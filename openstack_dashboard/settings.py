@@ -113,6 +113,7 @@ MIDDLEWARE_CLASSES += (
     'horizon.middleware.HorizonMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.http.ConditionalGetMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
