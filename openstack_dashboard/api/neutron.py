@@ -506,8 +506,11 @@ class FloatingIpManager(network_base.FloatingIpManager):
                     if target['instance_id'] == instance_id]
         else:
             ports = self._target_ports_by_instance(instance_id)
-            return ['{0}_{1}'.format(p.id, p.fixed_ips[0]['ip_address'])
-                    for p in ports]
+            v = []
+            for p in ports:
+                if len(p['fixed_ips']):
+                    v.append('{0}_{1}'.format(p['id'], p['fixed_ips'][0]['ip_address']))
+            return v
 
     def is_simple_associate_supported(self):
         # NOTE: There are two reason that simple association support
