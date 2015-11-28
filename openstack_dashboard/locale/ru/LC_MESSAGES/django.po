@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-10-22 08:58+0000\n"
+"POT-Creation-Date: 2015-11-19 04:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -458,9 +458,6 @@ msgid ""
 msgstr ""
 "\"Некоторые типы инстансов не соответствующие минимальным требованиям были "
 "запрещены.\""
-
-msgid "\"Users\""
-msgstr "\"Пользователи\""
 
 #, python-format
 msgid "%(conf_name)s: %(conf_val)s"
@@ -1016,15 +1013,6 @@ msgstr ""
 
 msgid "Add/Remove Hosts to Aggregate"
 msgstr "Добавить/удалить узлы в агрегаторе"
-
-msgid "AddFirewall"
-msgstr "Добавить межсетевой экран"
-
-msgid "AddPolicy"
-msgstr "Добавить политику"
-
-msgid "AddRule"
-msgstr "Добавить правило"
 
 #, python-format
 msgid "Added Firewall \"%s\"."
@@ -1841,9 +1829,6 @@ msgstr "Диски Cinder"
 msgid "Cipher"
 msgstr "Шифр"
 
-msgid "Classless Inter-Domain Routing (e.g. 192.168.0.0/24)"
-msgstr "CIDR (т.е. 192.168.0.0/24)"
-
 msgid "Clear Domain Context"
 msgstr "Очистить контекст домена"
 
@@ -1876,15 +1861,6 @@ msgstr "Количество кластеров"
 msgid "Cluster Creation Guide"
 msgstr "Руководство по созданию кластера"
 
-msgid "Cluster Detail"
-msgstr "Сведения кластера"
-
-msgid "Cluster Details"
-msgstr "Данные кластера"
-
-msgid "Cluster Details: {{ cluster.name }}"
-msgstr "Сведения кластера: {{ cluster.name }}"
-
 msgid "Cluster Events"
 msgstr "События кластера"
 
@@ -1897,9 +1873,6 @@ msgstr "Машины кластера"
 msgid "Cluster Name"
 msgstr "Название кластера"
 
-msgid "Cluster Overview"
-msgstr "Обзор кластера"
-
 msgid "Cluster Size"
 msgstr "Размер кластера"
 
@@ -1909,9 +1882,6 @@ msgstr "Шаблон кластера"
 #, python-format
 msgid "Cluster Template %s updated"
 msgstr "Шаблон кластера %s обновлен"
-
-msgid "Cluster Template Details"
-msgstr "Данные шаблона кластера"
 
 msgid "Cluster Template Name"
 msgstr "Название шаблона кластера"
@@ -2410,36 +2380,6 @@ msgstr "Создание шаблона группы машин \"Worker\""
 msgid "Create a data source"
 msgstr "Создание источника данных"
 
-msgid ""
-"Create a firewall based on a policy.\n"
-"\n"
-"A policy must be selected. Other fields are optional."
-msgstr ""
-"Создание межсетевого экрана на основании политики.\n"
-"\n"
-"Должна быть указана политика. Другие поля заполнять необязательно. "
-
-msgid ""
-"Create a firewall policy with an ordered list of firewall rules.\n"
-"\n"
-"A name must be given. Firewall rules are added in the order placed under the "
-"Rules tab."
-msgstr ""
-"Создать политику межсетевого экрана с упорядоченным списком правил.\n"
-"\n"
-"Должно быть указано название. Правила добавляются в порядке указания на "
-"закладке Правила."
-
-msgid ""
-"Create a firewall rule.\n"
-"\n"
-"Protocol and action must be specified. Other fields are optional."
-msgstr ""
-"Создание правила межсетевого экрана\n"
-"\n"
-"Должны быть указаны протокол и действие. Другие поля заполнять "
-"необязательно. "
-
 msgid "Create a firewall with selected routers."
 msgstr "Создание межсетевого экрана с выбранными маршрутизаторами."
 
@@ -2754,9 +2694,6 @@ msgstr "Мастер обработки данных"
 msgid "Data Processing Plugin Details"
 msgstr "Данные плагина обработки данных"
 
-msgid "Data Processing Plugin Overview"
-msgstr "Обзор плагина обработки данных"
-
 msgid "Data Processing Plugins"
 msgstr "Плагины обработки данных"
 
@@ -2772,12 +2709,6 @@ msgstr ""
 
 msgid "Data Source"
 msgstr "Источник данных"
-
-msgid "Data Source Details"
-msgstr "Информация об источнике данных"
-
-msgid "Data Source Overview"
-msgstr "Обзор источника данных"
 
 msgid "Data Source Type"
 msgstr "Тип источника данных"
@@ -4776,17 +4707,8 @@ msgstr "Завершение изменения типа или миграции
 msgid "Firewall %s was successfully updated."
 msgstr "Межсетевой экран  %s был успешно обновлен."
 
-msgid "Firewall Details"
-msgstr "Информация о межсетевом экране"
-
 msgid "Firewall Policies"
 msgstr "Политики межсетевого экрана"
-
-msgid "Firewall Policy Details"
-msgstr "Информация о политике межсетевого экрана"
-
-msgid "Firewall Rule Details"
-msgstr "Информация о правиле межсетевого экрана"
 
 msgid "Firewall Rules"
 msgstr "Правила межсетевого экрана"
@@ -5336,14 +5258,6 @@ msgstr "Служба идентификации запретила редакт�
 msgid "Identity service does not allow editing user password."
 msgstr "Служба идентификации не разрешает менять пароль пользователя."
 
-#, python-format
-msgid ""
-"If \"No volume type\" is selected, the default volume type \"%(name)s\" will "
-"be set for the created volume."
-msgstr ""
-"Если выбрано \"Не указан тип\", тип диска по умолчанию \"%(name)s\" будет "
-"установлен для создаваемого диска."
-
 msgid ""
 "If \"No volume type\" is selected, the volume will be created without a "
 "volume type."
@@ -5395,12 +5309,6 @@ msgctxt "Task status of an Instance"
 msgid "Image Backup"
 msgstr "Резервная копия образа"
 
-msgid "Image Details"
-msgstr "Подробности образа"
-
-msgid "Image Details: {{ image.name }}"
-msgstr "Детали образа: {{ image.name }}"
-
 msgid "Image File"
 msgstr "Файл Образа"
 
@@ -5415,9 +5323,6 @@ msgstr "Название образа"
 
 msgid "Image Name ="
 msgstr "Название образа ="
-
-msgid "Image Overview"
-msgstr "Обзор образов"
 
 msgctxt "Task status of an Instance"
 msgid "Image Pending Upload"
@@ -5602,12 +5507,6 @@ msgstr "Лог консоли инстанса"
 msgid "Instance Count"
 msgstr "Количество инстансов"
 
-msgid "Instance Details"
-msgstr "Детали инстанса"
-
-msgid "Instance Details: {{ instance.name }}"
-msgstr "Детали инстансы: {{ instance.name }}"
-
 msgid "Instance ID"
 msgstr "ID инстанса"
 
@@ -5720,20 +5619,8 @@ msgstr "Задача"
 msgid "Job Binaries"
 msgstr "Исполняемые файлы задач"
 
-msgid "Job Binary Details"
-msgstr "Данные исполняемого файла"
-
-msgid "Job Binary Overview"
-msgstr "Обзор исполняемых файлов"
-
 msgid "Job Configuration"
 msgstr "Конфигурация задачи"
-
-msgid "Job Details"
-msgstr "Данные задачи"
-
-msgid "Job Execution Details"
-msgstr "Данные выполнения задачи"
 
 msgid "Job Execution Guide"
 msgstr "Мастер запуска задачи"
@@ -5744,14 +5631,8 @@ msgstr "ID выполнения задачи"
 msgid "Job Guide"
 msgstr "Мастер задач"
 
-msgid "Job Overview"
-msgstr "Обзор задачи"
-
 msgid "Job Template"
 msgstr "Шаблон задачи"
-
-msgid "Job Template Details"
-msgstr "Детали шаблона задачи"
 
 msgid "Job Templates"
 msgstr "Шаблоны задачи"
@@ -6476,12 +6357,6 @@ msgstr "Пространство имён %s создано."
 msgid "Namespace Definition Source"
 msgstr "Источник определения пространства имён"
 
-msgid "Namespace Details"
-msgstr "Детали пространства имен"
-
-msgid "Namespace Details: {{ namespace.namespace }}"
-msgstr "Детали пространства имен: {{ namespace.namespace }}"
-
 msgid "Namespace JSON"
 msgstr "Пространство имён JSON"
 
@@ -6879,9 +6754,6 @@ msgstr "Узел группы"
 msgid "Node Group Template %s updated"
 msgstr "Шаблон группы узлов %s обновлён"
 
-msgid "Node Group Template Details"
-msgstr "Данные шаблона узла группы"
-
 #, python-format
 msgid "Node Group Template copy %s created"
 msgstr "Копия шаблона узла группы %s создана"
@@ -6907,9 +6779,6 @@ msgstr "Кластер узла группы"
 
 msgid "Node processes are not specified"
 msgstr "Узел процессов не указан"
-
-msgid "Nodegroup Template Details"
-msgstr "Данные шаблона узлов"
 
 msgid "Nodes Count"
 msgstr "Подсчет узлов"
@@ -7455,9 +7324,6 @@ msgstr "Порт %s был успешно создан."
 msgid "Port %s was successfully updated."
 msgstr "Порт %s был успешно обновлен."
 
-msgid "Port Details"
-msgstr "Детали порта"
-
 msgid "Port ID"
 msgstr "Порт ID"
 
@@ -7558,10 +7424,6 @@ msgstr "Проект ="
 msgid "Project Details"
 msgstr "Подробности проекта"
 
-#, python-format
-msgid "Project Details: %s"
-msgstr "Подробности проекта: %s"
-
 msgid "Project Groups"
 msgstr "Группы проекта"
 
@@ -7582,9 +7444,6 @@ msgstr "Участники проекта"
 
 msgid "Project Name"
 msgstr "Название проекта"
-
-msgid "Project Overview"
-msgstr "Обзор проекта"
 
 msgid "Project Quotas"
 msgstr "Квоты проектов"
@@ -8030,12 +7889,6 @@ msgstr "Изменяем размер диска \"%s\" "
 msgid "Resource"
 msgstr "Ресурс"
 
-msgid "Resource Details"
-msgstr "Детали ресурсов"
-
-msgid "Resource Details: {{ resource.resource_name }}"
-msgstr "Детали ресурса: {{ resource.resource_name }}"
-
 msgid "Resource ID"
 msgstr "ID ресурса"
 
@@ -8044,12 +7897,6 @@ msgstr "Метаданные ресурса"
 
 msgid "Resource Overview"
 msgstr "Обзор ресурса"
-
-msgid "Resource Type"
-msgstr "Тип ресурсы"
-
-msgid "Resource Type Details"
-msgstr "Детали типа ресурса"
 
 msgid "Resource Types"
 msgstr "Типы ресурсов"
@@ -8260,9 +8107,6 @@ msgstr "Маршрутизатор %s успешно создан."
 #, python-format
 msgid "Router %s was successfully updated."
 msgstr "Маршрутизатор %s был успешно обновлен."
-
-msgid "Router Details"
-msgstr "Информация о маршрутизаторе"
 
 msgid "Router ID"
 msgstr "ID Маршрутизатора"
@@ -9239,12 +9083,6 @@ msgstr ""
 msgid "Specs"
 msgstr "Specs"
 
-msgid "Stack Details"
-msgstr "Детали стека"
-
-msgid "Stack Details: {{ stack.stack_name }}"
-msgstr "Детали стека: {{ stack.stack_name }}"
-
 msgid "Stack Events"
 msgstr "События стека"
 
@@ -9253,9 +9091,6 @@ msgstr "ID стека"
 
 msgid "Stack Name"
 msgstr "Название стека"
-
-msgid "Stack Overview"
-msgstr "Обзор Стека"
 
 msgid "Stack Parameters"
 msgstr "Параметры стека"
@@ -9404,9 +9239,6 @@ msgstr "ID подсети"
 
 msgid "Subnet Name"
 msgstr "Название подсети"
-
-msgid "Subnet Overview"
-msgstr "Обзор подсети"
 
 msgid "Subnet list can not be retrieved."
 msgstr "Не удалось получить список подсетей."
@@ -9683,9 +9515,6 @@ msgstr "Файл шаблона"
 
 msgid "Template Name"
 msgstr "Название шаблона"
-
-msgid "Template Overview"
-msgstr "Обзор шаблона"
 
 msgid "Template Source"
 msgstr "Источник шаблона"
@@ -11752,9 +11581,6 @@ msgstr "Не удалось загрузить объект."
 msgid "Unable to upload volume to image for volume: \"%s\""
 msgstr "Не удалось загрузить диск на образ для диска: \"%s\""
 
-msgid "Undefined"
-msgstr "Не определено"
-
 msgid "Unit"
 msgstr "Единица"
 
@@ -12097,17 +11923,11 @@ msgstr "Детали учетных данных пользователя"
 msgid "User Details"
 msgstr "Детали пользователя"
 
-msgid "User Details: {{ user.name }}"
-msgstr "Детали пользователя: {{ user.name }}"
-
 msgid "User ID"
 msgstr "ID пользователя"
 
 msgid "User Name"
 msgstr "Имя пользователя"
-
-msgid "User Overview"
-msgstr "Обзор пользователя"
 
 msgid "User Settings"
 msgstr "Настройки пользователя"
@@ -12289,16 +12109,6 @@ msgstr "Диски (Cinder)"
 msgid "Volume Backup"
 msgstr "Резервные копии диска"
 
-msgid "Volume Backup Details"
-msgstr "Данные резервной копии диска"
-
-msgid "Volume Backup Details: {{ backup.name }}"
-msgstr "Детали резервной копии диска: {{ backup.name }}"
-
-#, python-format
-msgid "Volume Backup Overview: %(backup_display_name)s"
-msgstr "Обзор резервной копии диска: %(backup_display_name)s"
-
 msgid "Volume Backup:"
 msgstr "Резервная копия диска:"
 
@@ -12311,12 +12121,6 @@ msgid ""
 msgstr ""
 "Резервные копии диска хранятся, используя сервис хранения объектов. У вас "
 "должен быть активирован этот сервис, чтобы создать резервную копию."
-
-msgid "Volume Details"
-msgstr "Информация о диске"
-
-msgid "Volume Details: {{ volume.name }}"
-msgstr "Подробности о диске: {{ volume.name }}"
 
 msgid "Volume Encryption Details"
 msgstr "Подробности шифрования диска."
@@ -12337,20 +12141,11 @@ msgstr "Ограничения диска"
 msgid "Volume Name"
 msgstr "Название диска"
 
-msgid "Volume Overview"
-msgstr "Обзор диска"
-
 msgid "Volume Size"
 msgstr "Размер диска"
 
 msgid "Volume Snapshot"
 msgstr "Снимок диска"
-
-msgid "Volume Snapshot Details"
-msgstr "Информация о снимке диска"
-
-msgid "Volume Snapshot Details: {{ snapshot.name }}"
-msgstr "Детали снимка диска: {{ snapshot.name }}"
 
 msgid "Volume Snapshot Overview"
 msgstr "Обзор снимка диска"

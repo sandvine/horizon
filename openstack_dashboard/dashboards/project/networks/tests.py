@@ -355,7 +355,8 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
                                  test_with_profile=False):
         network = self.networks.first()
         params = {'name': network.name,
-                  'admin_state_up': network.admin_state_up}
+                  'admin_state_up': network.admin_state_up,
+                  'shared': False}
         if test_with_profile:
             net_profiles = self.net_profiles.list()
             net_profile_id = self.net_profiles.first().id
@@ -368,6 +369,38 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
 
         form_data = {'net_name': network.name,
                      'admin_state': network.admin_state_up,
+                     'shared': False,
+                     # subnet
+                     'with_subnet': False}
+        if test_with_profile:
+            form_data['net_profile_id'] = net_profile_id
+        form_data.update(form_data_no_subnet())
+        url = reverse('horizon:project:networks:create')
+        res = self.client.post(url, form_data)
+
+        self.assertNoFormErrors(res)
+        self.assertRedirectsNoFollow(res, INDEX_URL)
+
+    @test.create_stubs({api.neutron: ('network_create',
+                                      'profile_list',)})
+    def test_network_create_post_with_shared(self, test_with_profile=False):
+        network = self.networks.first()
+        params = {'name': network.name,
+                  'admin_state_up': network.admin_state_up,
+                  'shared': True}
+        if test_with_profile:
+            net_profiles = self.net_profiles.list()
+            net_profile_id = self.net_profiles.first().id
+            api.neutron.profile_list(IsA(http.HttpRequest),
+                                     'network').AndReturn(net_profiles)
+            params['net_profile_id'] = net_profile_id
+        api.neutron.network_create(IsA(http.HttpRequest),
+                                   **params).AndReturn(network)
+        self.mox.ReplayAll()
+
+        form_data = {'net_name': network.name,
+                     'admin_state': network.admin_state_up,
+                     'shared': True,
                      # subnet
                      'with_subnet': False}
         if test_with_profile:
@@ -393,7 +426,8 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         network = self.networks.first()
         subnet = self.subnets.first()
         params = {'name': network.name,
-                  'admin_state_up': network.admin_state_up}
+                  'admin_state_up': network.admin_state_up,
+                  'shared': False}
         subnet_params = {'network_id': network.id,
                          'name': subnet.name,
                          'cidr': subnet.cidr,
@@ -417,6 +451,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
 
         form_data = {'net_name': network.name,
                      'admin_state': network.admin_state_up,
+                     'shared': False,
                      'with_subnet': True}
         if test_with_profile:
             form_data['net_profile_id'] = net_profile_id
@@ -442,6 +477,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
                                                    test_with_profile=False):
         network = self.networks.first()
         params = {'name': network.name,
+                  'shared': False,
                   'admin_state_up': network.admin_state_up}
         if test_with_profile:
             net_profiles = self.net_profiles.list()
@@ -456,6 +492,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         form_data = {'net_name': network.name,
                      'admin_state': network.admin_state_up,
                      # subnet
+                     'shared': False,
                      'with_subnet': False}
         if test_with_profile:
             form_data['net_profile_id'] = net_profile_id
@@ -482,6 +519,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         network = self.networks.first()
         subnet = self.subnets.first()
         params = {'name': network.name,
+                  'shared': False,
                   'admin_state_up': network.admin_state_up}
         if test_with_profile:
             net_profiles = self.net_profiles.list()
@@ -495,6 +533,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
 
         form_data = {'net_name': network.name,
                      'admin_state': network.admin_state_up,
+                     'shared': False,
                      'with_subnet': True}
         if test_with_profile:
             form_data['net_profile_id'] = net_profile_id
@@ -524,6 +563,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         network = self.networks.first()
         subnet = self.subnets.first()
         params = {'name': network.name,
+                  'shared': False,
                   'admin_state_up': network.admin_state_up}
         if test_with_profile:
             net_profiles = self.net_profiles.list()
@@ -552,6 +592,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
 
         form_data = {'net_name': network.name,
                      'admin_state': network.admin_state_up,
+                     'shared': False,
                      'with_subnet': True}
         if test_with_profile:
             form_data['net_profile_id'] = net_profile_id
@@ -590,6 +631,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
 
         form_data = {'net_name': network.name,
                      'admin_state': network.admin_state_up,
+                     'shared': False,
                      'with_subnet': True}
         if test_with_profile:
             form_data['net_profile_id'] = net_profile_id
@@ -638,6 +680,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         self.mox.ReplayAll()
 
         form_data = {'net_name': network.name,
+                     'shared': False,
                      'admin_state': network.admin_state_up,
                      'with_subnet': True}
         if test_with_profile:
@@ -690,6 +733,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         # dummy IPv6 address
         cidr = '2001:0DB8:0:CD30:123:4567:89AB:CDEF/60'
         form_data = {'net_name': network.name,
+                     'shared': False,
                      'admin_state': network.admin_state_up,
                      'with_subnet': True}
         if test_with_profile:
@@ -742,6 +786,7 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         # dummy IPv6 address
         gateway_ip = '2001:0DB8:0:CD30:123:4567:89AB:CDEF'
         form_data = {'net_name': network.name,
+                     'shared': False,
                      'admin_state': network.admin_state_up,
                      'with_subnet': True}
         if test_with_profile:
@@ -800,13 +845,15 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         network = self.networks.first()
         api.neutron.network_update(IsA(http.HttpRequest), network.id,
                                    name=network.name,
-                                   admin_state_up=network.admin_state_up)\
+                                   admin_state_up=network.admin_state_up,
+                                   shared=network.shared)\
             .AndReturn(network)
         api.neutron.network_get(IsA(http.HttpRequest), network.id)\
             .AndReturn(network)
         self.mox.ReplayAll()
 
         form_data = {'network_id': network.id,
+                     'shared': False,
                      'name': network.name,
                      'admin_state': network.admin_state_up,
                      'tenant_id': network.tenant_id}
@@ -821,13 +868,15 @@ class NetworkTests(test.TestCase, NetworkStubMixin):
         network = self.networks.first()
         api.neutron.network_update(IsA(http.HttpRequest), network.id,
                                    name=network.name,
-                                   admin_state_up=network.admin_state_up)\
+                                   admin_state_up=network.admin_state_up,
+                                   shared=False)\
             .AndRaise(self.exceptions.neutron)
         api.neutron.network_get(IsA(http.HttpRequest), network.id)\
             .AndReturn(network)
         self.mox.ReplayAll()
 
         form_data = {'network_id': network.id,
+                     'shared': False,
                      'name': network.name,
                      'admin_state': network.admin_state_up,
                      'tenant_id': network.tenant_id}
@@ -912,7 +961,7 @@ class NetworkSubnetTests(test.TestCase):
         subnet = self.subnets.first()
 
         api.neutron.network_get(IsA(http.HttpRequest), network.id)\
-            .AndReturn(network)
+            .MultipleTimes().AndReturn(network)
         api.neutron.subnet_get(IsA(http.HttpRequest), subnet.id)\
             .AndReturn(subnet)
 
@@ -922,7 +971,7 @@ class NetworkSubnetTests(test.TestCase):
                       args=[subnet.id])
         res = self.client.get(url)
 
-        self.assertTemplateUsed(res, 'project/networks/subnets/detail.html')
+        self.assertTemplateUsed(res, 'horizon/common/_detail.html')
         self.assertEqual(res.context['subnet'].id, subnet.id)
 
     @test.create_stubs({api.neutron: ('subnet_get',)})
@@ -1959,181 +2008,6 @@ class NetworkSubnetTests(test.TestCase):
         res = self.client.post(url, form_data)
 
         self.assertRedirectsNoFollow(res, url)
-
-
-class NetworkPortTests(test.TestCase):
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',)})
-    def test_port_detail(self):
-        self._test_port_detail()
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',)})
-    def test_port_detail_with_mac_learning(self):
-        self._test_port_detail(mac_learning=True)
-
-    def _test_port_detail(self, mac_learning=False):
-        port = self.ports.first()
-        api.neutron.port_get(IsA(http.HttpRequest), port.id)\
-            .AndReturn(self.ports.first())
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'mac-learning')\
-            .AndReturn(mac_learning)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'mac-learning')\
-            .AndReturn(mac_learning)
-        self.mox.ReplayAll()
-
-        res = self.client.get(reverse('horizon:project:networks:ports:detail',
-                                      args=[port.id]))
-
-        self.assertTemplateUsed(res, 'project/networks/ports/detail.html')
-        self.assertEqual(res.context['port'].id, port.id)
-
-    @test.create_stubs({api.neutron: ('port_get',)})
-    def test_port_detail_exception(self):
-        port = self.ports.first()
-        api.neutron.port_get(IsA(http.HttpRequest), port.id)\
-            .AndRaise(self.exceptions.neutron)
-
-        self.mox.ReplayAll()
-
-        res = self.client.get(reverse('horizon:project:networks:ports:detail',
-                                      args=[port.id]))
-
-        self.assertRedirectsNoFollow(res, INDEX_URL)
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',)})
-    def test_port_update_get(self):
-        self._test_port_update_get()
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',)})
-    def test_port_update_get_with_mac_learning(self):
-        self._test_port_update_get(mac_learning=True)
-
-    def _test_port_update_get(self, mac_learning=False, binding=False):
-        port = self.ports.first()
-        api.neutron.port_get(IsA(http.HttpRequest),
-                             port.id)\
-            .AndReturn(port)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'binding')\
-            .AndReturn(binding)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'mac-learning')\
-            .AndReturn(mac_learning)
-        self.mox.ReplayAll()
-
-        url = reverse('horizon:project:networks:editport',
-                      args=[port.network_id, port.id])
-        res = self.client.get(url)
-
-        self.assertTemplateUsed(res, 'project/networks/ports/update.html')
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',
-                                      'port_update')})
-    def test_port_update_post(self):
-        self._test_port_update_post()
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',
-                                      'port_update')})
-    def test_port_update_post_with_mac_learning(self):
-        self._test_port_update_post(mac_learning=True)
-
-    def _test_port_update_post(self, mac_learning=False, binding=False):
-        port = self.ports.first()
-        api.neutron.port_get(IsA(http.HttpRequest), port.id)\
-            .AndReturn(port)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'binding')\
-            .AndReturn(binding)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'mac-learning')\
-            .AndReturn(mac_learning)
-        extension_kwargs = {}
-        if binding:
-            extension_kwargs['binding__vnic_type'] = port.binding__vnic_type
-        if mac_learning:
-            extension_kwargs['mac_learning_enabled'] = True
-        api.neutron.port_update(IsA(http.HttpRequest), port.id,
-                                name=port.name,
-                                admin_state_up=port.admin_state_up,
-                                **extension_kwargs)\
-            .AndReturn(port)
-        self.mox.ReplayAll()
-
-        form_data = {'network_id': port.network_id,
-                     'port_id': port.id,
-                     'name': port.name,
-                     'admin_state': port.admin_state_up}
-        if binding:
-            form_data['binding__vnic_type'] = port.binding__vnic_type
-        if mac_learning:
-            form_data['mac_state'] = True
-        url = reverse('horizon:project:networks:editport',
-                      args=[port.network_id, port.id])
-        res = self.client.post(url, form_data)
-
-        redir_url = reverse('horizon:project:networks:detail',
-                            args=[port.network_id])
-        self.assertRedirectsNoFollow(res, redir_url)
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',
-                                      'port_update')})
-    def test_port_update_post_exception(self):
-        self._test_port_update_post_exception()
-
-    @test.create_stubs({api.neutron: ('port_get',
-                                      'is_extension_supported',
-                                      'port_update')})
-    def test_port_update_post_exception_with_mac_learning(self):
-        self._test_port_update_post_exception(mac_learning=True)
-
-    def _test_port_update_post_exception(self, mac_learning=False,
-                                         binding=False):
-
-        port = self.ports.first()
-        api.neutron.port_get(IsA(http.HttpRequest), port.id)\
-            .AndReturn(port)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'binding')\
-            .AndReturn(binding)
-        api.neutron.is_extension_supported(IsA(http.HttpRequest),
-                                           'mac-learning')\
-            .AndReturn(mac_learning)
-        extension_kwargs = {}
-        if binding:
-            extension_kwargs['binding__vnic_type'] = port.binding__vnic_type
-        if mac_learning:
-            extension_kwargs['mac_learning_enabled'] = True
-        api.neutron.port_update(IsA(http.HttpRequest), port.id,
-                                name=port.name,
-                                admin_state_up=port.admin_state_up,
-                                **extension_kwargs)\
-            .AndRaise(self.exceptions.neutron)
-        self.mox.ReplayAll()
-
-        form_data = {'network_id': port.network_id,
-                     'port_id': port.id,
-                     'name': port.name,
-                     'admin_state': port.admin_state_up}
-        if binding:
-            form_data['binding__vnic_type'] = port.binding__vnic_type
-        if mac_learning:
-            form_data['mac_state'] = True
-        url = reverse('horizon:project:networks:editport',
-                      args=[port.network_id, port.id])
-        res = self.client.post(url, form_data)
-
-        redir_url = reverse('horizon:project:networks:detail',
-                            args=[port.network_id])
-        self.assertRedirectsNoFollow(res, redir_url)
 
 
 class NetworkViewTests(test.TestCase, NetworkStubMixin):

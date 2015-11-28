@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-10-22 08:58+0000\n"
+"POT-Creation-Date: 2015-11-19 04:15+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -596,15 +596,6 @@ msgstr "রুল হাপচিল্লু"
 msgid "Add/Remove Hosts to Aggregate"
 msgstr "এগ্রিগেত্তা হোষ্টশীং হাপচিল্লু/লৌথোকউ"
 
-msgid "AddFirewall"
-msgstr "ফায়রৱাল হাপচিল্লু"
-
-msgid "AddPolicy"
-msgstr "পোলিসি হাপচিল্লু"
-
-msgid "AddRule"
-msgstr "রুল হাপচিল্লু"
-
 #, python-format
 msgid "Added Firewall \"%s\"."
 msgstr "হাপচিল্লবা ফায়রৱাল \"%s\"।"
@@ -1126,9 +1117,6 @@ msgstr "সিন্দর ভোল্যুমশীং"
 msgid "Cipher"
 msgstr "সাইফর"
 
-msgid "Classless Inter-Domain Routing (e.g. 192.168.0.0/24)"
-msgstr "ক্লাস লৈতবা ইন্তর-দোমেইন রুতিং (খুদম ওইনা 192.168.0.0/24)"
-
 msgid "Clear Domain Context"
 msgstr "দোমেইন কন্তেক্স ক্লিয়র তৌ"
 
@@ -1141,23 +1129,14 @@ msgstr "ক্লোজ তৌ"
 msgid "Cluster"
 msgstr "ক্লষ্টর"
 
-msgid "Cluster Details"
-msgstr "ক্লষ্টরগী অকুপ্পা মরোলশীং"
-
 msgid "Cluster Instances"
 msgstr "ক্লষ্টর ইন্সতেন্সশীং"
 
 msgid "Cluster Name"
 msgstr "ক্লষ্টর মমীং"
 
-msgid "Cluster Overview"
-msgstr "ক্লষ্টর ওভরভ্যু"
-
 msgid "Cluster Template"
 msgstr "ক্লষ্টর তেমপ্লেত"
-
-msgid "Cluster Template Details"
-msgstr "ক্লষ্টর তেমপ্লেতকী অকুপ্পা মরোলশীং"
 
 msgid "Cluster Template Name"
 msgstr "ক্লষ্টর তেমপ্লেত মমীং"
@@ -1550,35 +1529,6 @@ msgid "Create a Volume Type"
 msgstr "ভোল্যুম তাইপ অমা শেম্মু"
 
 msgid ""
-"Create a firewall based on a policy.\n"
-"\n"
-"A policy must be selected. Other fields are optional."
-msgstr ""
-"পোলিসি অমদা য়ুম্ফম ওইদুনা ফায়রৱাল অমা শেম্মু।\n"
-" \n"
-" পোলিসি অমা খনগদবনি। অতোপ্পা ফিল্ডশীংদি ওপস্নেলনি।"
-
-msgid ""
-"Create a firewall policy with an ordered list of firewall rules.\n"
-"\n"
-"A name must be given. Firewall rules are added in the order placed under the "
-"Rules tab."
-msgstr ""
-"মথং-মনাউ নাইরবা ফায়রৱালগী লিষ্ট অমনা ফায়রৱাল পোলিসি অমা শেম্মু\n"
-"\n"
-"মমীং অমা পীগদবনি। ফায়রৱাল রুলশীং অসি রুলস তেবকী মখাদা থম্লিবা মথং-মনাউ অদুদা "
-"হাপচিনগদবনি।"
-
-msgid ""
-"Create a firewall rule.\n"
-"\n"
-"Protocol and action must be specified. Other fields are optional."
-msgstr ""
-"ফায়রৱাল রুল অমা শেম্মু।\n"
-"\n"
-"প্রোতোকোল অমসুং এক্সন শেংনা তাক্কদবনি। অতোপ্পা ফিল্ডশীং অদুদি ওপস্নেলনি।"
-
-msgid ""
 "Create a monitor template.\n"
 "\n"
 "Select type of monitoring. Specify delay, timeout, and retry limits required "
@@ -1806,9 +1756,6 @@ msgstr "দেতা প্রোসেসিং"
 msgid "Data Processing Plugin Details"
 msgstr "দেতা প্রোসেসিং প্লগইনগী অকুপ্পা মরোলশীং"
 
-msgid "Data Processing Plugin Overview"
-msgstr "দেতা প্রোসেসিং প্লগইন ওভরভ্যু"
-
 msgid "Data Processing Plugins"
 msgstr "দেতা প্রোসেসিং প্লগইনশীং"
 
@@ -1821,12 +1768,6 @@ msgid ""
 msgstr ""
 "দেতা প্রোসেসিংনা তোঙান-তোঙানবা ষ্টোরেজ লোকেসন ওপসনশীং পী। ইন্সতেন্সশীংদা এতেচ "
 "তৌনবা ইফেমেরল দ্রাইভ নত্ত্রগা সিন্দর ভোল্যুম অমা নহাক্না খনবা য়াই।"
-
-msgid "Data Source Details"
-msgstr "দেতা সোর্সকী অকুপ্পা মরোলশীং"
-
-msgid "Data Source Overview"
-msgstr "দেতা সোর্স ওভরভ্যু"
 
 msgid "Data Source Type"
 msgstr "দেতা সোর্স তাইপ"
@@ -2841,17 +2782,8 @@ msgstr "ফিঙ্গরপ্রিন্ত"
 msgid "Firewall %s was successfully updated."
 msgstr "ফায়রৱাল %s অদু মায় পাক্না অপদেত তৌরে।"
 
-msgid "Firewall Details"
-msgstr "ফায়রৱালগী অকুপ্পা মরোলশীং"
-
 msgid "Firewall Policies"
 msgstr "ফায়রৱাল পোলিসিশীং"
-
-msgid "Firewall Policy Details"
-msgstr "ফায়রৱাল পোলিসিগী অকুপ্পা মরোলশীং"
-
-msgid "Firewall Rule Details"
-msgstr "ফায়রৱাল রুলগী অকুপ্পা মরোলশীং"
 
 msgid "Firewall Rules"
 msgstr "ফায়রৱাল রুলশীং"
@@ -3334,9 +3266,6 @@ msgstr "ইমেজ"
 msgid "Image (Glance)"
 msgstr "ইমেজ (গ্লান্স)"
 
-msgid "Image Details"
-msgstr "ইমেজগী অকুপ্পা মরোলশীং"
-
 msgid "Image File"
 msgstr "ইমেজ ফাইল"
 
@@ -3351,9 +3280,6 @@ msgstr "ইমেজ মমীং"
 
 msgid "Image Name ="
 msgstr "ইমেজ মমীং ="
-
-msgid "Image Overview"
-msgstr "ইমেজ ওভরভ্যু"
 
 msgid "Image Registry"
 msgstr "ইমেজ রেজিষ্ট্রি"
@@ -3485,9 +3411,6 @@ msgstr "ইন্সতেন্স কন্সোল লোগ"
 msgid "Instance Count"
 msgstr "ইন্সতেন্স মশীং"
 
-msgid "Instance Details"
-msgstr "ইন্সতেন্সকী অকুপ্পা মরোলশীং"
-
 msgid "Instance ID"
 msgstr "ইন্সতেন্স ID"
 
@@ -3574,20 +3497,8 @@ msgstr "জোব"
 msgid "Job Binaries"
 msgstr "জোব বাইনরিশীং"
 
-msgid "Job Binary Details"
-msgstr "জোব বাইনরিগী অকুপ্পা মরোলশীং"
-
-msgid "Job Binary Overview"
-msgstr "জোব বাইনরি ওভরভ্যু"
-
 msgid "Job Configuration"
 msgstr "জোব কনফিগুরেসন"
-
-msgid "Job Details"
-msgstr "জোবকী অকুপ্পা মরোলশীং"
-
-msgid "Job Execution Details"
-msgstr "জোব এক্সেক্যুসনগী অকুপ্পা মরোলশীং"
 
 msgid "Job Execution ID"
 msgstr "জোব এক্সেক্যুসন ID"
@@ -4362,9 +4273,6 @@ msgstr "ভোল্যুম অমত্তা ফংদে"
 msgid "Node Configurations"
 msgstr "নোদ কনফিগুরেসনশীং"
 
-msgid "Node Group Template Details"
-msgstr "নোদ গ্রুপ তেমপ্লেতকী অকুপ্পা মরোলশীং"
-
 #, python-format
 msgid "Node Group Template copy %s created"
 msgstr "নোদ গ্রুপ তেমপ্লেত কোপি %s শেম্লে"
@@ -4390,9 +4298,6 @@ msgstr "নোদ গ্রুপ ক্লষ্টর"
 
 msgid "Node processes are not specified"
 msgstr "নোদ প্রোসেসশীং শেংনা তাক্তে"
-
-msgid "Nodegroup Template Details"
-msgstr "নোদগ্রুপ তেমপ্লেতকী অকুপ্পা মরোলশীং"
 
 msgid "Nodes Count"
 msgstr "নোদশীংগী মশীং"
@@ -4743,9 +4648,6 @@ msgstr "পোর্ত %s মায় পাক্না শেমখ্রে।
 msgid "Port %s was successfully updated."
 msgstr "পোর্ত %s মায়পাক্না অপদেত তৌখ্রে।"
 
-msgid "Port Details"
-msgstr "পোর্তকী অকুপ্পা মরোলশীং"
-
 msgid "Port ID"
 msgstr "পোর্ত ID"
 
@@ -5061,9 +4963,6 @@ msgstr "ভোল্যুম \"%s\" রিসাইজ তৌরি"
 msgid "Resource"
 msgstr "রিসোর্স"
 
-msgid "Resource Details"
-msgstr "রিসোর্সকী অকুপ্পা মরোলশীং"
-
 msgid "Resource ID"
 msgstr "রিসোর্স ID"
 
@@ -5156,9 +5055,6 @@ msgstr "রাউতর %s মায় পাক্না শেমখ্রে।
 #, python-format
 msgid "Router %s was successfully updated."
 msgstr "রাউতর %s মায় পাক্না অপদেত তৌখ্রে।"
-
-msgid "Router Details"
-msgstr "রাউতরগী অকুপ্পা মরোলশীং"
 
 msgid "Router ID"
 msgstr "রাউতর ID"
@@ -5706,9 +5602,6 @@ msgstr "দেতাবেজ ইন্সতেন্স অদুগী অন
 msgid "Specs"
 msgstr "স্পেকশীং"
 
-msgid "Stack Details"
-msgstr "ষ্টেক্কী অকুপ্পা মরোলশীং"
-
 msgid "Stack Events"
 msgstr "ষ্টেক ইভেন্তশীং"
 
@@ -5717,9 +5610,6 @@ msgstr "ষ্টেক ID"
 
 msgid "Stack Name"
 msgstr "ষ্টেক মমীং"
-
-msgid "Stack Overview"
-msgstr "ষ্টেক ওভরভ্যু"
 
 msgid "Stack Parameters"
 msgstr "ষ্টেক পেরামিতরশীং"
@@ -5822,9 +5712,6 @@ msgstr "সবনেত ID "
 
 msgid "Subnet Name"
 msgstr "সবনেত মমীং"
-
-msgid "Subnet Overview"
-msgstr "সবনেত ওভরভ্যু"
 
 msgid "Subnet list can not be retrieved."
 msgstr "সবনেত লিষ্ট রিত্রিভ তৌবা য়াদে।"
@@ -5997,9 +5884,6 @@ msgstr "তেমপ্লেত ফাইল"
 
 msgid "Template Name"
 msgstr "তেমপ্লেত মমীং"
-
-msgid "Template Overview"
-msgstr "তেমপ্লেত ওভরভ্যু"
 
 msgid "Template Source"
 msgstr "তেমপ্লেত সোর্স"
@@ -7928,13 +7812,6 @@ msgstr "ভোল্যুম (সিন্দর)"
 msgid "Volume Backup"
 msgstr "ভোল্যুম বেকঅপ"
 
-msgid "Volume Backup Details"
-msgstr "ভোল্যুম বেকঅপকী অকুপ্পা মরোলশীং"
-
-#, python-format
-msgid "Volume Backup Overview: %(backup_display_name)s"
-msgstr "ভোল্যুম বেকঅপ ওভরভ্যু: %(backup_display_name)s"
-
 msgid "Volume Backup:"
 msgstr "ভোল্যুম বেকঅপ:"
 
@@ -7948,26 +7825,17 @@ msgstr ""
 "ভোল্যুম বেকঅপশীং অসি ওবজেক্ত ষ্টোরেজ সর্ভিস শীজিন্নদুনা ষ্টোর তৌই। বেকঅপ অমা "
 "শেম্নবগীদমক নহাক্না সর্ভিস অসি এক্তিভেত তৌগদবনি।"
 
-msgid "Volume Details"
-msgstr "ভোল্যুমগী অকুপ্পা মরোলশীং"
-
 msgid "Volume Limits"
 msgstr "ভোল্যুম লিমিতশীং"
 
 msgid "Volume Name"
 msgstr "ভোল্যুম মমীং"
 
-msgid "Volume Overview"
-msgstr "ভোল্যুম ওভরভ্যু"
-
 msgid "Volume Size"
 msgstr "ভোল্যুমগী সাইজ"
 
 msgid "Volume Snapshot"
 msgstr "ভোল্যুম স্নেপশোত"
-
-msgid "Volume Snapshot Details"
-msgstr "ভোল্যুম স্নেপশোতকী অকুপ্পা মরোলশীং"
 
 msgid "Volume Snapshot Overview"
 msgstr "ভোল্যুম স্নেপশোত ওভরভ্যু"

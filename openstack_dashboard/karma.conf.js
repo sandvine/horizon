@@ -87,6 +87,7 @@ module.exports = function (config) {
       // from jasmine.html
       xstaticPath + 'jquery/data/jquery.js',
       xstaticPath + 'angular/data/angular.js',
+      xstaticPath + 'angular/data/angular-route.js',
       xstaticPath + 'angular/data/angular-mocks.js',
       xstaticPath + 'angular/data/angular-cookies.js',
       xstaticPath + 'angular_bootstrap/data/angular-bootstrap.js',
@@ -186,15 +187,15 @@ module.exports = function (config) {
     // Places coverage report in HTML format in the subdirectory below.
     coverageReporter: {
       type: 'html',
-      dir: './.coverage-karma/'
+      dir: './coverage-karma/'
     },
 
     // Coverage threshold values.
     thresholdReporter: {
-      statements: 90, // target 100
+      statements: 92, // target 100
       branches: 89, // target 100
-      functions: 89, // target 100
-      lines: 90 // target 100
+      functions: 92, // target 100
+      lines: 92 // target 100
     }
   });
 };
