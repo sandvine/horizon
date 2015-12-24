@@ -33,8 +33,16 @@
   function cinderAPI(apiService, toastService) {
     var service = {
       getVolumes: getVolumes,
+      getVolume: getVolume,
+      getVolumeTypes: getVolumeTypes,
+      getVolumeType: getVolumeType,
+      getDefaultVolumeType: getDefaultVolumeType,
       getVolumeSnapshots: getVolumeSnapshots,
-      getExtensions: getExtensions
+      getExtensions: getExtensions,
+      getQoSSpecs: getQoSSpecs,
+      createVolume: createVolume,
+      getAbsoluteLimits: getAbsoluteLimits,
+      getServices: getServices
     };
 
     return service;
@@ -59,10 +67,85 @@
      * For example, "status": "available" will show all available volumes.
      */
     function getVolumes(params) {
-      var config = (params) ? {'params': params} : {};
+      var config = params ? {'params': params} : {};
       return apiService.get('/api/cinder/volumes/', config)
         .error(function () {
           toastService.add('error', gettext('Unable to retrieve the volumes.'));
+        });
+    }
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.getVolume
+     * @description
+     * Get a single Volume by ID.
+     *
+     * @param {string} id
+     * Specifies the id of the Volume to request.
+     *
+     */
+    function getVolume(id) {
+      return apiService.get('/api/cinder/volumes/' + id)
+        .error(function () {
+          toastService.add('error', gettext('Unable to retrieve the volume.'));
+        });
+    }
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.createVolume
+     * @description
+     * Create a volume.
+     */
+    function createVolume(newVolume) {
+      return apiService.post('/api/cinder/volumes/', newVolume)
+        .error(function () {
+          toastService.add('error', gettext('Unable to create the volume.'));
+        });
+    }
+
+    // Volume Types
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.getVolumeTypes
+     * @description
+     * Get a list of volume types.
+     *
+     * The listing result is an object with property "items." Each item is
+     * a volume type.
+     *
+     */
+    function getVolumeTypes() {
+      return apiService.get('/api/cinder/volumetypes/')
+        .error(function () {
+          toastService.add('error', gettext('Unable to retrieve the volume types.'));
+        });
+    }
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.getVolumeType
+     * @description
+     * Get a single Volume Type by ID.
+     *
+     * @param {string} id
+     * Specifies the id of the Volume Type to request.
+     *
+     */
+    function getVolumeType(id) {
+      return apiService.get('/api/cinder/volumetypes/' + id)
+        .error(function () {
+          toastService.add('error', gettext('Unable to retrieve the volume type.'));
+        });
+    }
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.getDefaultVolumeType
+     * @description
+     * Get the default Volume Type
+     *
+     */
+    function getDefaultVolumeType() {
+      return apiService.get('/api/cinder/volumetypes/default')
+        .error(function () {
+          toastService.add('error', gettext('Unable to retrieve the default volume type.'));
         });
     }
 
@@ -85,7 +168,7 @@
      * snapshots.
      */
     function getVolumeSnapshots(params) {
-      var config = (params) ? {'params': params} : {};
+      var config = params ? {'params': params} : {};
       return apiService.get('/api/cinder/volumesnapshots/', config)
         .error(function () {
           toastService.add('error',
@@ -125,5 +208,55 @@
         });
     }
 
+    // Cinder Services
+
+    /**
+    * @name horizon.openstack-service-api.cinder.getServices
+    * @description Get the list of Cinder services.
+    *
+    * @returns The listing result is an object with property "services." Each item is
+    * a service.
+    */
+    function getServices() {
+      return apiService.get('/api/cinder/services/')
+        .error(function () {
+          toastService.add('error', gettext('Unable to retrieve the cinder services.'));
+        });
+    }
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.getQoSSpecs
+     * @description
+     * Get a list of Quality of Service.
+     *
+     * The listing result is an object with property "items." Each item is
+     * a Quality of Service Spec.
+     *
+     * @param {Object} params
+     * Query parameters. Optional.
+     *
+     */
+    function getQoSSpecs(params) {
+      var config = params ? {'params': params} : {};
+      return apiService.get('/api/cinder/qosspecs/', config)
+        .error(function () {
+          toastService.add('error',
+            gettext('Unable to retrieve the QoS Specs.'));
+        });
+    }
+
+    /**
+     * @name horizon.app.core.openstack-service-api.cinder.getAbsoluteLimits
+     * @description
+     * Get the limits for the current tenant.
+     *
+     */
+    function getAbsoluteLimits() {
+      return apiService.get('/api/cinder/tenantabsolutelimits/')
+        .error(function () {
+          toastService.add('error',
+            gettext('Unable to retrieve the Absolute Limits.'));
+        });
+    }
   }
 }());

@@ -55,7 +55,11 @@
 
         $provide.value('horizon.app.core.openstack-service-api.nova', {
           createServer: function(finalSpec) {
-            return finalSpec;
+            return {
+              then: function () {
+                return finalSpec;
+              }
+            };
           },
           getAvailabilityZones: function() {
             var zones = [
@@ -172,6 +176,10 @@
         });
 
         $provide.value('horizon.app.core.openstack-service-api.keystone', {});
+
+        $provide.value('horizon.framework.widgets.toast.service', {
+          add: function() {}
+        });
       }));
 
       beforeEach(inject(function(launchInstanceModel, $rootScope, _$q_) {
@@ -373,7 +381,7 @@
         it('sets volume options appropriately', function() {
           expect(model.newInstanceSpec.vol_create).toBe(false);
           expect(model.newInstanceSpec.vol_device_name).toBe('vda');
-          expect(model.newInstanceSpec.vol_delete_on_terminate).toBe(false);
+          expect(model.newInstanceSpec.vol_delete_on_instance_delete).toBe(false);
           expect(model.newInstanceSpec.vol_size).toBe(1);
         });
 
@@ -391,7 +399,7 @@
           model.newInstanceSpec.security_groups = [ { id: 'adminId', name: 'admin' },
                                                     { id: 'demoId', name: 'demo' } ];
           model.newInstanceSpec.vol_create = true;
-          model.newInstanceSpec.vol_delete_on_terminate = true;
+          model.newInstanceSpec.vol_delete_on_instance_delete = true;
           model.newInstanceSpec.vol_device_name = "volTestName";
           model.newInstanceSpec.vol_size = 10;
         });
@@ -442,7 +450,7 @@
         it('should handle source type of "volume"', function() {
           model.newInstanceSpec.source_type.type = 'volume';
           model.newInstanceSpec.source[0].id = 'imAnID';
-          model.newInstanceSpec.vol_delete_on_terminate = 'yep';
+          model.newInstanceSpec.vol_delete_on_instance_delete = 'yep';
 
           var finalSpec = model.createInstance();
           expect(finalSpec.block_device_mapping.volTestName)
@@ -461,7 +469,7 @@
         it('should handle source type of "volume_snapshot"', function() {
           model.newInstanceSpec.source_type.type = 'volume_snapshot';
           model.newInstanceSpec.source[0].id = 'imAnID';
-          model.newInstanceSpec.vol_delete_on_terminate = 'yep';
+          model.newInstanceSpec.vol_delete_on_instance_delete = 'yep';
 
           var finalSpec = model.createInstance();
           expect(finalSpec.block_device_mapping.volTestName)

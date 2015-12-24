@@ -181,6 +181,7 @@ class TestCase(horizon_helpers.TestCase):
                            token=self.token,
                            username=self.user.name,
                            domain_id=self.domain.id,
+                           user_domain_name=self.domain.name,
                            tenant_id=self.tenant.id,
                            service_catalog=self.service_catalog,
                            authorized_tenants=tenants)
@@ -206,12 +207,14 @@ class TestCase(horizon_helpers.TestCase):
 
     def setActiveUser(self, id=None, token=None, username=None, tenant_id=None,
                       service_catalog=None, tenant_name=None, roles=None,
-                      authorized_tenants=None, enabled=True, domain_id=None):
+                      authorized_tenants=None, enabled=True, domain_id=None,
+                      user_domain_name=None):
         def get_user(request):
             return user.User(id=id,
                              token=token,
                              user=username,
                              domain_id=domain_id,
+                             user_domain_name=user_domain_name,
                              tenant_id=tenant_id,
                              service_catalog=service_catalog,
                              roles=roles,
@@ -279,6 +282,46 @@ class TestCase(horizon_helpers.TestCase):
 
     def assertItemsCollectionEqual(self, response, items_list):
         self.assertEqual(response.json, {"items": items_list})
+
+    def getAndAssertTableRowAction(self, response, table_name,
+                                   action_name, row_id):
+        table = response.context[table_name + '_table']
+        rows = list(moves.filter(lambda x: x.id == row_id,
+                                 table.data))
+        self.assertEqual(1, len(rows),
+                         "Did not find a row matching id '%s'" % row_id)
+        row_actions = table.get_row_actions(rows[0])
+        actions = list(moves.filter(lambda x: x.name == action_name,
+                                    row_actions))
+
+        msg_args = (action_name, table_name, row_id)
+        self.assertTrue(
+            len(actions) > 0,
+            "No action named '%s' found in '%s' table for id '%s'" % msg_args)
+
+        self.assertEqual(
+            1, len(actions),
+            "Multiple actions named '%s' found in '%s' table for id '%s'"
+            % msg_args)
+
+        return actions[0]
+
+    def getAndAssertTableAction(self, response, table_name, action_name):
+
+        table = response.context[table_name + '_table']
+        table_actions = table.get_table_actions()
+        actions = list(moves.filter(lambda x: x.name == action_name,
+                                    table_actions))
+        msg_args = (action_name, table_name)
+        self.assertTrue(
+            len(actions) > 0,
+            "No action named '%s' found in '%s' table" % msg_args)
+
+        self.assertEqual(
+            1, len(actions),
+            "More than one action named '%s' found in '%s' table" % msg_args)
+
+        return actions[0]
 
     @staticmethod
     def mock_rest_request(**args):

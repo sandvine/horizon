@@ -20,8 +20,10 @@
   }
 }
 
-#main-content {
+#main_content {
   display: block;
+  min-width: unset;
+  width: 100%;
 }
 
 
@@ -30,10 +32,6 @@
   width: 100%;
   position: fixed;
   z-index: 4;
-
-  .navbar {
-    margin-bottom: 0;
-  }
 }
 
 

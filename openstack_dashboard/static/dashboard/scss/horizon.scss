@@ -15,6 +15,9 @@
 @import "/horizon/lib/font-awesome/scss/font-awesome.scss";
 @import "/horizon/lib/magic_search/magic_search.scss";
 
+// Main Page Layout
+@import "layout";
+
 // Dashboard Components
 @import "components/login";
 @import "components/resource_browser";
@@ -26,8 +29,12 @@
 @import "components/network_topology";
 @import "components/context_selection";
 @import "components/pie_charts";
+@import "components/bar_charts";
+@import "components/quota";
+@import "components/table_actions";
 @import "/framework/framework";
 @import "components/tables";
+@import "components/messages";
 @import "components/table_actions";
 
 
@@ -47,40 +54,6 @@
   zoom: 1;
 } // IE7
 
-
-// Basic Page Layout
-// Make the sidebar span the entire page, instead of just the Viewport
-// Display Table is not ideal, but it will allow dynamic resizing of
-// the sidebar while growing its container to fill the entire window
-html, body, #container {
-  height: 100%;
-}
-
-// Theme Note:
-// The following 1px is the default 1px for nav border in Bootstrap. If
-// this value is customized, then this value must change to compensate
-$navbar-border-size: 1px !default;
-$navbar-true-height: $navbar-height + $navbar-border-size !default;
-
-#main_content {
-  height: 100%; /* fallback if needed --> its scrolls, but it works */
-  height: calc(100% - #{$navbar-true-height});
-  display: table;
-}
-
-#content_body,
-#sidebar {
-  display: table-cell;
-  vertical-align: top;
-}
-
-#content_body {
-  width: 100%;
-  padding-left: $content-body-padding;
-  padding-right: $content-body-padding;
-}
-
-// Basic Page Layout End
 
 small {
   font-size: 11px;
@@ -182,46 +155,6 @@ a.current_item:hover h4 {
   border-bottom-color: #ccc;
 }
 
-.messages {
-  position: fixed;
-  z-index: 9999;
-  top: 20px;
-  right: 20px;
-  width: 300px;
-  .alert {
-    @include box-shadow(0 3px 7px rgba(0, 0, 0, 0.3));
-  }
-  .alert.alert-danger {
-    border-width: 1px;
-    border-style: solid;
-    border-color: darken($brand-danger, 5%);
-  }
-  .alert.alert-success {
-    border-width: 1px;
-    border-style: solid;
-    border-color: darken($brand-success, 5%);
-  }
-}
-
-.alert .alert-actions {
-  margin-top: -23px;
-  margin-right: -23px;
-}
-
-.modal > form,
-.alert-actions > form {
-  margin-bottom: 0;
-}
-
-.alert p {
-  overflow: hidden;
-  word-wrap: break-word;
-}
-
-.alert p:last-child {
-  margin-bottom: 0;
-}
-
 #actions.single {
   width: 90px;
 }
@@ -239,28 +172,6 @@ a.current_item:hover h4 {
 .overview {
   font-size: 24px;
 }
-
-#monitoring {
-  background: $body-bg;
-  font-size: 14px;
-  height: 20px;
-  margin: -18px 0 25px;
-  padding: 10px;
-  border: 1px solid $border-color;
-}
-
-#monitoring h3 {
-    font-size: 14px;
-    font-weight: normal;
-    float: left;
-    line-height: 18px;
-}
-
-#external_links, #external_links li {
-    float: left;
-}
-#external_links li { margin: 0 0 0 15px; }
-
 
 /* Forms */
 
@@ -411,14 +322,13 @@ a.current_item:hover h4 {
   }
 }
 
-/* Actions dropdown */
-
-.actions_column {
+/* Tables */
+/* This works around a known bug in Bootstrap, the
+   wrapping of button groups within the cell of a table:
+       https://github.com/twbs/bootstrap/issues/3130
+*/
+td .btn-group {
   white-space: nowrap;
-  padding: 10px;
-  position: relative;
-  width: 1em;
-  background-clip: padding-box;
 
   // We want the actions column to be a small button, but
   // we can't get to the class attribute yet to customize
@@ -426,118 +336,11 @@ a.current_item:hover h4 {
   .btn {
     @extend .btn-sm;
   }
-}
 
-form.actions_column {
-  width: auto;
-  font-family: $font-family-base;
-}
-
-// TODO(hurgleburgler): We need to fix this, we still support IE8+
-.actions_column .btn-group {
-  display: inline-flex;
-  display: -ms-inline-flexbox;
-  -ms-flex-direction: row;
-  display: -webkit-inline-flex;
-  display: -moz-inline-flex;
-}
-
-.actions_column .row_actions a,
-.actions_column .row_actions input,
-.actions_column .row_actions button,
-div.table_actions_menu .dropdown-menu a,
-div.table_actions_menu .dropdown-menu input,
-div.table_actions_menu .dropdown-menu button {
-  background: none;
-  float: none;
-  display: block;
-  padding: 5px 10px;
-  color: $text-color;
-  text-align: left;
-  border-radius: 0;
-  border: 0 none;
-  @include box-shadow(none);
-}
-
-.actions_column .row_actions .hide {
-  display: none;
-}
-
-.actions_column .btn-action-required {
-  font-weight: bold;
-}
-
-.tab-content {
-  overflow: visible;
-}
-
-/* Makes size consistent across browsers when mixing "btn-group" and "small" */
-.btn.hide, .btn-group .hide {
-  display: none;
-}
-.btn-group .dropdown-toggle:focus {
-  outline: none;
-}
-.dropdown-menu button {
-  line-height: 18px; /* Matches rule for ".dropdown-menu a" in bootstrap */
-  width: 100%;
-}
-.btn-group .dropdown-menu .btn {
-  border-radius: 0;
-}
-.dropdown-menu .btn.btn-danger,
-.dropdown-menu .btn.btn-danger:hover,
-.dropdown-menu .btn.btn-success,
-.dropdown-menu .btn.btn-success:hover,
-.dropdown-menu .btn.btn-info,
-.dropdown-menu .btn.btn-info:hover {
-  text-shadow: none; /* remove default bootstrap shadowing from button text. */
-}
-.dropdown-menu li:hover {
-  background: none;
-}
-
-.actions_column .dropdown-menu a:hover,
-.actions_column .dropdown-menu button:hover,
-div.table_actions_menu .dropdown-menu a:hover,
-div.table_actions_menu .dropdown-menu button:hover {
-  background-color: $gray-lighter;
-}
-.dropdown-menu .btn.btn-danger {
-  color: $brand-danger;
-}
-.dropdown-menu .btn.btn-danger:hover {
-  background-color: $gray-lighter;
-}
-
-
-/* Overrides for single-action rows (no dropdown) */
-
-tr .actions_column ul.row_actions.single,
-tr:hover .actions_column ul.row_actions.single,
-.actions_column ul.row_actions.single,
-.actions_column ul.row_actions.single:hover {
-  border: none;
-}
-
-.actions_column ul.row_actions.single li.action {
-  display: block;
-}
-
-.actions_column ul.row_actions.single li.action:hover {
-  background-color: transparent;
-}
-
-.actions_column ul.row_actions.single a,
-.actions_column ul.row_actions.single input,
-.actions_column ul.row_actions.single button {
-  color: $brand-info;
-}
-
-.actions_column ul.row_actions.single a:hover,
-.actions_column ul.row_actions.single input:hover,
-.actions_column ul.row_actions.single button:hover {
-  color: $text-color;
+  & > .btn-group,
+  & > .btn {
+    float: none;
+  }
 }
 
 div.input input[type="checkbox"] {
@@ -545,7 +348,7 @@ div.input input[type="checkbox"] {
   width: 25px;
 }
 
-tr.terminated {
+tr.deleted {
   color: #999999;
 }
 
@@ -608,48 +411,6 @@ iframe {
 
 .progress_bar_over {
   background-color: $brand-danger;
-}
-
-.d3_quota_bar {
-  width: 20%;
-  margin-bottom: 8px;
-  margin-top: 10px;
-  float: left;
-  text-align: center;
-}
-
-.quota-dynamic {
-  overflow: hidden;
-  margin-bottom: 8px;
-}
-
-.quota-heading {
-  font-weight: normal;
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.quota_title {
-  color: $gray-light;
-  padding-bottom: 0;
-  margin-bottom: 8px;
-}
-
-.quota_title strong {
-  color: $text-color;
-}
-
-.quota_title strong span {
-  font-weight: normal;
-}
-
-.quota_title p {
-  float: right;
-  margin-bottom: 0;
-}
-
-.quota_bar {
-  margin: -8px 0 8px;
 }
 
 div .flavor_table {
@@ -1382,27 +1143,6 @@ a:hover.link-popover { text-decoration: none; }
 }
 .has-feedback .form-control-feedback {
   top: 0;
-}
-
-/**** Details Override ****/
-.page-header > .breadcrumb {
-  font-size: $font-size-h3;
-  margin-bottom: 0;
-
-  .actions_column {
-    padding: 0;
-  }
-}
-
-.detail {
-  ul {
-    padding-left: 0;
-  }
-
-  dt, dd {
-    text-align: left;
-    line-height: $line-height-small;
-  }
 }
 
 input::-ms-clear, input::-ms-reveal {

@@ -26,7 +26,8 @@
     'horizon.app.core.openstack-service-api.nova',
     'horizon.app.core.openstack-service-api.novaExtensions',
     'horizon.app.core.openstack-service-api.security-group',
-    'horizon.app.core.openstack-service-api.serviceCatalog'
+    'horizon.app.core.openstack-service-api.serviceCatalog',
+    'horizon.framework.widgets.toast.service'
   ];
 
   /**
@@ -51,7 +52,8 @@
     novaAPI,
     novaExtensions,
     securityGroup,
-    serviceCatalog
+    serviceCatalog,
+    toast
   ) {
 
     var initPromise;
@@ -160,7 +162,7 @@
         vol_create: false,
         // May be null
         vol_device_name: 'vda',
-        vol_delete_on_terminate: false,
+        vol_delete_on_instance_delete: false,
         vol_size: 1
       };
     }
@@ -245,7 +247,13 @@
       setFinalSpecKeyPairs(finalSpec);
       setFinalSpecSecurityGroups(finalSpec);
 
-      return novaAPI.createServer(finalSpec);
+      return novaAPI.createServer(finalSpec).then(successMessage);
+    }
+
+    function successMessage() {
+      var numberInstances = model.newInstanceSpec.instance_count;
+      var message = ngettext('Instance launched.', '%s instances launched.', numberInstances);
+      toast.add('success', interpolate(message, [numberInstances]));
     }
 
     function cleanNullProperties(finalSpec) {
@@ -322,15 +330,6 @@
     function onGetSecurityGroups(data) {
       model.securityGroups.length = 0;
       push.apply(model.securityGroups, data.data.items);
-      // set initial default
-      if (model.newInstanceSpec.security_groups.length === 0 &&
-          model.securityGroups.length > 0) {
-        model.securityGroups.forEach(function (securityGroup) {
-          if (securityGroup.name === 'default') {
-            model.newInstanceSpec.security_groups.push(securityGroup);
-          }
-        });
-      }
     }
 
     function setFinalSpecSecurityGroups(finalSpec) {
@@ -472,7 +471,7 @@
       delete finalSpec.source_type;
       delete finalSpec.vol_create;
       delete finalSpec.vol_device_name;
-      delete finalSpec.vol_delete_on_terminate;
+      delete finalSpec.vol_delete_on_instance_delete;
       delete finalSpec.vol_size;
     }
 
@@ -486,7 +485,7 @@
             'device_name': deviceName,
             'source_type': SOURCE_TYPE_IMAGE,
             'destination_type': SOURCE_TYPE_VOLUME,
-            'delete_on_termination': finalSpec.vol_delete_on_terminate,
+            'delete_on_termination': finalSpec.vol_delete_on_instance_delete,
             'uuid': finalSpec.source_id,
             'boot_index': '0',
             'volume_size': finalSpec.vol_size
@@ -503,7 +502,7 @@
         ':',
         sourceType,
         '::',
-        finalSpec.vol_delete_on_terminate
+        finalSpec.vol_delete_on_instance_delete
       ].join('');
 
       // Source ID must be empty for API

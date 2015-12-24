@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-11-19 04:15+0000\n"
+"POT-Creation-Date: 2015-12-17 05:35+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.1\n"
+"X-Generator: Zanata 3.7.3\n"
 "Language-Team: Serbian\n"
 
 msgid " - End"
@@ -162,14 +162,6 @@ msgid ""
 "(max 16kb)."
 msgstr ""
 "Nalog ili niz komandi koji se izvršava nakon pravljenja instance (max 16kb)."
-
-#, python-format
-msgid ""
-"A volume of %(req)iGB cannot be created as you only have %(avail)iGB of your "
-"quota available."
-msgstr ""
-"Volume od %(req)iGB ne može biti kreiran jer imate samo %(avail)iGB od vaše "
-"kvote."
 
 msgid "AKI - Amazon Kernel Image"
 msgstr "AKI - Amazon Kernel Image "
@@ -892,24 +884,6 @@ msgid "Create Host Aggregate"
 msgstr "Kreiranje skupa hostova"
 
 msgid ""
-"Create IKE Policy for current project.\n"
-"\n"
-"Assign a name and description for the IKE Policy. "
-msgstr ""
-"Kreirajte IKE politiku za tekući projekat.\n"
-"\n"
-"Dodelite ime i opis za IKE poitiku."
-
-msgid ""
-"Create IPSec Policy for current project.\n"
-"\n"
-"Assign a name and description for the IPSec Policy. "
-msgstr ""
-"Kreirajte IPSec politiku za trenutni projekat.\n"
-"\n"
-"Dodelite ime i opis za IPSec politiku. "
-
-msgid ""
 "Create IPSec Site Connection for current project.\n"
 "\n"
 "Assign a name and description for the IPSec Site Connection. All fields in "
@@ -1185,15 +1159,9 @@ msgstr "Podrazumevano"
 msgid "Delay"
 msgstr "Kašnjenje"
 
-msgid "Delete on Terminate"
-msgstr "Brisanje kod ukidanja"
-
 #, python-format
 msgid "Delete the created network \"%s\" due to subnet creation failure."
 msgstr "Obrišite kreiranu mrežu \"%s\" zbog greške u kreiranju podmreže."
-
-msgid "Delete volume on instance terminate"
-msgstr "Breisanje volume-a kod ukidanja instance"
 
 msgid "Deleted"
 msgstr "Obrisano"
@@ -1439,9 +1407,6 @@ msgstr "Skidanje EC2 akreditiva"
 
 msgid "Download Key Pair"
 msgstr "Skinite par ključeva"
-
-msgid "Download OpenStack RC File"
-msgstr "Skidanje Openstack-ovih RC file-ova"
 
 #, python-format
 msgid "Download key pair &quot;%(keypair_name)s&quot;"
@@ -2031,9 +1996,6 @@ msgstr ""
 msgid "Floating IP"
 msgstr "Slobodna IP"
 
-msgid "Floating IP Pool"
-msgstr "Grupa slobodnih IP"
-
 msgid "Floating IPs"
 msgstr "Slobodne IP"
 
@@ -2495,17 +2457,8 @@ msgstr ""
 "pokreću. Kreiranje novog para ključeva registruje javni ključ i skida "
 "privatni ključ (.perm datoteka)"
 
-msgid "Keypair"
-msgstr "Par sigurnosnih ključeva"
-
 msgid "Kwapi"
 msgstr "Kwapi"
-
-msgid "LUKS Volume Snapshots"
-msgstr "Snapshot LUKS volume-a"
-
-msgid "LUKS Volumes"
-msgstr "LUKS Volume-i"
 
 msgid "Language"
 msgstr "Jezik"
@@ -2675,9 +2628,6 @@ msgstr "Najveći broj pokušaja (1~10)"
 msgid "Max."
 msgstr "Max."
 
-msgid "Max. Size (MB)"
-msgstr "Max. Veličina (MB)"
-
 msgid "Maximum Transmission Unit size for the connection"
 msgstr "Maksimalna jedinica prenosa za vezu"
 
@@ -2730,9 +2680,6 @@ msgstr "Minimalni RAM"
 
 msgid "Min."
 msgstr "Min."
-
-msgid "Min. Size (MB)"
-msgstr "Min. Veličina (MB)"
 
 msgid "Minimum Disk (GB)"
 msgstr "Najmanji disk (GB)"
@@ -2949,9 +2896,6 @@ msgstr "Nije pronađen ni jedan host."
 
 msgid "No images available"
 msgstr "Nema dostupnih image-a"
-
-msgid "No images available."
-msgstr "Nema dostupnih image-a."
 
 msgid "No instances available"
 msgstr "Nema dostupnih instanci"
@@ -3529,9 +3473,6 @@ msgstr ""
 "Adresa(e) subnet(ova) udaljenih peer-ova sa maskom(ama) u CIDR formatu "
 "odvojenizarezom ako treba (npr. 20.1.0.0/24, 21,1,0,0/24)"
 
-msgid "Remove"
-msgstr "Ukloni"
-
 msgid "Remove Rule"
 msgstr "Ukinite pravilo"
 
@@ -3940,9 +3881,6 @@ msgstr "Odstup od sistema"
 msgid "Size"
 msgstr "Veličina"
 
-msgid "Size (GB)"
-msgstr "Veličina (GB)"
-
 msgid "Size of ephemeral disk"
 msgstr "Veličina privremenog diska u GB"
 
@@ -4083,9 +4021,6 @@ msgstr "Početna adresa je veća od krajnje (vrednost=%s)"
 #, python-format
 msgid "Start and end addresses must be specified (value=%s)"
 msgstr "Početna i krajnja adresa moraju biti određene (vrednost=%s)"
-
-msgid "Started"
-msgstr "Pokrenuto"
 
 #, python-format
 msgid "Starting evacuation from %(current)s to %(target)s."
@@ -4388,23 +4323,8 @@ msgid "The subnet in the Network Address is too small (/%s)."
 msgstr "Podmreža u mrežnoj adresi je premala (/%s)."
 
 #, python-format
-msgid "The volume size cannot be less than the image minimum disk size (%sGB)"
-msgstr ""
-"veličina volume-a ne može biti manja od minimalne veličine otiska diska "
-"(%sGB)"
-
-#, python-format
 msgid "The volume size cannot be less than the image size (%s)"
 msgstr "Veličina volume-a ne može biti manja od veličine image-a (%s)"
-
-#, python-format
-msgid "The volume size cannot be less than the snapshot size (%sGB)"
-msgstr "Veličina volume-a ne može biti manja od veličine snapshot-a (%sGB)"
-
-#, python-format
-msgid "The volume size cannot be less than the source volume size (%sGB)"
-msgstr ""
-"Veličina volume-a ne može biti manja od izvorne veličine volume-a (%sGB)"
 
 msgid "There are no meters defined yet."
 msgstr "Nisu još deinisani merači."
@@ -4485,14 +4405,8 @@ msgstr "Topologija"
 msgid "Total Disk"
 msgstr "Ukupno diska-a"
 
-msgid "Total Gigabytes"
-msgstr "Ukupno Gigabajta"
-
 msgid "Total RAM"
 msgstr "Ukupno RAM"
-
-msgid "Total Size of LUKS Volumes and Snapshots (GB)"
-msgstr "Ukupna veličina LUKS volume-a i snapshot-a (GB)"
 
 msgid "Total Size of Volumes and Snapshots (GB)"
 msgstr "Ukupna veličina volume-a i snapshot-ova (GB)"
@@ -5440,9 +5354,6 @@ msgstr "Smestite objekat na sistem"
 msgid "Uploaded image size"
 msgstr "Veličina postavljenog otiska sadržaja diska"
 
-msgid "Url"
-msgstr "URL"
-
 msgid "Usage"
 msgstr "Iskorišćenje"
 
@@ -5651,27 +5562,8 @@ msgid "Volume size in gigabytes (integer value)."
 msgstr "Veličina volume-a u gigabajtima (celobroj)."
 
 #, python-format
-msgid ""
-"Volume size must be equal to or greater than the image minimum disk size "
-"(%sGB)"
-msgstr ""
-"Veličina volume-amora biti veća ili jednaka minimalnoj veličini diska (%sGB)"
-
-#, python-format
 msgid "Volume size must be equal to or greater than the image size (%s)"
 msgstr "Veličina volume-a mora biti jednaka ili veća od veličine image-a (%s)"
-
-#, python-format
-msgid ""
-"Volume size must be equal to or greater than the origin volume size (%s)"
-msgstr ""
-"Veličina volume-a mora biti veća ili jadnaka originalnoj veličini volume-a "
-"(%s)"
-
-#, python-format
-msgid "Volume size must be equal to or greater than the snapshot size (%sGB)"
-msgstr ""
-"Veličina volume-a mora biti jednaka ili veća od veličine shapshot-a (%sGB)"
 
 msgid "Volumes"
 msgstr "Volume-i"
@@ -5681,9 +5573,6 @@ msgstr "Pridruženi volume-i"
 
 msgid "Weight"
 msgstr "Težina"
-
-msgid "Which keypair to use for authentication."
-msgstr "Koji par ključeva se koristi za proveru autentičnosti?"
 
 msgid ""
 "Within a container you can group your objects into pseudo-folders, which "
