@@ -7,4 +7,20 @@
 
 {% block content %}
   {% include 'auth/_login.html' %}
+<div role="alert" id=motd></div>
+
+<script>
+$(document).ready(function() {
+        $.get("https://status.sandvine.rocks/motd.json",function(data) {
+                var el = document.getElementById("motd");
+                var offset = 80 + data.length * 20;
+                data.forEach(function(item) {
+                        el.innerHTML += "<p>" + item.msg + "</p>";
+                        $(".login").css("top",offset.toString() + "px");
+                        $("#motd").addClass("alert alert-success");
+                });
+        })
+});
+</script>
+
 {% endblock %}
