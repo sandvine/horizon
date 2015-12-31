@@ -31,6 +31,9 @@ from openstack_dashboard.dashboards.project.images \
 from openstack_dashboard.dashboards.project.instances \
     import utils as instance_utils
 
+from bs4 import BeautifulSoup
+import urlparse
+import urllib2
 
 LOG = logging.getLogger(__name__)
 
@@ -87,6 +90,23 @@ class TemplateForm(forms.SelfHandlingForm):
         help_text=_('An external (HTTP) URL to load the template from.'),
         widget=forms.TextInput(attrs=attributes),
         required=False)
+
+    picklist = getattr(settings, 'OPENSTACK_HEAT_STACK_LIST', None)
+    if (picklist != None):
+        choices = [ ('','') ]
+        base = (picklist)
+        try:
+            html_page = urllib2.urlopen(base)
+            soup = BeautifulSoup(html_page,"html.parser")
+            for link in soup.findAll('a'):
+                choices.append( [ urlparse.urljoin(base, link.get('href')), link.text ])
+            template_url = forms.ChoiceField(
+                label=_('Template URL'),
+                choices=choices,
+                widget=forms.Select(attrs=attributes),
+                required=False)
+        except:
+            pass
 
     attributes = create_upload_form_attributes(
         'template',
