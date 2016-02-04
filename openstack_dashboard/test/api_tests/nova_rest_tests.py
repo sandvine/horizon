@@ -19,6 +19,8 @@ from openstack_dashboard import api
 from openstack_dashboard.api.rest import nova
 from openstack_dashboard.test import helpers as test
 
+from novaclient import exceptions
+
 
 class NovaRestTestCase(test.TestCase):
     #
@@ -66,6 +68,67 @@ class NovaRestTestCase(test.TestCase):
                          {"name": "Ni!", "public_key": "hi"})
         self.assertEqual(response['location'], '/api/nova/keypairs/Ni%21')
         nc.keypair_import.assert_called_once_with(request, 'Ni!', 'hi')
+
+    def test_keypair_create_and_download(self):
+        self._test_keypair_create_and_download(False)
+
+    def test_keypair_recreate_and_download(self):
+        self._test_keypair_create_and_download(True)
+
+    @mock.patch.object(nova.api, 'nova')
+    def _test_keypair_create_and_download(self, recreate_keypair, nc):
+        params = {}
+
+        if recreate_keypair:
+            params = {'regenerate': 'true'}
+
+        request = self.mock_rest_request(GET=params)
+
+        keypair_create_response = mock.Mock()
+        keypair_create_response.private_key = "private key content"
+        nc.keypair_create.return_value = keypair_create_response
+
+        with mock.patch.object(settings, 'DEBUG', True):
+            response = nova.Keypair().get(request, "Ni!")
+
+        if recreate_keypair:
+            nc.keypair_delete.assert_called_once_with(request, 'Ni!')
+        else:
+            nc.keypair_delete.assert_not_called()
+
+        nc.keypair_create.assert_called_once_with(request, 'Ni!')
+        self.assertStatusCode(response, 200)
+        self.assertEqual(
+            response['Content-Disposition'],
+            'attachment; filename=ni.pem')
+        self.assertEqual(
+            response.content.decode('utf-8'),
+            "private key content")
+        self.assertEqual(response['Content-Length'], '19')
+
+    @mock.patch.object(nova.api, 'nova')
+    def test_keypair_fail_to_create_because_already_exists(self, nc):
+        request = self.mock_rest_request(GET={})
+
+        conflict_exception = exceptions.Conflict(409, 'keypair exists!')
+        nc.keypair_create.side_effect = conflict_exception
+
+        with mock.patch.object(settings, 'DEBUG', True):
+            response = nova.Keypair().get(request, "Ni!")
+
+        self.assertEqual(response.status_code, 409)
+
+    @mock.patch.object(nova.api, 'nova')
+    def test_keypair_fail_to_create(self, nc):
+        request = self.mock_rest_request(GET={})
+
+        surprise_exception = exceptions.ClientException(501, 'Boom!')
+        nc.keypair_create.side_effect = surprise_exception
+
+        with mock.patch.object(settings, 'DEBUG', True):
+            response = nova.Keypair().get(request, "Ni!")
+
+        self.assertEqual(response.status_code, 500)
 
     #
     # Availability Zones
@@ -145,6 +208,20 @@ class NovaRestTestCase(test.TestCase):
         )
 
     @mock.patch.object(nova.api, 'nova')
+    def test_server_list(self, nc):
+        request = self.mock_rest_request()
+        nc.server_list.return_value = ([
+            mock.Mock(**{'to_dict.return_value': {'id': 'one'}}),
+            mock.Mock(**{'to_dict.return_value': {'id': 'two'}}),
+        ], False)
+
+        response = nova.Servers().get(request)
+        self.assertStatusCode(response, 200)
+        self.assertEqual(response.json,
+                         {'items': [{'id': 'one'}, {'id': 'two'}]})
+        nc.server_list.assert_called_once_with(request)
+
+    @mock.patch.object(nova.api, 'nova')
     def test_server_get_single(self, nc):
         request = self.mock_rest_request()
         nc.server_get.return_value.to_dict.return_value = {'name': '1'}
@@ -152,6 +229,35 @@ class NovaRestTestCase(test.TestCase):
         response = nova.Server().get(request, "1")
         self.assertStatusCode(response, 200)
         nc.server_get.assert_called_once_with(request, "1")
+
+    #
+    # Server Metadata
+    #
+    @mock.patch.object(nova.api, 'nova')
+    def test_server_get_metadata(self, nc):
+        request = self.mock_rest_request()
+        meta = {'foo': 'bar'}
+        nc.server_get.return_value.to_dict.return_value.get.return_value = meta
+
+        response = nova.ServerMetadata().get(request, "1")
+        self.assertStatusCode(response, 200)
+        nc.server_get.assert_called_once_with(request, "1")
+
+    @mock.patch.object(nova.api, 'nova')
+    def test_server_edit_metadata(self, nc):
+        request = self.mock_rest_request(
+            body='{"updated": {"a": "1", "b": "2"}, "removed": ["c", "d"]}'
+        )
+
+        response = nova.ServerMetadata().patch(request, '1')
+        self.assertStatusCode(response, 204)
+        self.assertEqual(response.content, b'')
+        nc.server_metadata_update.assert_called_once_with(
+            request, '1', {'a': '1', 'b': '2'}
+        )
+        nc.server_metadata_delete.assert_called_once_with(
+            request, '1', ['c', 'd']
+        )
 
     #
     # Extensions

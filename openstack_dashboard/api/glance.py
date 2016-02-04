@@ -136,7 +136,7 @@ def image_update(request, image_id, **kwargs):
                 msg = (('Failed to remove temporary image file '
                         '%(file)s (%(e)s)') %
                        dict(file=filename, e=str(e)))
-                LOG.warn(msg)
+                LOG.warning(msg)
 
 
 def image_create(request, **kwargs):
@@ -346,7 +346,12 @@ def metadefs_namespace_delete(request, namespace_name):
 
 
 def metadefs_resource_types_list(request):
-    return glanceclient(request, '2').metadefs_resource_type.list()
+    # Listing Resource Types requires the v2 API. If not supported we return
+    # an empty array so callers don't need to worry about version checking.
+    if get_version() < 2:
+        return []
+    else:
+        return glanceclient(request, '2').metadefs_resource_type.list()
 
 
 def metadefs_namespace_resource_types(request, namespace_name):

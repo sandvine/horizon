@@ -10,28 +10,31 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from selenium.webdriver.common import by
-
 from openstack_dashboard.test.integration_tests.pages import basepage
 from openstack_dashboard.test.integration_tests.regions import forms
 from openstack_dashboard.test.integration_tests.regions import tables
 
 
+class SecurityGroupsTable(tables.TableRegion):
+    name = "security_groups"
+    CREATE_SECURITYGROUP_FORM_FIELDS = ("name", "description")
+
+    @tables.bind_table_action('create')
+    def create_group(self, create_button):
+        create_button.click()
+        return forms.FormRegion(
+            self.driver, self.conf,
+            field_mappings=self.CREATE_SECURITYGROUP_FORM_FIELDS)
+
+    @tables.bind_table_action('delete')
+    def delete_group(self, delete_button):
+        delete_button.click()
+        return forms.BaseFormRegion(self.driver, self.conf, None)
+
+
 class SecuritygroupsPage(basepage.BaseNavigationPage):
 
-    SECURITYGROUPS_TABLE_NAME_COLUMN_INDEX = 0
-
-    _securitygroups_table_locator = (by.By.ID, 'security_groups')
-
-    SECURITYGROUPS_TABLE_NAME = "security_groups"
-    SECURITYGROUPS_TABLE_ACTIONS = ("create", "delete")
-    SECURITYGROUPS_TABLE_ROW_ACTIONS = {
-        tables.ComplexActionRowRegion.PRIMARY_ACTION: "manage_rules",
-        tables.ComplexActionRowRegion.SECONDARY_ACTIONS: (
-            "edit_security_group", "delete_security_group")
-    }
-
-    CREATE_SECURITYGROUP_FORM_FIELDS = ("name", "description")
+    SECURITYGROUPS_TABLE_NAME_COLUMN = 'name'
 
     def __init__(self, driver, conf):
         super(SecuritygroupsPage, self).__init__(driver, conf)
@@ -39,40 +42,24 @@ class SecuritygroupsPage(basepage.BaseNavigationPage):
 
     def _get_row_with_securitygroup_name(self, name):
         return self.securitygroups_table.get_row(
-            self.SECURITYGROUPS_TABLE_NAME_COLUMN_INDEX, name)
+            self.SECURITYGROUPS_TABLE_NAME_COLUMN, name)
 
     @property
     def securitygroups_table(self):
-        src_elem = self._get_element(*self._securitygroups_table_locator)
-        return tables.ComplexActionTableRegion(
-            self.driver, self.conf, src_elem,
-            self.SECURITYGROUPS_TABLE_NAME,
-            self.SECURITYGROUPS_TABLE_ACTIONS,
-            self.SECURITYGROUPS_TABLE_ROW_ACTIONS)
-
-    @property
-    def create_securitygroups_form(self):
-        return forms.FormRegion(self.driver, self.conf, None,
-                                self.CREATE_SECURITYGROUP_FORM_FIELDS)
-
-    @property
-    def confirm_delete_securitygroups_form(self):
-        return forms.BaseFormRegion(self.driver, self.conf, None)
+        return SecurityGroupsTable(self.driver, self.conf)
 
     def create_securitygroup(self, name, description=None):
-        self.securitygroups_table.create.click()
-        self.create_securitygroups_form.name.text = name
+        create_securitygroups_form = self.securitygroups_table.create_group()
+        create_securitygroups_form.name.text = name
         if description is not None:
-            self.create_securitygroups_form.description.text = description
-        self.create_securitygroups_form.submit.click()
-        self.wait_till_popups_disappear()
+            create_securitygroups_form.description.text = description
+        create_securitygroups_form.submit()
 
     def delete_securitygroup(self, name):
         row = self._get_row_with_securitygroup_name(name)
         row.mark()
-        self.securitygroups_table.delete.click()
-        self.confirm_delete_securitygroups_form.submit.click()
-        self.wait_till_popups_disappear()
+        modal_confirmation_form = self.securitygroups_table.delete_group()
+        modal_confirmation_form.submit()
 
     def is_securitygroup_present(self, name):
         return bool(self._get_row_with_securitygroup_name(name))

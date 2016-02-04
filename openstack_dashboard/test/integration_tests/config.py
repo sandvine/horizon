@@ -19,9 +19,6 @@ DashboardGroup = [
     cfg.StrOpt('dashboard_url',
                default='http://localhost/',
                help="Where the dashboard can be found"),
-    cfg.StrOpt('login_url',
-               default='http://localhost/auth/login/',
-               help="Login page for the dashboard"),
     cfg.StrOpt('help_url',
                default='http://docs.openstack.org/',
                help="Dashboard help page url"),
@@ -82,6 +79,15 @@ InstancesGroup = [
                help="Boot Source to be selected for launch Instances"),
 ]
 
+VolumeGroup = [
+    cfg.StrOpt('volume_type',
+               default='lvmdriver-1',
+               help='Default volume type'),
+    cfg.StrOpt('volume_size',
+               default='1',
+               help='Default volume size ')
+]
+
 PluginGroup = [
     cfg.BoolOpt('is_plugin',
                 default='False',
@@ -113,5 +119,6 @@ def get_config():
     cfg.CONF.register_opts(ScenarioGroup, group="scenario")
     cfg.CONF.register_opts(InstancesGroup, group="launch_instances")
     cfg.CONF.register_opts(PluginGroup, group="plugin")
+    cfg.CONF.register_opts(VolumeGroup, group="volume")
 
     return cfg.CONF

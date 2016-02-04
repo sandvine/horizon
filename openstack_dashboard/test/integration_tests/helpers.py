@@ -13,7 +13,6 @@
 import datetime
 import os
 import socket
-import sys
 import time
 import traceback
 import uuid
@@ -25,10 +24,7 @@ from openstack_dashboard.test.integration_tests import config
 from openstack_dashboard.test.integration_tests.pages import loginpage
 from openstack_dashboard.test.integration_tests import webdriver
 
-ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
-
-if ROOT_PATH not in sys.path:
-    sys.path.append(ROOT_PATH)
+ROOT_PATH = os.path.dirname(os.path.abspath(config.__file__))
 
 
 def gen_random_resource_name(resource="", timestamp=True):
@@ -59,11 +55,20 @@ class BaseTestCase(testtools.TestCase):
             # Start a virtual display server for running the tests headless.
             if os.environ.get('SELENIUM_HEADLESS', False):
                 self.vdisplay = xvfbwrapper.Xvfb(width=1280, height=720)
-                # workaround for memory leak in Xvfb taken from: http://blog.
-                # jeffterrace.com/2012/07/xvfb-memory-leak-workaround.html
-                self.vdisplay.xvfb_cmd.append("-noreset")
+                args = []
+
+                # workaround for memory leak in Xvfb taken from:
+                # http://blog.jeffterrace.com/2012/07/xvfb-memory-leak-workaround.html
+                args.append("-noreset")
+
                 # disables X access control
-                self.vdisplay.xvfb_cmd.append("-ac")
+                args.append("-ac")
+
+                if hasattr(self.vdisplay, 'extra_xvfb_args'):
+                    # xvfbwrapper 0.2.8 or newer
+                    self.vdisplay.extra_xvfb_args.extend(args)
+                else:
+                    self.vdisplay.xvfb_cmd.extend(args)
                 self.vdisplay.start()
             # Increase the default Python socket timeout from nothing
             # to something that will cope with slow webdriver startup times.

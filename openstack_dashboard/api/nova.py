@@ -36,6 +36,7 @@ from novaclient.v2 import security_groups as nova_security_groups
 from novaclient.v2 import servers as nova_servers
 
 from horizon import conf
+from horizon import exceptions as horizon_exceptions
 from horizon.utils import functions as utils
 from horizon.utils.memoized import memoized  # noqa
 
@@ -121,7 +122,8 @@ class Server(base.APIResourceWrapper):
             try:
                 image = glance.image_get(self.request, self.image['id'])
                 return image.name
-            except glance_exceptions.ClientException:
+            except (glance_exceptions.ClientException,
+                    horizon_exceptions.ServiceCatalogException):
                 return _("-")
 
     @property
@@ -718,6 +720,14 @@ def server_lock(request, instance_id):
 
 def server_unlock(request, instance_id):
     novaclient(request).servers.unlock(instance_id)
+
+
+def server_metadata_update(request, instance_id, metadata):
+    novaclient(request).servers.set_meta(instance_id, metadata)
+
+
+def server_metadata_delete(request, instance_id, keys):
+    novaclient(request).servers.delete_meta(instance_id, keys)
 
 
 def tenant_quota_get(request, tenant_id):

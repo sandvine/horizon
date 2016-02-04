@@ -267,8 +267,8 @@ class GlanceApiTests(test.APITestCase):
         self.assertEqual(len(metadata_defs), len(defs))
         for i in range(len(metadata_defs)):
             self.assertEqual(metadata_defs[i].namespace, defs[i].namespace)
-        self.assertEqual(more, False)
-        self.assertEqual(prev, False)
+        self.assertFalse(more)
+        self.assertFalse(prev)
 
     def test_metadefs_namespace_list_v1(self):
         api.glance.get_version = self.mox.CreateMockAnything()
@@ -278,5 +278,14 @@ class GlanceApiTests(test.APITestCase):
 
         defs, more, prev = api.glance.metadefs_namespace_list(self.request)
         self.assertItemsEqual(defs, [])
-        self.assertEqual(more, False)
-        self.assertEqual(prev, False)
+        self.assertFalse(more)
+        self.assertFalse(prev)
+
+    def test_metadefs_resource_types_list_v1(self):
+        api.glance.get_version = self.mox.CreateMockAnything()
+        api.glance.get_version().AndReturn(1)
+
+        self.mox.ReplayAll()
+
+        res_types = api.glance.metadefs_resource_types_list(self.request)
+        self.assertItemsEqual(res_types, [])

@@ -24,9 +24,11 @@
     .filter('title', titleFilter)
     .filter('noUnderscore', noUnderscoreFilter)
     .filter('noValue', noValueFilter)
+    .filter('noName', noNameFilter)
     .filter('decode', decodeFilter)
     .filter('bytes', bytesFilter)
-    .filter('itemCount', itemCountFilter);
+    .filter('itemCount', itemCountFilter)
+    .filter('toIsoDate', toIsoDateFilter);
 
   /**
    * @ngdoc filter
@@ -139,6 +141,18 @@
 
   /**
    * @ngdoc filter
+   * @name noName
+   * @description
+   * Replaces null / undefined / empty string with translated 'None'.
+   */
+  function noNameFilter() {
+    return function (input) {
+      return input && angular.isString(input) ? input : gettext('None');
+    };
+  }
+
+  /**
+   * @ngdoc filter
    * @name decode
    * @description
    * Returns values based on key and given mapping.  If key doesn't exist
@@ -198,15 +212,30 @@
     }
 
     return function (input, totalInput) {
+      var format;
       var count = ensureNonNegative(input);
       if (angular.isUndefined(totalInput)) {
-        var format = ngettext('Displaying %s item', 'Displaying %s items', count);
+        format = ngettext('Displaying %s item', 'Displaying %s items', count);
         return interpolate(format, [count]);
       } else {
         var total = ensureNonNegative(totalInput);
-        var format = gettext('Displaying %(count)s of %(total)s items');
+        format = gettext('Displaying %(count)s of %(total)s items');
         return interpolate(format, {count: count, total: total}, true);
       }
     };
   }
+
+  /**
+   * @ngdoc filter
+   * @name toISO8610DateFormat
+   * @description
+   * Converts the string date into ISO-8610 format, which adds proper UTC
+   * timezone identifier.
+   */
+  function toIsoDateFilter() {
+    return function(input) {
+      return new Date(input).toISOString();
+    };
+  }
+
 })();

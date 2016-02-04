@@ -3,6 +3,7 @@
     padding: 0;
 
     & > li {
+      white-space: nowrap;
 
       &.dropdown-header,
       & > a {
@@ -20,7 +21,7 @@
 
       & > a {
         position: relative;
-        color: $navbar-default-color;
+        color: $dropdown-link-color;
         text-decoration: none;
         display: inline-block;
         width: 100%;

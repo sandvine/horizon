@@ -145,7 +145,7 @@ Defaults: ``{'delay': [3000], 'fade_duration': [1500], 'types': []}``
 
 If provided, will auto-fade the alert types specified. Valid alert types
 include: ['alert-default', 'alert-success', 'alert-info', 'alert-warning',
-'alert-error']  Can also define the delay before the alert fades and the fade
+'alert-danger']  Can also define the delay before the alert fades and the fade
 out duration.
 
 ``bug_url``
@@ -508,6 +508,28 @@ This setting can be used in the case where a separate panel is used for
 managing a custom property or if a certain custom property should never be
 edited.
 
+
+``MESSAGES_PATH``
+-----------------
+
+.. versionadded:: 9.0.0(Mitaka)
+
+Default: ``None``
+
+The absolute path to the directory where message files are collected.
+
+When the user logins to horizon, the message files collected are processed
+and displayed to the user. Each message file should contain a JSON formatted
+data and must have a .json file extension. For example::
+
+    {
+        "level": "info",
+        "message": "message of the day here"
+    }
+
+Possible values for level are: success, info, warning and error.
+
+
 ``OPENSTACK_API_VERSIONS``
 --------------------------
 
@@ -743,6 +765,19 @@ Default: ``"http://%s:5000/v2.0" % OPENSTACK_HOST``
 The full URL for the Keystone endpoint used for authentication. Unless you
 are using HTTPS, running your Keystone server on a nonstandard port, or using
 a nonstandard URL scheme you shouldn't need to touch this setting.
+
+
+``OPENSTACK_KEYSTONE_FEDERATION_MANAGEMENT``
+--------------------------------------------
+
+.. versionadded:: 9.0.0(Mitaka)
+
+Default: ``False``
+
+Set this to True to enable panels that provide the ability for users to manage
+Identity Providers (IdPs) and establish a set of rules to map federation protocol
+attributes to Identity API attributes. This extension requires v3.0+ of the
+Identity API.
 
 
 ``WEBSSO_ENABLED``

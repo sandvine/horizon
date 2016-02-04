@@ -1,7 +1,12 @@
 @import "icons";
+@import "components/messages";
 @import "components/hamburger";
+@import "components/magic_search";
 @import "components/sidebar";
 
+.login .splash-logo {
+  width: 215px;
+}
 
 // General Layout Changes
 #sidebar {
@@ -32,6 +37,20 @@
   width: 100%;
   position: fixed;
   z-index: 4;
+}
+
+// Border radius is unattractive here
+.navbar {
+  border-radius: 0;
+}
+
+.navbar-brand {
+  svg {
+    fill: $navbar-inverse-link-active-color;
+    height: $navbar-height - $padding-small-horizontal*2;
+    margin-top: $padding-small-horizontal;
+    display: inline-block;
+  }
 }
 
 

@@ -153,6 +153,32 @@
       });
     });
 
+    describe('noName', function () {
+      var noNameFilter;
+      beforeEach(inject(function (_noNameFilter_) {
+        noNameFilter = _noNameFilter_;
+      }));
+
+      it('returns value if there is a value', function () {
+        expect(noNameFilter('foo')).toBe('foo');
+        expect(noNameFilter('   foo   ')).toBe('   foo   ');
+        expect(noNameFilter('     ')).toBe('     ');
+      });
+
+      it('replaces undefined, null, blank with None', function () {
+        expect(noNameFilter(true)).toBe('None');
+        expect(noNameFilter(false)).toBe('None');
+        expect(noNameFilter(1)).toBe('None');
+        var object = {};
+        expect(noNameFilter(object)).toBe('None');
+        var array = [];
+        expect(noNameFilter(array)).toBe('None');
+        expect(noNameFilter(null)).toBe('None');
+        expect(noNameFilter()).toBe('None');
+        expect(noNameFilter('')).toBe('None');
+      });
+    });
+
     describe("decode", function () {
       var decodeFilter;
       beforeEach(inject(function (_decodeFilter_) {
@@ -242,6 +268,24 @@
           expect(itemCountFilter(5, 20)).toBe('Displaying 5 of 20 items');
         })
       );
+    });
+
+    describe('toISO8610DateFormat', function() {
+      var toIsoDateFilter;
+
+      beforeEach(inject(function(_toIsoDateFilter_) {
+        toIsoDateFilter = _toIsoDateFilter_;
+      }));
+
+      it('should convert to ISO-8610 from a date string', function() {
+        var actual = toIsoDateFilter('2015-09-22T11:00:00.000');
+        expect(actual).toBe('2015-09-22T11:00:00.000Z');
+      });
+
+      it('should convert to ISO-8610 from milliseconds', function() {
+        var actual = toIsoDateFilter(1442919600000);
+        expect(actual).toBe('2015-09-22T11:00:00.000Z');
+      });
     });
 
   }); // end of horizon.framework.util.filters

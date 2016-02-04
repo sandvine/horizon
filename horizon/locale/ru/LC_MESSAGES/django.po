@@ -6,19 +6,21 @@
 # Alexander Vasiliev <avasiliev@asdco.ru>, 2015
 # Ilya Alekseyev <ilyaalekseyev@acm.org>, 2015
 # Nikita Burtsev, 2015
+# Antonio Kless <antoniok.spb@gmail.com>, 2015. #zanata
 # Daisy <guoyingc@cn.ibm.com>, 2015. #zanata
 # Ilya Alekseyev <ilyaalekseyev@acm.org>, 2015. #zanata
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
+# Filatov Sergey <filatecs@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2015-12-17 05:35+0000\n"
+"POT-Creation-Date: 2016-01-31 10:08+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-09-10 01:38+0000\n"
-"Last-Translator: Ilya Alekseyev <ilyaalekseyev@acm.org>\n"
+"PO-Revision-Date: 2016-01-16 07:02+0000\n"
+"Last-Translator: Filatov Sergey <filatecs@gmail.com>\n"
 "Language: ru\n"
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
@@ -26,6 +28,39 @@ msgstr ""
 "Generated-By: Babel 2.0\n"
 "X-Generator: Zanata 3.7.3\n"
 "Language-Team: Russian\n"
+
+#, python-format
+msgid ""
+"\n"
+"                Login as different user or go back to <a href=\"%(home_url)s"
+"\">home page</a>\n"
+"              "
+msgstr ""
+"\n"
+"                Войдите под другим пользователем или вернитесь на<a href="
+"\"%(home_url)s\"> домашнюю страницу</a>\n"
+"              "
+
+#, python-format
+msgid ""
+"\n"
+"                Used <span> %(used)s </span>(No Limit)\n"
+"              "
+msgstr ""
+"\n"
+"                Использовано <span> %(used)s </span>(без ограничений)\n"
+"              "
+
+#, python-format
+msgid ""
+"\n"
+"                Used <span> %(used)s </span>of<span> %(available)s </span>\n"
+"              "
+msgstr ""
+"\n"
+"                     Использовано <span> %(used)s </span>из<span> "
+"%(available)s </span>\n"
+"              "
 
 #, python-format
 msgid ""
@@ -116,7 +151,7 @@ msgid "&laquo;&nbsp;Prev"
 msgstr "&laquo;&nbsp;Предыдущее"
 
 msgid "(No Limit)"
-msgstr "(нет ограничений)"
+msgstr "(без ограничений)"
 
 msgid "-"
 msgstr "-"
@@ -216,6 +251,9 @@ msgstr "Неправильная версия IP-адреса"
 
 msgid "Limit Summary"
 msgstr "Сводка лимитов"
+
+msgid "Log in"
+msgstr "Войти"
 
 msgid "Login"
 msgstr "Имя пользователя"
@@ -317,6 +355,15 @@ msgstr "Дата должна иметь формат YYYY-mm-dd."
 msgid "The string may only contain ASCII printable characters."
 msgstr "Строка может содержать только печатные ASCII символы."
 
+#, python-format
+msgid ""
+"The value of %(resource)s is %(name)s inside the template. When launching a "
+"stack from this interface, the value must start with \"http://\" or "
+"\"https://\""
+msgstr ""
+"Значение %(resource)s является %(name)s в шаблоне. Для формирования стека из "
+"этого интерфейса значение должно начинаться с \"http://\" или \"https://\""
+
 msgid "This Period's GB-Hours:"
 msgstr "ГБ-часов за период:"
 
@@ -339,12 +386,6 @@ msgstr "Вы не авторизованы. Попробуйте войти в �
 #, python-format
 msgid "Unauthorized: %s"
 msgstr "Не авторизован: %s"
-
-msgid "Update"
-msgstr "Обновить"
-
-msgid "Updated"
-msgstr "Обновлено"
 
 msgid "Usage Summary"
 msgstr "Сводка использования"

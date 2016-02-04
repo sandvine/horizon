@@ -13,7 +13,6 @@
 import json
 import re
 
-import django
 from django.conf import settings
 from django.core import exceptions
 from django.core.urlresolvers import reverse
@@ -565,18 +564,11 @@ class StackTests(test.TestCase):
                             'id="id___param_param1" '
                             'name="__param_param1" '
                             'type="text" />', html=True)
-        if django.VERSION >= (1, 6):
-            self.assertContains(res,
-                                '<input class="form-control" '
-                                'id="id___param_param2" '
-                                'name="__param_param2" '
-                                'type="number" />', html=True)
-        else:
-            self.assertContains(res,
-                                '<input class="form-control" '
-                                'id="id___param_param2" '
-                                'name="__param_param2" '
-                                'type="text" />', html=True)
+        self.assertContains(res,
+                            '<input class="form-control" '
+                            'id="id___param_param2" '
+                            'name="__param_param2" '
+                            'type="number" />', html=True)
         self.assertContains(res,
                             '<input class="form-control" '
                             'id="id___param_param3" '
@@ -888,6 +880,27 @@ class StackTests(test.TestCase):
                          'project/stacks/_stack_template.html')
         self.assertIn(json.loads(template.validate)['Description'],
                       template_data)
+
+    @test.create_stubs({api.heat: ('resource_get', 'resource_metadata_get')})
+    def test_resource_view(self):
+        stack = self.stacks.first()
+        resource = self.heat_resources.first()
+        metadata = {}
+        api.heat.resource_get(
+            IsA(http.HttpRequest), stack.id, resource.resource_name) \
+            .AndReturn(resource)
+        api.heat.resource_metadata_get(
+            IsA(http.HttpRequest), stack.id, resource.resource_name) \
+            .AndReturn(metadata)
+        self.mox.ReplayAll()
+
+        url = reverse('horizon:project:stacks:resource',
+                      args=[stack.id, resource.resource_name])
+        res = self.client.get(url)
+        self.assertTemplateUsed(res, 'horizon/common/_detail.html')
+        self.assertTemplateUsed(res, 'project/stacks/_resource_overview.html')
+        self.assertEqual(res.context['resource'].logical_resource_id,
+                         resource.logical_resource_id)
 
 
 class TemplateFormTests(test.TestCase):
