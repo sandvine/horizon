@@ -22,6 +22,7 @@ Views for managing instances.
 from collections import OrderedDict
 import logging
 
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django import http
@@ -134,7 +135,7 @@ class IndexView(tables.DataTableView):
         if filter_action:
             filter_field = self.table.get_filter_field()
             if filter_action.is_api_filter(filter_field):
-                filter_string = self.table.get_filter_string()
+                filter_string = self.table.get_filter_string().strip()
                 if filter_field and filter_string:
                     filters[filter_field] = filter_string
         return filters
@@ -147,6 +148,8 @@ class LaunchInstanceView(workflows.WorkflowView):
         initial = super(LaunchInstanceView, self).get_initial()
         initial['project_id'] = self.request.user.tenant_id
         initial['user_id'] = self.request.user.id
+        defaults = getattr(settings, 'LAUNCH_INSTANCE_DEFAULTS', {})
+        initial['config_drive'] = defaults.get('config_drive', False)
         return initial
 
 
@@ -260,6 +263,7 @@ class RebuildView(forms.ModalFormView):
     template_name = 'project/instances/rebuild.html'
     success_url = reverse_lazy('horizon:project:instances:index')
     page_title = _("Rebuild Instance")
+    submit_label = page_title
 
     def get_context_data(self, **kwargs):
         context = super(RebuildView, self).get_context_data(**kwargs)
@@ -439,18 +443,18 @@ class AttachInterfaceView(forms.ModalFormView):
     modal_header = _("Attach Interface")
     form_id = "attach_interface_form"
     submit_label = _("Attach Interface")
-    submit_url = "horizon:project:instances:attach_interface"
     success_url = reverse_lazy('horizon:project:instances:index')
 
     def get_context_data(self, **kwargs):
         context = super(AttachInterfaceView, self).get_context_data(**kwargs)
         context['instance_id'] = self.kwargs['instance_id']
-        args = (self.kwargs['instance_id'],)
-        context['submit_url'] = reverse(self.submit_url, args=args)
         return context
 
     def get_initial(self):
-        return {'instance_id': self.kwargs['instance_id']}
+        args = {'instance_id': self.kwargs['instance_id']}
+        submit_url = "horizon:project:instances:attach_interface"
+        self.submit_url = reverse(submit_url, kwargs=args)
+        return args
 
 
 class DetachInterfaceView(forms.ModalFormView):
@@ -459,15 +463,15 @@ class DetachInterfaceView(forms.ModalFormView):
     modal_header = _("Detach Interface")
     form_id = "detach_interface_form"
     submit_label = _("Detach Interface")
-    submit_url = "horizon:project:instances:detach_interface"
     success_url = reverse_lazy('horizon:project:instances:index')
 
     def get_context_data(self, **kwargs):
         context = super(DetachInterfaceView, self).get_context_data(**kwargs)
         context['instance_id'] = self.kwargs['instance_id']
-        args = (self.kwargs['instance_id'],)
-        context['submit_url'] = reverse(self.submit_url, args=args)
         return context
 
     def get_initial(self):
-        return {'instance_id': self.kwargs['instance_id']}
+        args = {"instance_id": self.kwargs["instance_id"]}
+        submit_url = "horizon:project:instances:detach_interface"
+        self.submit_url = reverse(submit_url, kwargs=args)
+        return args

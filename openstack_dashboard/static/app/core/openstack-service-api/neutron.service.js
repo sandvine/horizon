@@ -27,8 +27,11 @@
 
   /**
    * @ngdoc service
-   * @name horizon.app.core.openstack-service-api.neutron
+   * @name neutronAPI
+   * @param {Object} apiService
+   * @param {Object} toastService
    * @description Provides access to Neutron APIs.
+   * @returns {Object} The service
    */
   function neutronAPI(apiService, toastService) {
     var service = {
@@ -37,7 +40,8 @@
       getSubnets: getSubnets,
       createSubnet: createSubnet,
       getPorts: getPorts,
-      getAgents: getAgents
+      getAgents: getAgents,
+      getExtensions: getExtensions
     };
 
     return service;
@@ -47,11 +51,10 @@
     // Neutron Services
 
     /**
-     * @name horizon.openstack-service-api.neutron.getAgents
+     * @name getAgents
      * @description Get the list of Neutron agents.
      *
-     * @returns The listing result is an object with property "items." Each item is
-     * an agent.
+     * @returns {Object} An object with property "items." Each item is an agent.
      */
     function getAgents() {
       return apiService.get('/api/neutron/agents/')
@@ -63,12 +66,11 @@
     // Networks
 
     /**
-     * @name horizon.app.core.openstack-service-api.neturonAPI.getNetworks
+     * @name getNetworks
      * @description
      * Get a list of networks for a tenant.
      *
-     * The listing result is an object with property "items". Each item is
-     * a network.
+     * @returns {Object} An object with property "items". Each item is a network.
      */
     function getNetworks() {
       return apiService.get('/api/neutron/networks/')
@@ -78,10 +80,10 @@
     }
 
     /**
-     * @name horizon.app.core.openstack-service-api.neutron.createNetwork
+     * @name createNetwork
      * @description
      * Create a new network.
-     * @returns The new network object on success.
+     * @returns {Object} The new network object on success.
      *
      * @param {Object} newNetwork
      * The network to create.  Required.
@@ -129,7 +131,7 @@
     // Subnets
 
     /**
-     * @name horizon.app.core.openstack-service-api.neutron.getSubnets
+     * @name getSubnets
      * @description
      * Get a list of subnets for a network.
      *
@@ -138,6 +140,7 @@
      *
      * @param {string} networkId
      * The network id to retrieve subnets for. Required.
+     * @returns {Object} The result of the API call
      */
     function getSubnets(networkId) {
       return apiService.get('/api/neutron/subnets/', networkId)
@@ -147,10 +150,10 @@
     }
 
     /**
-     * @name horizon.app.core.openstack-service-api.neutron.createSubnet
+     * @name createSubnet
      * @description
      * Create a Subnet for given Network.
-     * @returns The JSON representation of Subnet on success.
+     * @returns {Object} The JSON representation of Subnet on success.
      *
      * @param {Object} newSubnet
      * The subnet to create.
@@ -213,13 +216,14 @@
     // Ports
 
     /**
-     * @name horizon.app.core.openstack-service-api.neutron.getPorts
+     * @name getPorts
      * @description
      * Get a list of ports for a network.
      *
      * The listing result is an object with property "items". Each item is
      * a port.
      *
+     * @param {string} params - The parameters
      * @param {string} params.status
      * The port status. Value is ACTIVE or DOWN.
      *
@@ -252,14 +256,47 @@
      * @param {string} params.device_id
      * The UUID of the device that uses this port. For example, a virtual server.
      *
+     * @returns {Object} The result of the API call
      */
     function getPorts(params) {
-      var config = (params) ? { 'params' : params} : {};
+      var config = params ? { 'params' : params} : {};
       return apiService.get('/api/neutron/ports/', config)
         .error(function () {
           toastService.add('error', gettext('Unable to retrieve the ports.'));
         });
     }
 
+    // Extensions
+
+    /**
+     * @name getExtensions
+     * @description
+     * Returns a list of enabled extensions.
+     *
+     * The listing result is an object with property "items". Each item is
+     * an extension.
+     * @example
+     * The following is an example of response:
+     *
+     *  {
+     *    "items": [
+     *      {
+     *        "updated": "2012-07-29T10:00:00-00:00",
+     *        "name": "Quota management support",
+     *        "links": [],
+     *        "alias": "quotas",
+     *        "description": "Expose functions for quotas management per tenant"
+     *      }
+     *    ]
+     *  }
+     * @returns {Object} The result of the API call
+     */
+    function getExtensions() {
+      return apiService.get('/api/neutron/extensions/')
+        .error(function() {
+          toastService.add('error', gettext('Unable to retrieve the extensions.'));
+        });
+    }
   }
+
 }());

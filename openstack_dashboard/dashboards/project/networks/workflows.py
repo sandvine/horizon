@@ -27,6 +27,7 @@ from horizon import workflows
 
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.project.networks.subnets import utils
+from openstack_dashboard import policy
 
 
 LOG = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ class CreateNetworkInfoAction(workflows.Action):
                                                           'action,'
                                                           'create_network__'
                                                           'createsubnetdetail'
-                                                          'action,',
+                                                          'action',
                                          'data-hide-on-checked': 'false'
                                      }),
                                      initial=True,
@@ -73,6 +74,12 @@ class CreateNetworkInfoAction(workflows.Action):
         if api.neutron.is_port_profiles_supported():
             self.fields['net_profile_id'].choices = (
                 self.get_network_profile_choices(request))
+
+        if not policy.check((("network", "create_network:shared"),), request):
+            self.fields['shared'].widget = forms.CheckboxInput(
+                attrs={'disabled': True})
+            self.fields['shared'].help_text = _(
+                'Non admin users are not allowed to set shared option.')
 
     def get_network_profile_choices(self, request):
         profile_choices = [('', _("Select a profile"))]
@@ -167,7 +174,7 @@ class CreateSubnetInfoAction(workflows.Action):
         label=_("Gateway IP"),
         widget=forms.TextInput(attrs={
             'class': 'switched',
-            'data-switch-on': 'source gateway_ip',
+            'data-switch-on': 'gateway_ip',
             'data-source-manual': _("Gateway IP")
         }),
         required=False,
@@ -193,6 +200,7 @@ class CreateSubnetInfoAction(workflows.Action):
 
     class Meta(object):
         name = _("Subnet")
+        policy_rules = (('network', 'create_subnet'),)
         help_text = _('Creates a subnet associated with the network.'
                       ' You need to enter a valid "Network Address"'
                       ' and "Gateway IP". If you did not enter the'
@@ -249,24 +257,6 @@ class CreateSubnetInfoAction(workflows.Action):
 
     def get_subnetpool_choices(self, request):
         subnetpool_choices = [('', _('Select a pool'))]
-        default_ipv6_subnet_pool_label = \
-            getattr(settings, 'OPENSTACK_NEUTRON_NETWORK', {}).get(
-                'default_ipv6_subnet_pool_label', None)
-        default_ipv4_subnet_pool_label = \
-            getattr(settings, 'OPENSTACK_NEUTRON_NETWORK', {}).get(
-                'default_ipv4_subnet_pool_label', None)
-
-        if default_ipv6_subnet_pool_label:
-            subnetpool_dict = {'ip_version': 6,
-                               'name': default_ipv6_subnet_pool_label}
-            subnetpool = api.neutron.SubnetPool(subnetpool_dict)
-            subnetpool_choices.append(('', subnetpool))
-
-        if default_ipv4_subnet_pool_label:
-            subnetpool_dict = {'ip_version': 4,
-                               'name': default_ipv4_subnet_pool_label}
-            subnetpool = api.neutron.SubnetPool(subnetpool_dict)
-            subnetpool_choices.append(('', subnetpool))
 
         for subnetpool in api.neutron.subnetpool_list(request):
             subnetpool_choices.append((subnetpool.id, subnetpool))
@@ -284,11 +274,13 @@ class CreateSubnetInfoAction(workflows.Action):
         gateway_ip = cleaned_data.get('gateway_ip')
         no_gateway = cleaned_data.get('no_gateway')
         address_source = cleaned_data.get('address_source')
+        subnetpool = cleaned_data.get('subnetpool')
 
-        # When creating network from a pool it is allowed to supply empty
-        # subnetpool_id signaling that Neutron should choose the default
-        # pool configured by the operator. This is also part of the IPv6
-        # Prefix Delegation Workflow.
+        if not subnetpool and address_source == 'subnetpool':
+            msg = _('Specify "Address pool" or select '
+                    '"Enter Network Address manually" and specify '
+                    '"Network Address".')
+            raise forms.ValidationError(msg)
         if not cidr and address_source != 'subnetpool':
             msg = _('Specify "Network Address" or '
                     'clear "Create Subnet" checkbox in previous step.')
@@ -371,6 +363,7 @@ class CreateSubnetDetailAction(workflows.Action):
 
     class Meta(object):
         name = _("Subnet Details")
+        policy_rules = (('network', 'create_subnet'),)
         help_text = _('Specify additional attributes for the subnet.')
 
     def __init__(self, request, context, *args, **kwargs):
@@ -595,7 +588,7 @@ class CreateNetwork(workflows.Workflow):
         if not network:
             return False
         # If we do not need to create a subnet, return here.
-        if not data['with_subnet']:
+        if not data.get('with_subnet'):
             return True
         subnet = self._create_subnet(request, data, network, no_redirect=True)
         if subnet:

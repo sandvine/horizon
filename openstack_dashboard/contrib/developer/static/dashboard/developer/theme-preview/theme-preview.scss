@@ -1,5 +1,3 @@
-@import "/custom/variables";
-
 themepreview {
 
   #source-button {
@@ -12,10 +10,6 @@ themepreview {
 
   .bs-component {
     position: relative;
-  }
-
-  .bs-component .modal-dialog {
-    width: 90%;
   }
 
   .bs-component .modal {
@@ -56,6 +50,16 @@ themepreview {
 
     .bs-component {
       margin: 0;
+    }
+  }
+
+  .page-header {
+
+    h1:before {
+      content: '';
+      height: $navbar-height;
+      margin: -$navbar-height 0 0;
+      display: block;
     }
   }
 }

@@ -28,6 +28,12 @@ class CreateVolumeType(forms.SelfHandlingForm):
         widget=forms.Textarea(attrs={'rows': 4}),
         label=_("Description"),
         required=False)
+    is_public = forms.BooleanField(
+        label=_("Public"),
+        initial=True,
+        required=False,
+        help_text=_("By default, volume type is created as public. To "
+                    "create a private volume type, uncheck this field."))
 
     def clean_name(self):
         cleaned_name = self.cleaned_data['name']
@@ -42,7 +48,8 @@ class CreateVolumeType(forms.SelfHandlingForm):
             volume_type = cinder.volume_type_create(
                 request,
                 data['name'],
-                data['vol_type_description'])
+                data['vol_type_description'],
+                data['is_public'])
             messages.success(request, _('Successfully created volume type: %s')
                              % data['name'])
             return volume_type
@@ -60,8 +67,8 @@ class CreateVolumeType(forms.SelfHandlingForm):
 
 class CreateQosSpec(forms.SelfHandlingForm):
     name = forms.CharField(max_length=255, label=_("Name"))
-    consumer = forms.ChoiceField(label=_("Consumer"),
-                                 choices=cinder.CONSUMER_CHOICES)
+    consumer = forms.ThemableChoiceField(label=_("Consumer"),
+                                         choices=cinder.CONSUMER_CHOICES)
 
     def handle(self, request, data):
         try:
@@ -89,12 +96,12 @@ class CreateVolumeTypeEncryption(forms.SelfHandlingForm):
                            widget=forms.TextInput(attrs={'readonly':
                                                          'readonly'}))
     provider = forms.CharField(max_length=255, label=_("Provider"))
-    control_location = forms.ChoiceField(label=_("Control Location"),
-                                         choices=(('front-end',
-                                                   _('front-end')),
-                                                  ('back-end',
-                                                   _('back-end')))
-                                         )
+    control_location = forms.ThemableChoiceField(label=_("Control Location"),
+                                                 choices=(('front-end',
+                                                           _('front-end')),
+                                                          ('back-end',
+                                                           _('back-end')))
+                                                 )
     cipher = forms.CharField(label=_("Cipher"), required=False)
     key_size = forms.IntegerField(label=_("Key Size (bits)"),
                                   required=False,
@@ -104,7 +111,7 @@ class CreateVolumeTypeEncryption(forms.SelfHandlingForm):
     def handle(self, request, data):
         try:
             # Set Cipher to None if empty
-            if data['cipher'] is u'':
+            if data['cipher'] == u'':
                 data['cipher'] = None
 
             # Create encryption for the volume type
@@ -122,8 +129,36 @@ class CreateVolumeTypeEncryption(forms.SelfHandlingForm):
                               redirect=redirect)
 
 
+class UpdateVolumeTypeEncryption(CreateVolumeTypeEncryption):
+
+    def handle(self, request, data):
+        try:
+            # Set Cipher to None if empty
+            if data['cipher'] == u'':
+                data['cipher'] = None
+
+            # Update encryption for the volume type
+            volume_type = cinder.\
+                volume_encryption_type_update(request,
+                                              data['volume_type_id'],
+                                              data)
+            messages.success(request, _('Successfully updated encryption for '
+                                        'volume type: %s') % data['name'])
+            return volume_type
+        except NotImplementedError:
+            messages.error(request, _('Updating encryption is not '
+                                      'implemented.  Unable to update '
+                                      ' encrypted volume type.'))
+        except Exception:
+            redirect = reverse("horizon:admin:volumes:index")
+            exceptions.handle(request,
+                              _('Unable to update encrypted volume type.'),
+                              redirect=redirect)
+        return False
+
+
 class ManageQosSpecAssociation(forms.SelfHandlingForm):
-    qos_spec_choice = forms.ChoiceField(
+    qos_spec_choice = forms.ThemableChoiceField(
         label=_("QoS Spec to be associated"),
         help_text=_("Choose associated QoS Spec."))
 
@@ -190,8 +225,12 @@ class ManageQosSpecAssociation(forms.SelfHandlingForm):
 
 
 class EditQosSpecConsumer(forms.SelfHandlingForm):
-    consumer_choice = forms.ChoiceField(
-        label=_("QoS Spec Consumer"),
+    current_consumer = forms.CharField(label=_("Current consumer"),
+                                       widget=forms.TextInput(
+                                       attrs={'readonly': 'readonly'}),
+                                       required=False)
+    consumer_choice = forms.ThemableChoiceField(
+        label=_("New QoS Spec Consumer"),
         choices=cinder.CONSUMER_CHOICES,
         help_text=_("Choose consumer for this QoS Spec."))
 
@@ -199,19 +238,11 @@ class EditQosSpecConsumer(forms.SelfHandlingForm):
         super(EditQosSpecConsumer, self).__init__(request, *args, **kwargs)
         consumer_field = self.fields['consumer_choice']
         qos_spec = self.initial["qos_spec"]
-        consumer_field.initial = qos_spec.consumer
-
-    def clean_consumer_choice(self):
-        # ensure that new consumer isn't the same as current consumer
-        qos_spec = self.initial['qos_spec']
-        cleaned_new_consumer = self.cleaned_data.get('consumer_choice')
-        old_consumer = qos_spec.consumer
-
-        if cleaned_new_consumer == old_consumer:
-            raise forms.ValidationError(
-                _('QoS Spec consumer value must be different than '
-                  'the current consumer value.'))
-        return cleaned_new_consumer
+        self.fields['current_consumer'].initial = qos_spec.consumer
+        choices = [choice for choice in cinder.CONSUMER_CHOICES
+                   if choice[0] != qos_spec.consumer]
+        choices.insert(0, ("", _("Select a new consumer")))
+        consumer_field.choices = choices
 
     def handle(self, request, data):
         qos_spec_id = self.initial['qos_spec_id']
@@ -238,6 +269,10 @@ class EditVolumeType(forms.SelfHandlingForm):
                                   widget=forms.Textarea(attrs={'rows': 4}),
                                   label=_("Description"),
                                   required=False)
+    is_public = forms.BooleanField(label=_("Public"), required=False,
+                                   help_text=_(
+                                       "To make volume type private, uncheck "
+                                       "this field."))
 
     def clean_name(self):
         cleaned_name = self.cleaned_data['name']
@@ -253,7 +288,8 @@ class EditVolumeType(forms.SelfHandlingForm):
             cinder.volume_type_update(request,
                                       volume_type_id,
                                       data['name'],
-                                      data['description'])
+                                      data['description'],
+                                      data['is_public'])
             message = _('Successfully updated volume type.')
             messages.success(request, message)
             return True

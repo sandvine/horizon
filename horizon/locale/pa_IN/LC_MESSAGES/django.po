@@ -1,53 +1,19 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# Amandeep Singh Saini <jimidar@gmail.com>, 2015
 # Amandeep Singh Saini <jimidar@gmail.com>, 2015. #zanata
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 10:08+0000\n"
+"Project-Id-Version: horizon 9.0.1.dev356\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-05-24 18:48+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2015-10-06 02:02+0000\n"
 "Last-Translator: Amandeep Singh Saini <jimidar@gmail.com>\n"
-"Language: pa-IN\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
 "Language-Team: Punjabi (India)\n"
-
-#, python-format
-msgid ""
-"\n"
-"      <label>From:</label> %(start)s"
-msgstr ""
-"\n"
-"      <label>ਇਸ ਤੋਂ:</label> %(start)s"
-
-#, python-format
-msgid ""
-"\n"
-"      <label>To:</label>%(end)s"
-msgstr ""
-"\n"
-"      <label>ਵੱਲ:</label>%(end)s"
-
-msgid ""
-"\n"
-"      If you are not sure which authentication method to use, contact your "
-"administrator.\n"
-"    "
-msgstr ""
-"\n"
-"      ਜੇ ਤੁਹਾਨੂੰ ਇਹ ਪੱਕਾ ਨਹੀਂ ਕਿ ਕਿਹੜਾ ਪ੍ਰਮਾਣਿਕਤਾ ਤਰੀਕਾ ਵਰਤਣਾ ਹੈ ਤਾਂ, ਆਪਣੇ ਪ੍ਰਸ਼ਾਸ਼ਕ ਨਾਲ "
-"ਰਾਬਤਾ ਕਰੋ।\n"
-"    "
+"Language: pa-IN\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #, python-format
 msgctxt "past"
@@ -270,6 +236,7 @@ msgstr "ਬਰਾਊਜ਼ ਕਰਨ ਲਈ ਇੱਕ %s ਚੁਣੋ।"
 msgid "Select a period of time to query its usage:"
 msgstr "ਇਸਦੀ ਵਰਤੋਂ ਬਾਰੇ ਪੁੱਛ-ਗਿੱਛ ਲਈ ਇੱਕ ਸਮਾਂ ਅੰਤਰਾਲ ਚੁਣੋ:"
 
+#. Translators: test code, don't really have to translate
 msgid "Sell Puppy"
 msgid_plural "Sell Puppies"
 msgstr[0] "ਪਪੀ ਵੇਚੋ"
@@ -278,6 +245,7 @@ msgstr[1] "ਪਪੀ ਵੇਚੋ"
 msgid "Sign In"
 msgstr "ਸਾਈਨ ਇਨ ਕਰੋ"
 
+#. Translators: test code, don't really have to translate
 msgid "Sold Puppy"
 msgid_plural "Sold Puppies"
 msgstr[0] "ਵਿਕਿਆ ਹੋਇਆ ਪਪੀ"

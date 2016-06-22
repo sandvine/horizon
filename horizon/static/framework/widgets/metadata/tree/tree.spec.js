@@ -111,7 +111,8 @@
           $scope = $injector.get('$rootScope').$new();
 
           $scope.available = namespaces;
-          $scope.existing = { 'test:B:A:1':'foo' };
+          // Purposely use different case to ensure it still matches.
+          $scope.existing = { 'test:B:a:1':'foo' };
 
           var markup = '<metadata-tree' +
                        '  available="available"' +
@@ -205,7 +206,7 @@
           $scope = $injector.get('$rootScope').$new();
 
           var serviceName = 'horizon.framework.widgets.metadata.tree.service';
-          item = new ($injector.get(serviceName).Item)();
+          item = new ($injector.get(serviceName)).Item();
           $scope.item = item.fromProperty('test', namespaces[0].properties['test:A:6']);
 
           var markup = '<metadata-tree-item' +

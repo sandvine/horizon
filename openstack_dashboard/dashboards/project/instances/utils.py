@@ -74,6 +74,16 @@ def availability_zone_list(request):
         return []
 
 
+def server_group_list(request):
+    """Utility method to retrieve a list of server groups."""
+    try:
+        return api.nova.server_group_list(request)
+    except Exception:
+        exceptions.handle(request,
+                          _('Unable to retrieve Nova server groups.'))
+        return []
+
+
 def network_field_data(request, include_empty_option=False):
     """Returns a list of tuples of all networks.
 
@@ -155,3 +165,51 @@ def flavor_field_data(request, include_empty_option=False):
     if include_empty_option:
         return [("", _("No flavors available")), ]
     return []
+
+
+def port_field_data(request):
+    """Returns a list of tuples of all ports available for the tenant.
+
+    Generates a list of ports that have no device_owner based on the networks
+    available to the tenant doing the request.
+
+    :param request: django http request object
+    :return: list of (id, name) tuples
+    """
+
+    def add_more_info_port_name(port):
+        # add more info to the port for the display
+        return "{} ({})".format(port.name_or_id,
+                                ",".join([ip['ip_address']
+                                          for ip in port['fixed_ips']]))
+
+    ports = []
+    if api.base.is_service_enabled(request, 'network'):
+        network_list = api.neutron.network_list_for_tenant(
+            request, request.user.tenant_id)
+        for network in network_list:
+            ports.extend(
+                [(port.id, add_more_info_port_name(port))
+                 for port in api.neutron.port_list(request,
+                                                   network_id=network.id)
+                 if port.device_owner == ''])
+    ports.sort(key=lambda obj: obj[1])
+    return ports
+
+
+def server_group_field_data(request):
+    """Returns a list of tuples of all server groups.
+
+    Generates a list of server groups available. And returns a list of
+    (id, name) tuples.
+
+    :param request: django http request object
+    :return: list of (id, name) tuples
+    """
+    server_groups = server_group_list(request)
+    if server_groups:
+        server_groups_list = [(sg.id, sg.name) for sg in server_groups]
+        server_groups_list.sort(key=lambda obj: obj[1])
+        return [("", _("Select Server Group")), ] + server_groups_list
+
+    return [("", _("No server groups available")), ]

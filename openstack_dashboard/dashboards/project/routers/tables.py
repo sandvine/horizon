@@ -147,9 +147,10 @@ class ClearGateway(policy.PolicyTargetMixin, tables.BatchAction):
         )
 
     name = "cleargateway"
-    classes = ('btn-danger', 'btn-cleargateway')
+    classes = ('btn-cleargateway',)
     redirect_url = "horizon:project:routers:index"
     policy_rules = (("network", "update_router"),)
+    action_type = "danger"
 
     def action(self, request, obj_id):
         obj = self.table.get_object_by_id(obj_id)
@@ -243,7 +244,7 @@ class RoutersTable(tables.DataTable):
         return obj.name
 
     class Meta(object):
-        name = "Routers"
+        name = "routers"
         verbose_name = _("Routers")
         status_columns = ["status"]
         row_class = UpdateRow

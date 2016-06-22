@@ -134,12 +134,12 @@ class FloatingIpViewTests(test.TestCase):
                                           floating_ip.id,
                                           server.id)
         self.mox.ReplayAll()
-
+        next = reverse("horizon:project:instances:index")
         form_data = {'instance_id': server.id,
+                     'next': next,
                      'ip_id': floating_ip.id}
         url = reverse('%s:associate' % NAMESPACE)
-        next = reverse("horizon:project:instances:index")
-        res = self.client.post("%s?next=%s" % (url, next), form_data)
+        res = self.client.post(url, form_data)
         self.assertRedirectsNoFollow(res, next)
 
     @test.create_stubs({api.network: ('floating_ip_associate',
@@ -169,7 +169,8 @@ class FloatingIpViewTests(test.TestCase):
                         api.network: ('floating_ip_disassociate',
                                       'floating_ip_supported',
                                       'tenant_floating_ip_get',
-                                      'tenant_floating_ip_list',)})
+                                      'tenant_floating_ip_list',),
+                        api.neutron: ('is_extension_supported',)})
     def test_disassociate_post(self):
         floating_ip = self.floating_ips.first()
 
@@ -179,6 +180,9 @@ class FloatingIpViewTests(test.TestCase):
             .AndReturn(True)
         api.network.tenant_floating_ip_list(IsA(http.HttpRequest)) \
             .AndReturn(self.floating_ips.list())
+        api.neutron.is_extension_supported(IsA(http.HttpRequest),
+                                           'subnet_allocation')\
+            .AndReturn(True)
         api.network.floating_ip_disassociate(IsA(http.HttpRequest),
                                              floating_ip.id)
         self.mox.ReplayAll()
@@ -192,7 +196,8 @@ class FloatingIpViewTests(test.TestCase):
                         api.network: ('floating_ip_disassociate',
                                       'floating_ip_supported',
                                       'tenant_floating_ip_get',
-                                      'tenant_floating_ip_list',)})
+                                      'tenant_floating_ip_list',),
+                        api.neutron: ('is_extension_supported',)})
     def test_disassociate_post_with_exception(self):
         floating_ip = self.floating_ips.first()
 
@@ -202,6 +207,9 @@ class FloatingIpViewTests(test.TestCase):
             .AndReturn(True)
         api.network.tenant_floating_ip_list(IsA(http.HttpRequest)) \
             .AndReturn(self.floating_ips.list())
+        api.neutron.is_extension_supported(IsA(http.HttpRequest),
+                                           'subnet_allocation')\
+            .AndReturn(True)
 
         api.network.floating_ip_disassociate(IsA(http.HttpRequest),
                                              floating_ip.id) \
@@ -355,13 +363,14 @@ class FloatingIpNeutronViewTests(FloatingIpViewTests):
                                       'network_list',
                                       'router_list',
                                       'subnet_list'),
-                        api.base: ('is_service_enabled',)})
+                        api.base: ('is_service_enabled',),
+                        api.cinder: ('is_volume_service_enabled',)})
     @test.update_settings(OPENSTACK_NEUTRON_NETWORK={'enable_quotas': True})
     def test_correct_quotas_displayed(self):
         servers = [s for s in self.servers.list()
                    if s.tenant_id == self.request.user.tenant_id]
 
-        api.base.is_service_enabled(IsA(http.HttpRequest), 'volume') \
+        api.cinder.is_volume_service_enabled(IsA(http.HttpRequest)) \
             .AndReturn(False)
         api.base.is_service_enabled(IsA(http.HttpRequest), 'network') \
             .MultipleTimes().AndReturn(True)
@@ -413,13 +422,14 @@ class FloatingIpNeutronViewTests(FloatingIpViewTests):
                                       'network_list',
                                       'router_list',
                                       'subnet_list'),
-                        api.base: ('is_service_enabled',)})
+                        api.base: ('is_service_enabled',),
+                        api.cinder: ('is_volume_service_enabled',)})
     @test.update_settings(OPENSTACK_NEUTRON_NETWORK={'enable_quotas': True})
     def test_correct_quotas_displayed_shared_networks(self):
         servers = [s for s in self.servers.list()
                    if s.tenant_id == self.request.user.tenant_id]
 
-        api.base.is_service_enabled(IsA(http.HttpRequest), 'volume') \
+        api.cinder.is_volume_service_enabled(IsA(http.HttpRequest)) \
             .AndReturn(False)
         api.base.is_service_enabled(IsA(http.HttpRequest), 'network') \
             .MultipleTimes().AndReturn(True)

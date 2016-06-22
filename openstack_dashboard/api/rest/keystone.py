@@ -18,9 +18,8 @@ import django.http
 from django.views import generic
 
 from openstack_dashboard import api
-from openstack_dashboard.api.rest import utils as rest_utils
-
 from openstack_dashboard.api.rest import urls
+from openstack_dashboard.api.rest import utils as rest_utils
 
 
 @urls.register
@@ -81,7 +80,6 @@ class Users(generic.View):
 
         This action returns the new user object on success.
         """
-        # not sure why email is forced to None, but other code does it
         domain = api.keystone.get_default_domain(request)
         new_user = api.keystone.user_create(
             request,

@@ -20,7 +20,7 @@ data pulled by the Nova instances API.
     with the :doc:`Horizon quickstart guide </quickstart>` or the
     `Django tutorial`_.
 
-    .. _Django tutorial: https://docs.djangoproject.com/en/1.6/intro/tutorial01/
+    .. _Django tutorial: https://docs.djangoproject.com/en/dev/intro/tutorial01/
 
 
 Creating a dashboard
@@ -252,7 +252,7 @@ following code::
                               verbose_name=_("Availability Zone"))
         image_name = tables.Column('image_name', verbose_name=_("Image Name"))
 
-        class Meta:
+        class Meta(object):
             name = "instances"
             verbose_name = _("Instances")
 
@@ -309,7 +309,7 @@ must first define the action::
 Then, we add that action to the table actions for our table.::
 
     class InstancesTable:
-        class Meta:
+        class Meta(object):
             table_actions = (MyFilterAction,)
 
 
@@ -334,7 +334,7 @@ The completed ``tables.py`` file should look like the following::
         image_name = tables.Column('image_name', \
                                    verbose_name=_("Image Name"))
 
-        class Meta:
+        class Meta(object):
             name = "instances"
             verbose_name = _("Instances")
             table_actions = (MyFilterAction,)
@@ -462,42 +462,14 @@ URLs
 ----
 The auto-generated ``urls.py`` file is like::
 
-    from django.conf.urls import patterns
-    from django.conf.urls import url
-
-    from openstack_dashboard.dashboards.mydashboard.mypanel.views \
-        import IndexView
-
-
-    urlpatterns = patterns(
-        '',
-        url(r'^$', IndexView.as_view(), name='index'),
-    )
-
-
-Adjust the import of ``IndexView`` to make the code readable::
-
-    from openstack_dashboard.dashboards.mydashboard.mypanel import views
-
-
-Replace the existing ``url`` pattern with the following line::
-
-    url(r'^$',
-        views.IndexView.as_view(), name='index'),
-
-
-The completed ``urls.py`` file should look like the following::
-
-    from django.conf.urls import patterns
     from django.conf.urls import url
 
     from openstack_dashboard.dashboards.mydashboard.mypanel import views
 
 
-    urlpatterns = patterns('',
-        url(r'^$',
-            views.IndexView.as_view(), name='index'),
-    )
+    urlpatterns = [
+        url(r'^$', views.IndexView.as_view(), name='index'),
+    ]
 
 
 The template
@@ -562,7 +534,7 @@ our OpenStack Dashboard site.
     For more information about Django views, URLs and templates, please refer
     to the `Django documentation`_.
 
-    .. _Django documentation: https://docs.djangoproject.com/en/1.6/
+    .. _Django documentation: https://docs.djangoproject.com/en/dev/
 
 
 Enable and show the dashboard
@@ -612,7 +584,7 @@ Adding a complex action to a table
 
 For a more detailed look into adding a table action, one that requires forms for
 gathering data, you can walk through :doc:`Adding a complex action to a table
-</topics/table_actions>` tutorial.
+</tutorials/table_actions>` tutorial.
 
 
 Conclusion

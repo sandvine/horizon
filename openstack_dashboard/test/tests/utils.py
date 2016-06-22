@@ -18,7 +18,6 @@ import uuid
 
 from openstack_dashboard.test import helpers as test
 from openstack_dashboard.utils import filters
-from openstack_dashboard.utils import identity
 from openstack_dashboard.utils import metering
 
 
@@ -64,10 +63,3 @@ class UtilsMeteringTests(test.TestCase):
     def test_calc_date_args_invalid(self):
         self.assertRaises(
             ValueError, metering.calc_date_args, object, object, "other")
-
-
-class IdentityTests(test.BaseAdminViewTests):
-    def test_get_admin_roles(self):
-        mix_in = identity.IdentityMixIn()
-        admin_roles = mix_in.get_admin_roles()
-        self.assertEqual(['foo', 'bar', 'admin'], admin_roles)

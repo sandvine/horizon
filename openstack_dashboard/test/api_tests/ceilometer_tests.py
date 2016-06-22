@@ -34,6 +34,7 @@ class CeilometerApiTests(test.APITestCase):
         ret_list = api.ceilometer.sample_list(self.request,
                                               meter_name,
                                               query=[])
+        self.assertEqual(len(samples), len(ret_list))
         for c in ret_list:
             self.assertIsInstance(c, api.ceilometer.Sample)
 
@@ -45,7 +46,7 @@ class CeilometerApiTests(test.APITestCase):
         self.mox.ReplayAll()
 
         ret_list = api.ceilometer.alarm_list(self.request, query=[])
-        self.assertIsNotNone(ret_list)
+        self.assertEqual(len(alarms), len(ret_list))
         for c in ret_list:
             self.assertIsInstance(c, api.ceilometer.Alarm)
 
@@ -94,6 +95,7 @@ class CeilometerApiTests(test.APITestCase):
         self.mox.ReplayAll()
 
         ret_list = api.ceilometer.meter_list(self.request, [])
+        self.assertEqual(len(meters), len(ret_list))
         for m in ret_list:
             self.assertIsInstance(m, api.ceilometer.Meter)
 
@@ -105,6 +107,7 @@ class CeilometerApiTests(test.APITestCase):
         self.mox.ReplayAll()
 
         ret_list = api.ceilometer.resource_list(self.request, query=[])
+        self.assertEqual(len(resources), len(ret_list))
         for r in ret_list:
             self.assertIsInstance(r, api.ceilometer.Resource)
 
@@ -122,16 +125,12 @@ class CeilometerApiTests(test.APITestCase):
                                                  meter_name,
                                                  period=None,
                                                  query=[])
+        self.assertEqual(len(statistics), len(ret_list))
         for s in ret_list:
             self.assertIsInstance(s, api.ceilometer.Statistic)
 
-    @test.create_stubs({api.nova: ('flavor_list',),
-                        })
     def test_meters_list_all(self):
         meters = self.meters.list()
-
-        request = self.mox.CreateMock(http.HttpRequest)
-        api.nova.flavor_list(request, None).AndReturn([])
 
         ceilometerclient = self.stub_ceilometerclient()
         ceilometerclient.meters = self.mox.CreateMockAnything()
@@ -153,8 +152,6 @@ class CeilometerApiTests(test.APITestCase):
             self.assertIn(ret.name, names)
             names.remove(ret.name)
 
-    @test.create_stubs({api.nova: ('flavor_list',),
-                        })
     def test_meters_list_all_only(self):
         meters = self.meters.list()
 
@@ -162,8 +159,6 @@ class CeilometerApiTests(test.APITestCase):
         ceilometerclient.meters = self.mox.CreateMockAnything()
         ceilometerclient.meters.list(None).AndReturn(meters)
 
-        request = self.mox.CreateMock(http.HttpRequest)
-        api.nova.flavor_list(request, None).AndReturn([])
         self.mox.ReplayAll()
 
         meters_object = api.ceilometer.Meters(self.request)
@@ -179,8 +174,6 @@ class CeilometerApiTests(test.APITestCase):
         self.assertEqual("disk.read.bytes", ret_list[0].name)
         self.assertEqual("instance", ret_list[1].name)
 
-    @test.create_stubs({api.nova: ('flavor_list',),
-                        })
     def test_meters_list_all_except(self):
         meters = self.meters.list()
 
@@ -188,8 +181,6 @@ class CeilometerApiTests(test.APITestCase):
         ceilometerclient.meters = self.mox.CreateMockAnything()
         ceilometerclient.meters.list(None).AndReturn(meters)
 
-        request = self.mox.CreateMock(http.HttpRequest)
-        api.nova.flavor_list(request, None).AndReturn([])
         self.mox.ReplayAll()
 
         meters_object = api.ceilometer.Meters(self.request)

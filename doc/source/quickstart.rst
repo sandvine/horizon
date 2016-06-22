@@ -4,7 +4,7 @@ Quickstart
 
 ..  Note ::
 
-    This section has been tested for Horizon on Ubuntu (12.04-64) and Fedora-based (RHEL 6.4) distributions. Feel free to add notes and any changes according to your experiences or operating system.
+    This section has been tested for Horizon on Ubuntu (12.04-64) and RPM-based (RHEL 7.x) distributions. Feel free to add notes and any changes according to your experiences or operating system.
 
 Linux Systems
 =============
@@ -15,7 +15,7 @@ On Ubuntu::
 
     > sudo apt-get install git python-dev python-virtualenv libssl-dev libffi-dev
 
-On Fedora-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux)::
+On RPM-based distributions (e.g., Fedora/RHEL/CentOS/Scientific Linux)::
 
     > sudo yum install gcc git-core python-devel python-virtualenv openssl-devel libffi-devel which
 
@@ -297,7 +297,8 @@ you register it in a ``panel.py`` file like so::
     class Images(horizon.Panel):
         name = "Images"
         slug = 'images'
-        permissions = ('openstack.roles.admin', 'my.other.permission',)
+        permissions = ('openstack.roles.admin', 'my.openstack.permission',)
+        policy_rules = (('endpoint', 'endpoint:rule'),)
 
 
     # You could also register your panel with another application's dashboard

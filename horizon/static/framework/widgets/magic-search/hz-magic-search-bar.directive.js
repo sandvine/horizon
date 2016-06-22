@@ -15,7 +15,7 @@
   'use strict';
 
   angular
-    .module('MagicSearch')
+    .module('horizon.framework.widgets.magic-search')
     .directive('hzMagicSearchBar', hzMagicSearchBar);
 
   hzMagicSearchBar.$inject = ['horizon.framework.widgets.basePath'];
@@ -24,53 +24,48 @@
    * @ngdoc directive
    * @name MagicSearch.directive:hzMagicSearchBar
    * @element
-   * @param {object} filterFacets Facets allowed for searching
-   * @param {object=} filterStrings Help content shown in search bar
    * @description
    * The `magicSearchBar` directive provides a template for a
    * client side faceted search that utilizes Smart-Table's
-   * filtering capabilities as well.
-   *
-   * Facets:
-   * ```
-   * var nameFacet = {
-   *   label: gettext('Name'),
-   *   name: 'name',
-   *   singleton: true
-   * };
-   *
-   * var sizeFacet = {
-   *   label: gettext('Size'),
-   *   name: 'size',
-   *   singleton: false,
-   *   options: [
-   *     { label: gettext('Small'), key: 'small' },
-   *     { label: gettext('Medium'), key: 'medium' },
-   *     { label: gettext('Large'), key: 'large' },
-   *   ]
-   * };
-   *
-   * label - this is the text shown in top level facet dropdown menu
-   * name - this is the column key provided to Smart-Table
-   * singleton - 'true' if free text can be used as search term
-   * options - list of options shown in selected facet dropdown menu
-   * ```
+   * filtering capabilities as well.  It needs to be placed within
+   * an hz-magic-search-context to be effective.
    *
    * @restrict E
    * @scope
    *
    * @example
    * ```
-   * <hz-magic-search-bar
-   *   filter-facets="filterFacets"
-   *   filter-strings="filterStrings">
-   * </hz-magic-search-bar>
    *
-   * or
+   *  var filterFacets = [
+   *  {
+   *    label: gettext('Name'),
+   *    name: 'name',
+   *    singleton: true
+   *  },
+   *  {
+   *    label: gettext('VCPUs'),
+   *    name: 'vcpus',
+   *    singleton: true
+   *  },
+   *  {
+   *    label: gettext('RAM'),
+   *    name: 'ram',
+   *    singleton: true
+   *  },
+   *  {
+   *    label: gettext('Public'),
+   *    name: 'isPublic',
+   *    singleton: true,
+   *    options: [
+   *      { label: gettext('No'), key: false },
+   *      { label: gettext('Yes'), key: true }
+   *    ]
+   *  }];
    *
-   * <hz-magic-search-bar
+   * <hz-magic-search-context
    *   filter-facets="filterFacets">
-   * </hz-magic-search-bar>
+   *   <hz-magic-search-bar></hz-magic-search-bar>
+   * </hz-magic-search-context>
    * ```
    */
   function hzMagicSearchBar(basePath) {
@@ -78,10 +73,7 @@
     var directive = {
       compile: compile,
       restrict: 'E',
-      scope: {
-        filterStrings: '=?',
-        filterFacets: '='
-      },
+      scope: true,
       templateUrl: basePath + 'magic-search/hz-magic-search-bar.html'
     };
 
@@ -89,23 +81,15 @@
 
     //////////
 
-    function link(scope) {
-      // if filterStrings is not defined, set defaults
-      var defaultFilterStrings = {
-        cancel: gettext('Cancel'),
-        prompt: gettext('Click here for filters.'),
-        remove: gettext('Remove'),
-        text: gettext('In current results')
-      };
-      scope.filterStrings = scope.filterStrings ? scope.filterStrings : defaultFilterStrings;
+    function link() {
     }
 
     function compile(element) {
       /**
-        * Need to set template here since MagicSearch template
-        * attribute is not interpolated. Can't hardcode the
-        * template location and need to use basePath.
-        */
+       * Need to set template here since MagicSearch template
+       * attribute is not interpolated. Can't hardcode the
+       * template location and need to use basePath.
+       */
       var templateUrl = basePath + 'magic-search/magic-search.html';
       element.find('magic-search').attr('template', templateUrl);
       element.addClass('hz-magic-search-bar');

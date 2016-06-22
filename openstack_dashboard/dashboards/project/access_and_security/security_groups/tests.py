@@ -18,11 +18,14 @@
 
 import cgi
 
+import django
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django import http
 
 from mox3.mox import IsA  # noqa
+
+from horizon import exceptions
 
 from openstack_dashboard import api
 from openstack_dashboard.test import helpers as test
@@ -137,7 +140,7 @@ class SecurityGroupsViewTests(test.TestCase):
         bug #1224576 Security group names cannot contain spaces
         """
         sec_group = self.security_groups.first()
-        sec_group.name = '@group name'
+        sec_group.name = '@group name-\xe3\x82\xb3'
         self._create_security_group(sec_group)
 
     @test.create_stubs({api.network: ('security_group_create',)})
@@ -169,25 +172,6 @@ class SecurityGroupsViewTests(test.TestCase):
         res = self.client.post(SG_CREATE_URL, formData)
         self.assertMessageCount(error=1)
         self.assertRedirectsNoFollow(res, INDEX_URL)
-
-    @test.create_stubs({api.network: ('security_group_create',)})
-    def test_create_security_groups_non_printable(self):
-        """Ensure that group names can only contain printable
-        ASCII characters.
-
-        Only 95 characters are allowed: from 0x20 (space) to 0x7E (~).
-        """
-        sec_group = self.security_groups.first()
-        # 0x7F is a control character (DELETE)
-        fail_name = sec_group.name + ' \x7F'
-        self.mox.ReplayAll()
-
-        form_data = {'method': 'CreateGroup',
-                     'name': fail_name,
-                     'description': sec_group.description}
-        res = self.client.post(SG_CREATE_URL, form_data)
-        self.assertTemplateUsed(res, SG_CREATE_TEMPLATE)
-        self.assertContains(res, "ASCII")
 
     @test.create_stubs({api.network: ('security_group_get',)})
     def test_detail_get(self):
@@ -408,6 +392,12 @@ class SecurityGroupsViewTests(test.TestCase):
             IsA(http.HttpRequest)).AndReturn(self.secgroup_backend)
         api.network.security_group_list(
             IsA(http.HttpRequest)).AndReturn(sec_group_list)
+        if django.VERSION >= (1, 9):
+            api.network.security_group_backend(
+                IsA(http.HttpRequest)).AndReturn(self.secgroup_backend)
+            api.network.security_group_list(
+                IsA(http.HttpRequest)).AndReturn(sec_group_list)
+
         self.mox.ReplayAll()
 
         formData = {'method': 'AddRule',
@@ -433,6 +423,13 @@ class SecurityGroupsViewTests(test.TestCase):
                 IsA(http.HttpRequest)).AndReturn(self.secgroup_backend)
             api.network.security_group_list(
                 IsA(http.HttpRequest)).AndReturn(sec_group_list)
+        if django.VERSION >= (1, 9):
+            for i in range(3):
+                api.network.security_group_backend(
+                    IsA(http.HttpRequest)).AndReturn(self.secgroup_backend)
+                api.network.security_group_list(
+                    IsA(http.HttpRequest)).AndReturn(sec_group_list)
+
         self.mox.ReplayAll()
 
         formData = {'method': 'AddRule',
@@ -481,8 +478,12 @@ class SecurityGroupsViewTests(test.TestCase):
         sec_group_list = self.security_groups.list()
         icmp_rule = self.security_group_rules.list()[1]
 
-        # Call POST 4 times
-        for i in range(4):
+        # Call POST 5 times (*2 if Django >= 1.9)
+        call_post = 5
+        if django.VERSION >= (1, 9):
+            call_post *= 2
+
+        for i in range(call_post):
             api.network.security_group_backend(
                 IsA(http.HttpRequest)).AndReturn(self.secgroup_backend)
             api.network.security_group_list(
@@ -524,7 +525,7 @@ class SecurityGroupsViewTests(test.TestCase):
                     'remote': 'cidr'}
         res = self.client.post(self.edit_url, formData)
         self.assertNoMessages()
-        self.assertContains(res, "The ICMP code is invalid")
+        self.assertContains(res, "The ICMP code not in range (-1, 255)")
 
         formData = {'method': 'AddRule',
                     'id': sec_group.id,
@@ -536,7 +537,20 @@ class SecurityGroupsViewTests(test.TestCase):
                     'remote': 'cidr'}
         res = self.client.post(self.edit_url, formData)
         self.assertNoMessages()
-        self.assertContains(res, "The ICMP type is invalid")
+        self.assertContains(res, "The ICMP type not in range (-1, 255)")
+
+        formData = {'method': 'AddRule',
+                    'id': sec_group.id,
+                    'port_or_range': 'port',
+                    'icmp_type': -1,
+                    'icmp_code': icmp_rule.to_port,
+                    'rule_menu': icmp_rule.ip_protocol,
+                    'cidr': icmp_rule.ip_range['cidr'],
+                    'remote': 'cidr'}
+        res = self.client.post(self.edit_url, formData)
+        self.assertNoMessages()
+        self.assertContains(
+            res, "ICMP code is provided but ICMP type is missing.")
 
     @test.create_stubs({api.network: ('security_group_rule_create',
                                       'security_group_list',
@@ -568,6 +582,39 @@ class SecurityGroupsViewTests(test.TestCase):
                     'cidr': rule.ip_range['cidr'],
                     'remote': 'cidr'}
         res = self.client.post(self.edit_url, formData)
+        self.assertRedirectsNoFollow(res, self.detail_url)
+
+    @test.create_stubs({api.network: ('security_group_rule_create',
+                                      'security_group_list',
+                                      'security_group_backend')})
+    def test_detail_add_rule_duplicated(self):
+        sec_group = self.security_groups.first()
+        sec_group_list = self.security_groups.list()
+        rule = self.security_group_rules.first()
+
+        api.network.security_group_backend(
+            IsA(http.HttpRequest)).AndReturn(self.secgroup_backend)
+        api.network.security_group_rule_create(
+            IsA(http.HttpRequest),
+            sec_group.id, 'ingress', 'IPv4',
+            rule.ip_protocol,
+            int(rule.from_port),
+            int(rule.to_port),
+            rule.ip_range['cidr'],
+            None).AndRaise(exceptions.Conflict)
+        api.network.security_group_list(
+            IsA(http.HttpRequest)).AndReturn(sec_group_list)
+        self.mox.ReplayAll()
+
+        formData = {'method': 'AddRule',
+                    'id': sec_group.id,
+                    'port_or_range': 'port',
+                    'port': rule.from_port,
+                    'rule_menu': rule.ip_protocol,
+                    'cidr': rule.ip_range['cidr'],
+                    'remote': 'cidr'}
+        res = self.client.post(self.edit_url, formData)
+        self.assertNoFormErrors(res)
         self.assertRedirectsNoFollow(res, self.detail_url)
 
     @test.create_stubs({api.network: ('security_group_rule_delete',)})

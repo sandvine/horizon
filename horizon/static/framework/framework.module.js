@@ -7,7 +7,8 @@
       'horizon.framework.util',
       'horizon.framework.widgets'
     ])
-    .config(config);
+    .config(config)
+    .run(run);
 
   config.$inject = [
     '$injector',
@@ -63,11 +64,30 @@
       return {
         responseError: function (error) {
           if (error.status === 401) {
-            $windowProvider.$get().location.replace('/auth/logout');
+            var $window = $windowProvider.$get();
+            $window.location.replace($window.WEBROOT + 'auth/logout');
           }
           return $q.reject(error);
         }
       };
+    }
+  }
+
+  run.$inject = ['$window', '$rootScope'];
+
+  function run($window, $rootScope) {
+    $window.recompileAngularContent = recompileAngularContent;
+
+    function recompileAngularContent($element) {
+      function explicit($compile) {
+        // NOTE(tsufiev): recompiling elements with ng-click directive spawns
+        // a new 'click' handler even if there were some, so we need to cleanup
+        // existing handlers before doing this.
+        $element.find('[ng-click]').off('click');
+        $compile($element)($rootScope);
+      }
+      explicit.$inject = ['$compile'];
+      $element.injector().invoke(explicit);
     }
   }
 

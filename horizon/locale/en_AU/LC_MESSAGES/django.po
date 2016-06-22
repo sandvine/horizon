@@ -1,53 +1,20 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# Tom Fifield <tom@openstack.org>, 2015
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 # Tom Fifield <tom@openstack.org>, 2015. #zanata
+# Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 10:08+0000\n"
+"Project-Id-Version: horizon 9.0.1.dev356\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-05-24 18:48+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-09-15 02:17+0000\n"
+"PO-Revision-Date: 2016-03-22 09:13+0000\n"
 "Last-Translator: Tom Fifield <tom@openstack.org>\n"
-"Language: en-AU\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
 "Language-Team: English (Australia)\n"
-
-#, python-format
-msgid ""
-"\n"
-"      <label>From:</label> %(start)s"
-msgstr ""
-"\n"
-"      <label>From:</label> %(start)s"
-
-#, python-format
-msgid ""
-"\n"
-"      <label>To:</label>%(end)s"
-msgstr ""
-"\n"
-"      <label>To:</label>%(end)s"
-
-msgid ""
-"\n"
-"      If you are not sure which authentication method to use, contact your "
-"administrator.\n"
-"    "
-msgstr ""
-"\n"
-"      If you are not sure which authentication method to use, contact your "
-"administrator.\n"
-"    "
+"Language: en-AU\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #, python-format
 msgctxt "past"
@@ -142,6 +109,18 @@ msgstr "Available"
 msgid "Back"
 msgstr "Back"
 
+#. Translators: test code, don't really have to translate
+msgid "Batch Item"
+msgid_plural "Batch Items"
+msgstr[0] "Batch Item"
+msgstr[1] "Batch Items"
+
+#. Translators: test code, don't really have to translate
+msgid "Batched Item"
+msgid_plural "Batched Items"
+msgstr[0] "Batched Item"
+msgstr[1] "Batched Items"
+
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -171,6 +150,22 @@ msgid "Displaying %(nav_items)s item"
 msgid_plural "Displaying %(nav_items)s items"
 msgstr[0] "Displaying %(nav_items)s item"
 msgstr[1] "Displaying %(nav_items)s items"
+
+#. Translators: test code, don't really have to translate
+msgid "Down Item"
+msgid_plural "Down Items"
+msgstr[0] "Down Item"
+msgstr[1] "Down Items"
+
+#. Translators: test code, don't really have to translate
+msgid "Downed Item"
+msgid_plural "Downed Items"
+msgstr[0] "Downed Item"
+msgstr[1] "Downed Items"
+
+#, python-format
+msgid "Error processing message json file '%(path)s': %(exception)s"
+msgstr "Error processing message json file '%(path)s': %(exception)s"
 
 msgid "Error: "
 msgstr "Error: "
@@ -202,11 +197,18 @@ msgstr "Invalid version for IP address"
 msgid "Limit Summary"
 msgstr "Limit Summary"
 
+msgid "Log in"
+msgstr "Log in"
+
 msgid "Login"
 msgstr "Login"
 
 msgid "Members"
 msgstr "Members"
+
+#, python-format
+msgid "Message json file '%(path)s' is malformed. %(exception)s"
+msgstr "Message json file '%(path)s' is malformed. %(exception)s"
 
 msgid "More Actions"
 msgstr "More Actions"
@@ -270,6 +272,7 @@ msgstr "Select a %s to browse."
 msgid "Select a period of time to query its usage:"
 msgstr "Select a period of time to query its usage:"
 
+#. Translators: test code, don't really have to translate
 msgid "Sell Puppy"
 msgid_plural "Sell Puppies"
 msgstr[0] "Sell Puppy"
@@ -278,6 +281,7 @@ msgstr[1] "Sell Puppies"
 msgid "Sign In"
 msgstr "Sign In"
 
+#. Translators: test code, don't really have to translate
 msgid "Sold Puppy"
 msgid_plural "Sold Puppies"
 msgstr[0] "Sold Puppy"
@@ -292,11 +296,25 @@ msgstr "Success: "
 msgid "Summary"
 msgstr "Summary"
 
+#, python-format
+msgid "The attribute %(attr)s doesn't exist on %(obj)s."
+msgstr "The attribute %(attr)s doesn't exist on %(obj)s."
+
 msgid "The date should be in YYYY-mm-dd format."
 msgstr "The date should be in YYYY-mm-dd format."
 
 msgid "The string may only contain ASCII printable characters."
 msgstr "The string may only contain ASCII printable characters."
+
+#, python-format
+msgid ""
+"The value of %(resource)s is %(name)s inside the template. When launching a "
+"stack from this interface, the value must start with \"http://\" or "
+"\"https://\""
+msgstr ""
+"The value of %(resource)s is %(name)s inside the template. When launching a "
+"stack from this interface, the value must start with \"http://\" or "
+"\"https://\""
 
 msgid "This Period's GB-Hours:"
 msgstr "This Period's GB-Hours:"
@@ -320,6 +338,28 @@ msgstr "Unauthorised. Please try logging in again."
 #, python-format
 msgid "Unauthorized: %s"
 msgstr "Unauthorised: %s"
+
+#. Translators: test code, don't really have to translate
+msgid "Up Item"
+msgid_plural "Up Items"
+msgstr[0] "Up Item"
+msgstr[1] "Up Items"
+
+msgid "Update Item"
+msgid_plural "Update Items"
+msgstr[0] "Update Item"
+msgstr[1] "Update Items"
+
+msgid "Updated Item"
+msgid_plural "Updated Items"
+msgstr[0] "Updated Item"
+msgstr[1] "Updated Items"
+
+#. Translators: test code, don't really have to translate
+msgid "Upped Item"
+msgid_plural "Upped Items"
+msgstr[0] "Upped Item"
+msgstr[1] "Upped Items"
 
 msgid "Usage Summary"
 msgstr "Usage Summary"

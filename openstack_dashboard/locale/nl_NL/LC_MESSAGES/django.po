@@ -1,26 +1,19 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# Evelijn Saaltink <evelijnsaaltink@gmail.com>, 2015
-# Roeltje, 2015
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
+# Joris S'heeren <joris.sheeren@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 01:15+0000\n"
+"Project-Id-Version: horizon 10.0.0.0b2.dev164\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-06-21 03:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-09-08 11:14+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
-"Language: nl-NL\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
+"PO-Revision-Date: 2016-03-04 12:36+0000\n"
+"Last-Translator: Joris S'heeren <joris.sheeren@gmail.com>\n"
 "Language-Team: Dutch (Netherlands)\n"
+"Language: nl-NL\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 msgid " - End"
 msgstr "- Einde"
@@ -108,10 +101,6 @@ msgstr ""
 "creëren binnen uw registratie. Gegevens moeten altijd opgeslagen worden in "
 "houders dus u moet voor het uploaden van gegevens minimaal één houder "
 "definiëren binnen uw registratie."
-
-msgid "A image or external image location must be specified."
-msgstr ""
-"Een afbeelding of externe afbeeldingslocatie dient te worden gespecificeerd."
 
 msgid "A local environment to upload."
 msgstr "Een lokale omgeving om te versturen."
@@ -313,12 +302,6 @@ msgstr "VIP toevoegen"
 
 msgid "Add VPN Service"
 msgstr "VPN dienst toevoegen"
-
-msgid "Add interface"
-msgstr "Aansluiten toevoegen"
-
-msgid "Add rule"
-msgstr "Regel toevoegen"
 
 msgid "Add/Remove Hosts to Aggregate"
 msgstr "Toevoegen/verwijderen van gastheren aan het aggregaat"
@@ -623,11 +606,6 @@ msgstr "CIDR moet worden gespecificeerd."
 msgid "CPU time used"
 msgstr "CPU tijd gebruikt"
 
-msgid "Can not specify both image and external image location."
-msgstr ""
-"U mag niet zowel een afbeelding als een externe afbeeldingslocatie "
-"specificeren."
-
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -675,15 +653,6 @@ msgstr "Selecteer een volume"
 
 msgid "Choose an image"
 msgstr "Kies een afbeelding"
-
-msgid ""
-"Choose rule(s) from Available Rules to Selected Rule by push button or drag "
-"and drop,\n"
-"you may change their order by drag and drop as well. "
-msgstr ""
-"Verplaats regel(s) uit Beschikbare regels naar Geselecteerde regels met "
-"behulp van de drukknop of door te verslepen. U kunt door te verslepen tevens "
-"de volgorde aanpassen."
 
 msgid "Choose the flavor to launch."
 msgstr "Kies de te starten smaak."
@@ -1109,6 +1078,10 @@ msgstr "Dode wederhelft (peer) detectie verlooptijd"
 msgid "Decrypt Password"
 msgstr "Wachtwoord ontcijferen"
 
+msgctxt "Default style theme"
+msgid "Default"
+msgstr "Standaard"
+
 msgid "Default Quotas"
 msgstr "Standaardquota's"
 
@@ -1404,14 +1377,6 @@ msgstr "EC2 identiteitsgegevens ophalen"
 
 msgid "Download Key Pair"
 msgstr "Sleutelpaar ophalen"
-
-#, python-format
-msgid "Download key pair &quot;%(keypair_name)s&quot;"
-msgstr "Sleutelpaar &quot;%(keypair_name)s&quot; ophalen"
-
-#, python-format
-msgid "Duration of instance type %s (openstack flavor)"
-msgstr "Duur van exemplaar type %s (openstack smaak)"
 
 msgid "Edit"
 msgstr "Bewerken"
@@ -1903,9 +1868,6 @@ msgstr "Firewall regels"
 msgid "Firewalls"
 msgstr "Firewalls"
 
-msgid "Fixed IP"
-msgstr "Vast IP"
-
 msgid "Fixed IPs"
 msgstr "Vaste IPs"
 
@@ -2320,9 +2282,6 @@ msgstr "Exemplaar beheervenster"
 msgid "Instance Console Log"
 msgstr "Exemplaar beheervenster log"
 
-msgid "Instance Count"
-msgstr "Exemplaartelling"
-
 msgid "Instance ID"
 msgstr "Exemplaar ID"
 
@@ -2458,10 +2417,6 @@ msgstr "Start exemplaar met deze netwerken"
 
 msgid "Launch instance with this policy profile"
 msgstr "Start exemplaar met dit beleidsprofiel"
-
-#, python-format
-msgid "Launched %(count)s named \"%(name)s\"."
-msgstr "Gestart %(count)s genoemd \"%(name)s\"."
 
 msgid ""
 "Launching multiple instances is only supported for images and instance "
@@ -2998,9 +2953,6 @@ msgstr "Aantal inkomende bytes op het netwerk van een VM aansluiting"
 msgid "Number of incoming packets for a VM interface"
 msgstr "Aantal inkomende pakketten voor een VM aansluiting"
 
-msgid "Number of instances to launch."
-msgstr "Aantal te starten exemplaren."
-
 msgid "Number of objects"
 msgstr "Aantal objecten"
 
@@ -3425,9 +3377,6 @@ msgstr ""
 "Relatieve deel van de verzoeken die dit poulelid bedient ten opzichte van de "
 "anderen"
 
-msgid "Reload"
-msgstr "Herladen"
-
 msgid "Remote"
 msgstr "Van op afstand"
 
@@ -3640,10 +3589,6 @@ msgstr "Wijzigingen opslaan"
 msgid "Saved extra spec \"%s\"."
 msgstr "Extra specificatie \"%s\" opgeslagen."
 
-#, python-format
-msgid "Scheduled resize of instance \"%s\"."
-msgstr "Geplande herdimensionering van het exemplaar \"%s\"."
-
 msgid "Security Group"
 msgstr "Beveiligingsgroep"
 
@@ -3717,9 +3662,6 @@ msgstr "Selecteer een sleutelpaar"
 #, python-format
 msgid "Select a monitor template for %s"
 msgstr "Selecteer een bewakingsjabloon voor %s"
-
-msgid "Select a name for your network."
-msgstr "Selecteer een naam voor uw netwerk."
 
 msgid "Select a new agent"
 msgstr "Selecteer een nieuw agent"
@@ -3816,9 +3758,6 @@ msgstr "Gedeeld"
 
 msgid "Shared Storage"
 msgstr "Gedeelde Opslag"
-
-msgid "Shared with Me"
-msgstr "Gedeeld met mij"
 
 msgctxt "Power state of an Instance"
 msgid "Shut Off"
@@ -4115,14 +4054,8 @@ msgstr ""
 msgid "The Aggregate was updated."
 msgstr "Het aggregaat is aangepast."
 
-msgid "The ICMP code is invalid."
-msgstr "De ICMP code is ongeldig."
-
 msgid "The ICMP code not in range (-1, 255)"
 msgstr "De ICMP code valt niet binnen het geldige bereik (-1, 255)"
-
-msgid "The ICMP type is invalid."
-msgstr "Het ICMP type is ongeldig."
 
 msgid "The ICMP type not in range (-1, 255)"
 msgstr "Het ICMP tpye valt niet binnen het geldige bereik (-1, 255)"
@@ -4177,23 +4110,8 @@ msgstr ""
 "Minimale vereisten: %(min_ram)s MB aan werkgeheugen en %(min_disk)s GB voor "
 "de hoofdschijf."
 
-#, python-format
-msgid "The instance is preparing the live migration to host \"%s\"."
-msgstr ""
-"Het exemplaar is de live verplaatsing naar gastheer \"%s\" aan het "
-"voorbereiden."
-
 msgid "The instance password encrypted with your public key."
 msgstr "Het exemplaar wachtwoord versleuteld met uw publieke sleutel."
-
-#, python-format
-msgid ""
-"The key pair &quot;%(keypair_name)s&quot; should download automatically. If "
-"not use the link below."
-msgstr ""
-"Het sleutelpaar &quot;%(keypair_name)s&quot; zou automatisch moeten worden "
-"opgehaald. Indien dat niet geval is, gebruik dan de onderstaande "
-"snelkoppeling."
 
 msgid ""
 "The minimum disk size required to boot the image. If unspecified, this value "
@@ -5188,9 +5106,6 @@ msgstr "Standaarden bijwerken"
 msgid "Update Group"
 msgstr "Groep bijwerken"
 
-msgid "Update Image"
-msgstr "Afbeelding bijwerken"
-
 msgid "Update Network"
 msgstr "Netwerk bijwerken"
 
@@ -5514,11 +5429,6 @@ msgstr ""
 "U kunt het gewenste regelsjabloon specificeren of maatwerk regels gebruiken. "
 "De opties zijn Maatwerk TCP regel, Maatwerk UDP regel of Maatwerk ICMP regel."
 
-msgid "You cannot disable the user you are currently logged in as."
-msgstr ""
-"U kunt de gebruiker waarmee u op dit moment bent aangemeld niet onklaar "
-"maken."
-
 msgid ""
 "You cannot revoke your administrative privileges from the project you are "
 "currently logged into. Please switch to another project with administrative "
@@ -5647,11 +5557,6 @@ msgstr "beiden"
 
 msgid "clear"
 msgstr "wissen"
-
-msgid "console is currently unavailable. Please try again later."
-msgstr ""
-"Het beheervenster is momenteel niet beschikbaar. Probeert u het later nog "
-"eens."
 
 msgid "disabled"
 msgstr "gedeactiveerd"

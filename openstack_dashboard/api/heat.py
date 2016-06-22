@@ -166,6 +166,30 @@ def stack_update(request, stack_id, password=None, **kwargs):
     return heatclient(request, password).stacks.update(stack_id, **kwargs)
 
 
+def snapshot_create(request, stack_id):
+    return heatclient(request).stacks.snapshot(stack_id)
+
+
+def snapshot_list(request, stack_id):
+    return heatclient(request).stacks.snapshot_list(stack_id)
+
+
+def snapshot_show(request, stack_id, snapshot_id):
+    return heatclient(request).stacks.snapshot_show(stack_id, snapshot_id)
+
+
+def snapshot_delete(request, stack_id, snapshot_id):
+    return heatclient(request).stacks.snapshot_delete(stack_id, snapshot_id)
+
+
+def output_list(request, stack_id):
+    return heatclient(request).stacks.output_list(stack_id)
+
+
+def output_show(request, stack_id):
+    return heatclient(request).stacks.output_show(stack_id)
+
+
 def events_list(request, stack_name):
     return heatclient(request).events.list(stack_name)
 
@@ -208,3 +232,11 @@ def resource_type_get(request, resource_type):
 
 def service_list(request):
     return heatclient(request).services.list()
+
+
+def template_version_list(request):
+    return heatclient(request).template_versions.list()
+
+
+def template_function_list(request, template_version):
+    return heatclient(request).template_versions.get(template_version)

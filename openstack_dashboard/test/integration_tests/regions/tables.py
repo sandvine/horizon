@@ -24,7 +24,10 @@ class RowRegion(baseregion.BaseRegion):
     """Classic table row."""
 
     _cell_locator = (by.By.CSS_SELECTOR, 'td.%s' % NORMAL_COLUMN_CLASS)
-    _row_checkbox_locator = (by.By.CSS_SELECTOR, 'td > input')
+    _row_checkbox_locator = (
+        by.By.CSS_SELECTOR,
+        'td .themable-checkbox [type="checkbox"] + label'
+    )
 
     def __init__(self, driver, conf, src_elem, column_names):
         self.column_names = column_names
@@ -50,12 +53,28 @@ class TableRegion(baseregion.BaseRegion):
     _rows_locator = (by.By.CSS_SELECTOR, 'tbody > tr')
     _empty_table_locator = (by.By.CSS_SELECTOR, 'tbody > tr.empty')
     _search_field_locator = (by.By.CSS_SELECTOR,
-                             'div.table_search.client > input')
+                             'div.table_search input.form-control')
     _search_button_locator = (by.By.CSS_SELECTOR,
-                              'div.table_search.client > button')
+                              'div.table_search > button')
+    _search_option_locator = (by.By.CSS_SELECTOR,
+                              'div.table_search > .themable-select')
+    marker_name = 'marker'
+    prev_marker_name = 'prev_marker'
 
     def _table_locator(self, table_name):
         return by.By.CSS_SELECTOR, 'table#%s' % table_name
+
+    @property
+    def _next_locator(self):
+        return by.By.CSS_SELECTOR, 'a[href^="?%s"]' % self.marker_name
+
+    @property
+    def _prev_locator(self):
+        return by.By.CSS_SELECTOR, 'a[href^="?%s"]' % self.prev_marker_name
+
+    def _search_menu_value_locator(self, value):
+        return (by.By.CSS_SELECTOR,
+                'ul.dropdown-menu a[data-select-value="%s"]' % value)
 
     def __init__(self, driver, conf):
         self._default_src_locator = self._table_locator(self.__class__.name)
@@ -89,6 +108,12 @@ class TableRegion(baseregion.BaseRegion):
         self._set_search_field(value)
         self._click_search_btn()
 
+    def set_filter_value(self, value):
+        search_menu = self._get_element(*self._search_option_locator)
+        search_menu.click()
+        item_locator = self._search_menu_value_locator(value)
+        search_menu.find_element(*item_locator).click()
+
     def get_row(self, column_name, text, exact_match=True):
         """Get row that contains specified text in specified column.
 
@@ -114,6 +139,7 @@ class TableRegion(baseregion.BaseRegion):
 
     def _set_search_field(self, value):
         srch_field = self._get_element(*self._search_field_locator)
+        srch_field.clear()
         srch_field.send_keys(value)
 
     def _click_search_btn(self):
@@ -123,6 +149,70 @@ class TableRegion(baseregion.BaseRegion):
     def _get_rows(self, *args):
         return [RowRegion(self.driver, self.conf, elem, self.column_names)
                 for elem in self._get_elements(*self._rows_locator)]
+
+    def is_row_deleted(self, row_getter):
+        def predicate(driver):
+            if self._is_element_present(*self._empty_table_locator):
+                return True
+            with self.waits_disabled():
+                return not self._is_element_displayed(row_getter())
+        try:
+            self._wait_until(predicate)
+        except exceptions.TimeoutException:
+            return False
+        except IndexError:
+            return True
+        return True
+
+    def wait_cell_status(self, cell_getter, statuses):
+        if not isinstance(statuses, (list, tuple)):
+            statuses = (statuses,)
+        try:
+            return self._wait_till_text_present_in_element(cell_getter,
+                                                           statuses)
+        except exceptions.TimeoutException:
+            return False
+
+    def is_next_link_available(self):
+        try:
+            self._turn_off_implicit_wait()
+            return self._is_element_visible(*self._next_locator)
+        finally:
+            self._turn_on_implicit_wait()
+
+    def is_prev_link_available(self):
+        try:
+            self._turn_off_implicit_wait()
+            return self._is_element_visible(*self._prev_locator)
+        finally:
+            self._turn_on_implicit_wait()
+
+    def turn_next_page(self):
+        if self.is_next_link_available():
+            lnk = self._get_element(*self._next_locator)
+            lnk.click()
+
+    def turn_prev_page(self):
+        if self.is_prev_link_available():
+            lnk = self._get_element(*self._prev_locator)
+            lnk.click()
+
+    def assert_definition(self, expected_table_definition, sorting=False):
+        """Checks that actual table is expected one.
+        Items to compare: 'next' and 'prev' links, count of rows and names of
+        elements in list
+        :param expected_table_definition: expected values (dictionary)
+        :param sorting: boolean arg specifying whether to sort actual names
+        :return:
+        """
+        names = [row.cells['name'].text for row in self.rows]
+        if sorting:
+            names.sort()
+        actual_table = {'Next': self.is_next_link_available(),
+                        'Prev': self.is_prev_link_available(),
+                        'Count': len(self.rows),
+                        'Names': names}
+        self.assertDictEqual(actual_table, expected_table_definition)
 
 
 def bind_table_action(action_name):
@@ -164,7 +254,7 @@ def bind_table_action(action_name):
     return decorator
 
 
-def bind_row_action(action_name, primary=False):
+def bind_row_action(action_name):
     """A decorator to bind table region method to an actual row action button.
 
     Many table actions when started (by clicking a corresponding button
@@ -183,35 +273,33 @@ def bind_row_action(action_name, primary=False):
         Part of the action button id which is specific to action itself. It
         is safe to use action `name` attribute from the dashboard tables.py
         code.
-
-    .. param:: primary
-
-        Whether an action being bound is primary or secondary. In latter case
-        a button drop-down needs to be clicked prior to clicking a button.
-        Defaults to `False`.
     """
+    # NOTE(tsufiev): button tag could be either <a> or <button> - target
+    # both with *. Also primary action could be single as well, do not use
+    # .btn-group because of that
     primary_action_locator = (
-        by.By.CSS_SELECTOR,
-        'td.actions_column > .btn-group > a.btn:nth-child(1)')
+        by.By.CSS_SELECTOR, 'td.actions_column *.btn:nth-child(1)')
     secondary_actions_opener_locator = (
         by.By.CSS_SELECTOR,
-        'td.actions_column > .btn-group > a.btn:nth-child(2)')
+        'td.actions_column > .btn-group > *.btn:nth-child(2)')
     secondary_actions_locator = (
         by.By.CSS_SELECTOR,
-        'td.actions_column > .btn-group > ul.row_actions > li > a')
+        'td.actions_column > .btn-group > ul.row_actions > li > a, button')
 
     def decorator(method):
         @functools.wraps(method)
         def wrapper(table, row):
-            action_element = None
-            if primary:
-                action_element = row._get_element(*primary_action_locator)
-            else:
+            def find_action(element):
+                pattern = "__action_%s" % action_name
+                return element.get_attribute('id').endswith(pattern)
+
+            action_element = row._get_element(*primary_action_locator)
+            if not find_action(action_element):
+                action_element = None
                 row._get_element(*secondary_actions_opener_locator).click()
-                for action in row._get_elements(*secondary_actions_locator):
-                    pattern = "__action_%s" % action_name
-                    if action.get_attribute('id').endswith(pattern):
-                        action_element = action
+                for element in row._get_elements(*secondary_actions_locator):
+                    if find_action(element):
+                        action_element = element
                         break
 
             if action_element is None:
@@ -219,5 +307,25 @@ def bind_row_action(action_name, primary=False):
                     method.__name__, action_name)
                 raise ValueError(msg)
             return method(table, action_element, row)
+        return wrapper
+    return decorator
+
+
+def bind_row_anchor_column(column_name):
+    """A decorator to bind table region method to a anchor in a column.
+
+    Typical examples of such tables are Project -> Compute -> Images, Admin
+    -> System -> Flavors, Project -> Compute -> Instancies.
+    The method can be used to follow the link in the anchor by the click.
+    """
+
+    def decorator(method):
+        @functools.wraps(method)
+        def wrapper(table, row):
+            cell = row.cells[column_name]
+            action_element = cell.find_element(
+                by.By.CSS_SELECTOR, 'td.%s > a' % NORMAL_COLUMN_CLASS)
+            return method(table, action_element, row)
+
         return wrapper
     return decorator

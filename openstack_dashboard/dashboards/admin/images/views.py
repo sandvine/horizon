@@ -25,10 +25,12 @@ from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from horizon import exceptions
+from horizon import messages
 from horizon import tables
 
 from openstack_dashboard import api
 from openstack_dashboard.dashboards.project.images.images import views
+from openstack_dashboard import policy
 
 from openstack_dashboard.dashboards.admin.images import forms as project_forms
 from openstack_dashboard.dashboards.admin.images \
@@ -51,28 +53,29 @@ class IndexView(tables.DataTableView):
 
     def get_data(self):
         images = []
+        if not policy.check((("image", "get_images"),), self.request):
+            msg = _("Insufficient privilege level to retrieve image list.")
+            messages.info(self.request, msg)
+            return images
         filters = self.get_filters()
         prev_marker = self.request.GET.get(
             project_tables.AdminImagesTable._meta.prev_pagination_param, None)
 
         if prev_marker is not None:
-            sort_dir = 'asc'
             marker = prev_marker
         else:
-            sort_dir = 'desc'
             marker = self.request.GET.get(
                 project_tables.AdminImagesTable._meta.pagination_param, None)
+        reversed_order = prev_marker is not None
         try:
             images, self._more, self._prev = api.glance.image_list_detailed(
                 self.request,
                 marker=marker,
                 paginate=True,
                 filters=filters,
-                sort_dir=sort_dir)
-
-            if prev_marker is not None:
-                images = sorted(images, key=lambda image:
-                                getattr(image, 'created_at'), reverse=True)
+                sort_dir='asc',
+                sort_key='name',
+                reversed_order=reversed_order)
 
         except Exception:
             self._prev = False
@@ -133,7 +136,7 @@ class UpdateView(views.UpdateView):
     form_class = project_forms.AdminUpdateImageForm
     submit_url = "horizon:admin:images:update"
     success_url = reverse_lazy('horizon:admin:images:index')
-    page_title = _("Update Image")
+    page_title = _("Edit Image")
 
 
 class DetailView(views.DetailView):

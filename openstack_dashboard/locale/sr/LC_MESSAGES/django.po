@@ -1,26 +1,19 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# darioristic <office@darioristic.com>, 2015
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 01:15+0000\n"
+"Project-Id-Version: horizon 10.0.0.0b2.dev164\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-06-21 03:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-09-08 11:14+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
-"Language: sr\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
 "Language-Team: Serbian\n"
+"Language: sr\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
 
 msgid " - End"
 msgstr "- Kraj"
@@ -107,9 +100,6 @@ msgstr ""
 "kreirati neograničen broj kontejnera. Podaci moraju biti smešteni u "
 "kontejner, tako da vi morate imati bar jedan konteejner pod vašim nalogom "
 "pre prebacivanja podataka na sistem."
-
-msgid "A image or external image location must be specified."
-msgstr "Lokacija image-a ili spoljnog image-a mora biti određena."
 
 msgid "A local environment to upload."
 msgstr "Lokalno okruženje za postavljanje."
@@ -273,12 +263,6 @@ msgstr ""
 
 msgid "Add hosts to this aggregate. Hosts can be in multiple aggregates."
 msgstr "Dodaj Host ovom skupu. Host moze biti dodan u vise skupova. "
-
-msgid "Add interface"
-msgstr "Dodavanje interface-a"
-
-msgid "Add rule"
-msgstr "Dodaj pravilo"
 
 msgid "Add/Remove Hosts to Aggregate"
 msgstr "Dodaj/Izbaci host iz skupa"
@@ -604,9 +588,6 @@ msgstr "CIDR mora biti određen."
 msgid "CPU time used"
 msgstr "Iskorišteno CPU vreme"
 
-msgid "Can not specify both image and external image location."
-msgstr "Ne mogu se odrediti i lokacija image-a i spoljnog image-a. "
-
 msgid "Cancel"
 msgstr "Odustani"
 
@@ -655,15 +636,6 @@ msgstr "Odaberite volume"
 
 msgid "Choose an image"
 msgstr "Odaberite image"
-
-msgid ""
-"Choose rule(s) from Available Rules to Selected Rule by push button or drag "
-"and drop,\n"
-"you may change their order by drag and drop as well. "
-msgstr ""
-"Odaberite pravilo(a) iz dostupnih pravila u odabrana pravila dugmetom ili "
-"uzmi i prebaci,\n"
-"možete menjati redosled pomoću uzmi i prebaci. "
 
 msgid "Choose the flavor to launch."
 msgstr "Odaberite aromu za pokretanje."
@@ -1313,14 +1285,6 @@ msgstr "Skidanje EC2 akreditiva"
 msgid "Download Key Pair"
 msgstr "Skinite par ključeva"
 
-#, python-format
-msgid "Download key pair &quot;%(keypair_name)s&quot;"
-msgstr "Skinite par ključeva &quot;%(keypair_name)s&quot;"
-
-#, python-format
-msgid "Duration of instance type %s (openstack flavor)"
-msgstr "Trajanje instance tipa %s (openstack aroma)"
-
 msgid "Edit"
 msgstr "Izmena"
 
@@ -1838,9 +1802,6 @@ msgstr "Pravila Firewall-a"
 msgid "Firewalls"
 msgstr "Firewall-i"
 
-msgid "Fixed IP"
-msgstr "Fiksna IP"
-
 msgid "Fixed IPs"
 msgstr "Fiksne IP addrese"
 
@@ -2244,9 +2205,6 @@ msgstr "Konzola za instance"
 msgid "Instance Console Log"
 msgstr "Log konzole instance"
 
-msgid "Instance Count"
-msgstr "Broj instanci"
-
 msgid "Instance ID"
 msgstr "ID instance"
 
@@ -2381,10 +2339,6 @@ msgstr "Pokretanje instance sa ovim mrežama"
 
 msgid "Launch instance with this policy profile"
 msgstr "pokrenite računarsku jedinicu sa ovim profilom politika"
-
-#, python-format
-msgid "Launched %(count)s named \"%(name)s\"."
-msgstr "Pokrenute %(count)s po imenu \"%(name)s\"."
 
 msgid ""
 "Launching multiple instances is only supported for images and instance "
@@ -2899,9 +2853,6 @@ msgstr "Broj dolaznih bajtova na mreži za VM interfejs"
 msgid "Number of incoming packets for a VM interface"
 msgstr "Broj dolaznih paketa za VM interfejs"
 
-msgid "Number of instances to launch."
-msgstr "Broj instanci za pokretanje."
-
 msgid "Number of objects"
 msgstr "Broj objekata"
 
@@ -3300,9 +3251,6 @@ msgstr "Renoviranje instance %s."
 msgid "Relative part of requests this pool member serves compared to others"
 msgstr "Relative part of requests this pool member serves compared to others"
 
-msgid "Reload"
-msgstr "Ponovno učitavanje"
-
 msgid "Remote"
 msgstr "Udaljen"
 
@@ -3508,10 +3456,6 @@ msgstr "Sačuvaj izmene"
 msgid "Saved extra spec \"%s\"."
 msgstr "Sačuvana dodatna specifikacija ta \"%s\"."
 
-#, python-format
-msgid "Scheduled resize of instance \"%s\"."
-msgstr "Planirana promena veličine instance \"%s\"."
-
 msgid "Security Group"
 msgstr "Sigurnosna grupa"
 
@@ -3585,9 +3529,6 @@ msgstr "Odaberite par ključeva"
 #, python-format
 msgid "Select a monitor template for %s"
 msgstr "Odaberite šablon monitora za %s"
-
-msgid "Select a name for your network."
-msgstr "Odaberite ime mreže."
 
 msgid "Select a new host"
 msgstr "Odaberite novi Host"
@@ -3698,9 +3639,6 @@ msgstr "Podeljeno"
 
 msgid "Shared Storage"
 msgstr "Deljeni Storage"
-
-msgid "Shared with Me"
-msgstr "Podelite sa mnom"
 
 msgctxt "Power state of an Instance"
 msgid "Shut Off"
@@ -4012,14 +3950,8 @@ msgstr "\"to\" broj porta mora biti veći ili jednak \"from\" broju porta."
 msgid "The Aggregate was updated."
 msgstr "Skup je ažuriran."
 
-msgid "The ICMP code is invalid."
-msgstr "ICMP kod je nevažeći."
-
 msgid "The ICMP code not in range (-1, 255)"
 msgstr "ICMP kod nije u opsegu (-1, 255)"
-
-msgid "The ICMP type is invalid."
-msgstr "ICMP tip je navažeći."
 
 msgid "The ICMP type not in range (-1, 255)"
 msgstr "ICMP tip nije u opsegu (-1, 255)"
@@ -4078,20 +4010,8 @@ msgstr ""
 "Aroma '%(flavor)s' je premala za traženi image.\n"
 "Minimalni zahtevi: %(min_ram)s MB RAM-a i  %(min_disk)s GB Root diska."
 
-#, python-format
-msgid "The instance is preparing the live migration to host \"%s\"."
-msgstr "Instanca se priprema za selidbu uživo na host \"%s\"."
-
 msgid "The instance password encrypted with your public key."
 msgstr "Lozinka instance je šifrovana sa vašim javnim ključem."
-
-#, python-format
-msgid ""
-"The key pair &quot;%(keypair_name)s&quot; should download automatically. If "
-"not use the link below."
-msgstr ""
-"Par ključeva &quot;%(keypair_name)s&quot; će automatski biti prenet. Ako "
-"nije, iskoristite link ispod."
 
 msgid ""
 "The minimum disk size required to boot the image. If unspecified, this value "
@@ -5082,9 +5002,6 @@ msgstr "Ažuriranje podrazumevanog"
 msgid "Update Group"
 msgstr "Ažuriranje grupe"
 
-msgid "Update Image"
-msgstr "Izmena image-a"
-
 msgid "Update Metadata"
 msgstr "Ažurirani Metadata podaci"
 
@@ -5414,9 +5331,6 @@ msgstr ""
 "izbor su uobičajeno TCP pravilo, uobičajeno DP pravilo, ili Uobičajeno ICMP "
 "pravilo."
 
-msgid "You cannot disable the user you are currently logged in as."
-msgstr "Nemožete onemogućiti korisnika pod kojim ste trenutno ulogovani."
-
 msgid ""
 "You cannot revoke your administrative privileges from the project you are "
 "currently logged into. Please switch to another project with administrative "
@@ -5545,9 +5459,6 @@ msgstr "oboje"
 
 msgid "clear"
 msgstr "čisto"
-
-msgid "console is currently unavailable. Please try again later."
-msgstr "KOnzola je trenutno nedostupna. Pokušajte kasnije."
 
 msgid "disabled"
 msgstr "onemogućeno"

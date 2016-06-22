@@ -72,7 +72,7 @@
 
     // Users
     function getUsers(params) {
-      var config = (params) ? {'params': params} : {};
+      var config = params ? {'params': params} : {};
       return apiService.get('/api/keystone/users/', config)
         .error(function () {
           toastService.add('error', gettext('Unable to retrieve the users.'));
@@ -101,7 +101,8 @@
     }
 
     /**
-    * @name horizon.app.core.openstack-service-api.keystone.getCurrentUserSession
+    * @name getCurrentUserSession
+    * @param {Object} config - The configuration for which we want a session
     * @description
     * Gets the current User Session Information
     * @example
@@ -126,6 +127,7 @@
     * "user_domain_name": "Default",
     * "username": "admin"
     * }
+    * @returns {Object} The result of the API call
     */
     function getCurrentUserSession(config) {
       return apiService.get('/api/keystone/user-session/', config)
@@ -247,7 +249,7 @@
 
     // Projects
     function getProjects(params) {
-      var config = (params) ? {'params': params} : {};
+      var config = params ? {'params': params} : {};
       return apiService.get('/api/keystone/projects/', config)
         .error(function () {
           toastService.add('error', gettext('Unable to retrieve the projects.'));
@@ -299,11 +301,12 @@
     }
 
     /**
-     * @name horizon.app.core.openstack-service-api.keystone.serviceCatalog
+     * @name serviceCatalog
      * @description
      * Returns the service catalog.
      * @param {Object} config
      * See $http config object parameters.
+     * @returns {Object} The result of the API call
      */
     function serviceCatalog(config) {
       return apiService.get('/api/keystone/svc-catalog/', config)

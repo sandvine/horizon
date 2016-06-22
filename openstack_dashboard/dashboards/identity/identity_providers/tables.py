@@ -39,6 +39,14 @@ class EditIdPLink(tables.LinkAction):
     policy_rules = (("identity", "identity:update_identity_provider"),)
 
 
+class ManageProtocolsLink(tables.LinkAction):
+    name = "manage_protocols"
+    verbose_name = _("Manage Protocols")
+    url = "horizon:identity:identity_providers:protocols_tab"
+    icon = "pencil"
+    policy_rules = (("identity", "identity:list_protocols"),)
+
+
 class DeleteIdPsAction(tables.DeleteAction):
     @staticmethod
     def action_present(count):
@@ -70,7 +78,9 @@ class IdPFilterAction(tables.FilterAction):
 
 
 class IdentityProvidersTable(tables.DataTable):
-    id = tables.Column('id', verbose_name=_('Identity Provider ID'))
+    id = tables.Column('id',
+                       verbose_name=_('Identity Provider ID'),
+                       link="horizon:identity:identity_providers:detail")
     description = tables.Column(lambda obj: getattr(obj, 'description', None),
                                 verbose_name=_('Description'))
     enabled = tables.Column('enabled', verbose_name=_('Enabled'), status=True,
@@ -81,8 +91,11 @@ class IdentityProvidersTable(tables.DataTable):
         wrap_list=True,
         filters=(filters.unordered_list,))
 
+    def get_object_display(self, datum):
+        return datum.id
+
     class Meta(object):
         name = "identity_providers"
         verbose_name = _("Identity Providers")
-        row_actions = (EditIdPLink, DeleteIdPsAction)
+        row_actions = (ManageProtocolsLink, EditIdPLink, DeleteIdPsAction)
         table_actions = (IdPFilterAction, RegisterIdPLink, DeleteIdPsAction)

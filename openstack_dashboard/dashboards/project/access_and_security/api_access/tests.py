@@ -12,6 +12,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import six
+
 from django.core.urlresolvers import reverse
 from django.http import HttpRequest  # noqa
 from django.test.utils import override_settings  # noqa
@@ -22,11 +24,13 @@ from openstack_dashboard import api
 from openstack_dashboard.test import helpers as test
 
 
+INDEX_URL = reverse('horizon:project:access_and_security:index')
 API_URL = "horizon:project:access_and_security:api_access"
 EC2_URL = reverse(API_URL + ":ec2")
 OPENRC_URL = reverse(API_URL + ":openrc")
 OPENRCV2_URL = reverse(API_URL + ":openrcv2")
 CREDS_URL = reverse(API_URL + ":view_credentials")
+RECREATE_CREDS_URL = reverse(API_URL + ":recreate_credentials")
 
 
 class APIAccessTests(test.TestCase):
@@ -96,3 +100,105 @@ class APIAccessTests(test.TestCase):
         self.assertEqual(self.user.id, res.context['openrc_creds']['user'].id)
         self.assertEqual(certs[0].access,
                          res.context['ec2_creds']['ec2_access_key'])
+
+    @test.create_stubs({api.keystone: ("list_ec2_credentials",
+                                       "create_ec2_credentials",
+                                       "delete_user_ec2_credentials",)})
+    def _test_recreate_user_credentials(self, exists_credentials=True):
+        old_creds = self.ec2.list() if exists_credentials else []
+        new_creds = self.ec2.first()
+        api.keystone.list_ec2_credentials(
+            IsA(HttpRequest),
+            self.user.id).AndReturn(old_creds)
+        if exists_credentials:
+            api.keystone.delete_user_ec2_credentials(
+                IsA(HttpRequest),
+                self.user.id,
+                old_creds[0].access).AndReturn([])
+        api.keystone.create_ec2_credentials(
+            IsA(HttpRequest),
+            self.user.id,
+            self.tenant.id).AndReturn(new_creds)
+
+        self.mox.ReplayAll()
+
+        res_get = self.client.get(RECREATE_CREDS_URL)
+        self.assertEqual(res_get.status_code, 200)
+        credentials = \
+            'project/access_and_security/api_access/recreate_credentials.html'
+        self.assertTemplateUsed(res_get, credentials)
+
+        res_post = self.client.post(RECREATE_CREDS_URL)
+        self.assertNoFormErrors(res_post)
+        self.assertRedirectsNoFollow(res_post, INDEX_URL)
+
+    def test_recreate_user_credentials(self):
+        self._test_recreate_user_credentials()
+
+    def test_recreate_user_credentials_with_no_existing_creds(self):
+        self._test_recreate_user_credentials(exists_credentials=False)
+
+
+class ASCIITenantNameRCTests(test.TestCase):
+    TENANT_NAME = 'tenant'
+
+    def _setup_user(self, **kwargs):
+        super(ASCIITenantNameRCTests, self)._setup_user(
+            tenant_name=self.TENANT_NAME)
+
+    def test_openrcv2_credentials_filename(self):
+        expected = 'attachment; filename="%s-openrc.sh"' % self.TENANT_NAME
+        res = self.client.get(OPENRCV2_URL)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(expected, res['content-disposition'])
+
+    @override_settings(OPENSTACK_API_VERSIONS={"identity": 3})
+    def test_openrc_credentials_filename(self):
+        expected = 'attachment; filename="%s-openrc.sh"' % self.TENANT_NAME
+        res = self.client.get(OPENRC_URL)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(expected, res['content-disposition'])
+
+
+class UnicodeTenantNameRCTests(test.TestCase):
+    TENANT_NAME = u'\u043f\u0440\u043e\u0435\u043a\u0442'
+
+    def _setup_user(self, **kwargs):
+        super(UnicodeTenantNameRCTests, self)._setup_user(
+            tenant_name=self.TENANT_NAME)
+
+    def test_openrcv2_credentials_filename(self):
+        expected = ('attachment; filename="%s-openrc.sh"' %
+                    self.TENANT_NAME).encode('utf-8')
+        res = self.client.get(OPENRCV2_URL)
+
+        self.assertEqual(res.status_code, 200)
+
+        result_content_disposition = res['content-disposition']
+        # we need to encode('latin-1') because django response object
+        # has custom setter which encodes all values to latin-1 for Python3.
+        # https://github.com/django/django/blob/1.9.6/django/http/response.py#L142
+        # see _convert_to_charset() method for details.
+        if six.PY3:
+            result_content_disposition = result_content_disposition.\
+                encode('latin-1')
+        self.assertEqual(expected,
+                         result_content_disposition)
+
+    @override_settings(OPENSTACK_API_VERSIONS={"identity": 3})
+    def test_openrc_credentials_filename(self):
+        expected = ('attachment; filename="%s-openrc.sh"' %
+                    self.TENANT_NAME).encode('utf-8')
+        res = self.client.get(OPENRC_URL)
+
+        self.assertEqual(res.status_code, 200)
+
+        result_content_disposition = res['content-disposition']
+
+        if six.PY3:
+            result_content_disposition = result_content_disposition.\
+                encode('latin-1')
+        self.assertEqual(expected,
+                         result_content_disposition)

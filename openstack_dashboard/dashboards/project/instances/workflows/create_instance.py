@@ -52,8 +52,8 @@ LOG = logging.getLogger(__name__)
 
 
 class SelectProjectUserAction(workflows.Action):
-    project_id = forms.ChoiceField(label=_("Project"))
-    user_id = forms.ChoiceField(label=_("User"))
+    project_id = forms.ThemableChoiceField(label=_("Project"))
+    user_id = forms.ThemableChoiceField(label=_("User"))
 
     def __init__(self, request, *args, **kwargs):
         super(SelectProjectUserAction, self).__init__(request, *args, **kwargs)
@@ -79,36 +79,37 @@ class SelectProjectUser(workflows.Step):
 
 
 class SetInstanceDetailsAction(workflows.Action):
-    availability_zone = forms.ChoiceField(label=_("Availability Zone"),
-                                          required=False)
+    availability_zone = forms.ThemableChoiceField(label=_("Availability Zone"),
+                                                  required=False)
 
     name = forms.CharField(label=_("Instance Name"),
                            max_length=255)
 
-    flavor = forms.ChoiceField(label=_("Flavor"),
-                               help_text=_("Size of image to launch."))
+    flavor = forms.ThemableChoiceField(label=_("Flavor"),
+                                       help_text=_("Size of image to launch."))
 
-    count = forms.IntegerField(label=_("Instance Count"),
+    count = forms.IntegerField(label=_("Number of Instances"),
                                min_value=1,
-                               initial=1,
-                               help_text=_("Number of instances to launch."))
+                               initial=1)
 
-    source_type = forms.ChoiceField(label=_("Instance Boot Source"),
-                                    help_text=_("Choose Your Boot Source "
-                                                "Type."))
+    source_type = forms.ThemableChoiceField(
+        label=_("Instance Boot Source"),
+        help_text=_("Choose Your Boot Source "
+                    "Type."))
 
-    instance_snapshot_id = forms.ChoiceField(label=_("Instance Snapshot"),
-                                             required=False)
+    instance_snapshot_id = forms.ThemableChoiceField(
+        label=_("Instance Snapshot"),
+        required=False)
 
-    volume_id = forms.ChoiceField(label=_("Volume"), required=False)
+    volume_id = forms.ThemableChoiceField(label=_("Volume"), required=False)
 
-    volume_snapshot_id = forms.ChoiceField(label=_("Volume Snapshot"),
-                                           required=False)
+    volume_snapshot_id = forms.ThemableChoiceField(label=_("Volume Snapshot"),
+                                                   required=False)
 
     image_id = forms.ChoiceField(
         label=_("Image Name"),
         required=False,
-        widget=forms.SelectWidget(
+        widget=forms.ThemableSelectWidget(
             data_attrs=('volume_size',),
             transform=lambda x: ("%s (%s)" % (x.name,
                                               filesizeformat(x.bytes)))))
@@ -156,7 +157,7 @@ class SetInstanceDetailsAction(workflows.Action):
             ("image_id", _("Boot from image")),
             ("instance_snapshot_id", _("Boot from snapshot")),
         ]
-        if base.is_service_enabled(request, 'volume'):
+        if cinder.is_volume_service_enabled(request):
             source_type_choices.append(("volume_id", _("Boot from volume")))
 
             try:
@@ -467,8 +468,7 @@ class SetInstanceDetailsAction(workflows.Action):
     def populate_volume_id_choices(self, request, context):
         volumes = []
         try:
-            if (base.is_service_enabled(request, 'volume')
-                    or base.is_service_enabled(request, 'volumev2')):
+            if cinder.is_volume_service_enabled(request):
                 available = api.cinder.VOLUME_STATE_AVAILABLE
                 volumes = [self._get_volume_display_name(v)
                            for v in cinder.volume_list(self.request,
@@ -485,8 +485,7 @@ class SetInstanceDetailsAction(workflows.Action):
     def populate_volume_snapshot_id_choices(self, request, context):
         snapshots = []
         try:
-            if (base.is_service_enabled(request, 'volume')
-                    or base.is_service_enabled(request, 'volumev2')):
+            if cinder.is_volume_service_enabled(request):
                 available = api.cinder.VOLUME_STATE_AVAILABLE
                 snapshots = [self._get_volume_display_name(s)
                              for s in cinder.volume_snapshot_list(
@@ -539,10 +538,11 @@ KEYPAIR_IMPORT_URL = "horizon:project:access_and_security:keypairs:import"
 
 
 class SetAccessControlsAction(workflows.Action):
-    keypair = forms.DynamicChoiceField(label=_("Key Pair"),
-                                       help_text=_("Key pair to use for "
-                                                   "authentication."),
-                                       add_item_link=KEYPAIR_IMPORT_URL)
+    keypair = forms.ThemableDynamicChoiceField(
+        label=_("Key Pair"),
+        help_text=_("Key pair to use for "
+                    "authentication."),
+        add_item_link=KEYPAIR_IMPORT_URL)
     admin_pass = forms.RegexField(
         label=_("Admin Password"),
         required=False,
@@ -553,12 +553,13 @@ class SetAccessControlsAction(workflows.Action):
         label=_("Confirm Admin Password"),
         required=False,
         widget=forms.PasswordInput(render_value=False))
-    groups = forms.MultipleChoiceField(label=_("Security Groups"),
-                                       required=False,
-                                       initial=["default"],
-                                       widget=forms.CheckboxSelectMultiple(),
-                                       help_text=_("Launch instance in these "
-                                                   "security groups."))
+    groups = forms.MultipleChoiceField(
+        label=_("Security Groups"),
+        required=False,
+        initial=["default"],
+        widget=forms.ThemableCheckboxSelectMultiple(),
+        help_text=_("Launch instance in these "
+                    "security groups."))
 
     class Meta(object):
         name = _("Access & Security")
@@ -629,10 +630,11 @@ class CustomizeAction(workflows.Action):
                       ('file', _('File'))]
 
     attributes = {'class': 'switchable', 'data-slug': 'scriptsource'}
-    script_source = forms.ChoiceField(label=_('Customization Script Source'),
-                                      choices=source_choices,
-                                      widget=forms.Select(attrs=attributes),
-                                      required=False)
+    script_source = forms.ChoiceField(
+        label=_('Customization Script Source'),
+        choices=source_choices,
+        widget=forms.ThemableSelectWidget(attrs=attributes),
+        required=False)
 
     script_help = _("A script or set of commands to be executed after the "
                     "instance has been built (max 16kb).")
@@ -703,14 +705,15 @@ class PostCreationStep(workflows.Step):
 
 
 class SetNetworkAction(workflows.Action):
-    network = forms.MultipleChoiceField(label=_("Networks"),
-                                        widget=forms.CheckboxSelectMultiple(),
-                                        error_messages={
-                                            'required': _(
-                                                "At least one network must"
-                                                " be specified.")},
-                                        help_text=_("Launch instance with"
-                                                    " these networks"))
+    network = forms.MultipleChoiceField(
+        label=_("Networks"),
+        widget=forms.ThemableCheckboxSelectMultiple(),
+        error_messages={
+            'required': _(
+                "At least one network must"
+                " be specified.")},
+        help_text=_("Launch instance with"
+                    " these networks"))
     if api.neutron.is_port_profiles_supported():
         widget = None
     else:
@@ -779,8 +782,41 @@ class SetNetwork(workflows.Step):
         return context
 
 
+class SetNetworkPortsAction(workflows.Action):
+    ports = forms.MultipleChoiceField(label=_("Ports"),
+                                      widget=forms.CheckboxSelectMultiple(),
+                                      required=False,
+                                      help_text=_("Launch instance with"
+                                                  " these ports"))
+
+    class Meta(object):
+        name = _("Network Ports")
+        permissions = ('openstack.services.network',)
+        help_text_template = ("project/instances/"
+                              "_launch_network_ports_help.html")
+
+    def populate_ports_choices(self, request, context):
+        ports = instance_utils.port_field_data(request)
+        if not ports:
+            self.fields['ports'].label = _("No ports available")
+            self.fields['ports'].help_text = _("No ports available")
+        return ports
+
+
+class SetNetworkPorts(workflows.Step):
+    action_class = SetNetworkPortsAction
+    contributes = ("ports",)
+
+    def contribute(self, data, context):
+        if data:
+            ports = self.workflow.request.POST.getlist("ports")
+            if ports:
+                context['ports'] = ports
+        return context
+
+
 class SetAdvancedAction(workflows.Action):
-    disk_config = forms.ChoiceField(
+    disk_config = forms.ThemableChoiceField(
         label=_("Disk Partition"), required=False,
         help_text=_("Automatic: The entire disk is a single partition and "
                     "automatically resizes. Manual: Results in faster build "
@@ -790,6 +826,9 @@ class SetAdvancedAction(workflows.Action):
         required=False, help_text=_("Configure OpenStack to write metadata to "
                                     "a special configuration drive that "
                                     "attaches to the instance when it boots."))
+    server_group = forms.ThemableChoiceField(
+        label=_("Server Group"), required=False,
+        help_text=_("Server group to associate with this instance."))
 
     def __init__(self, request, context, *args, **kwargs):
         super(SetAdvancedAction, self).__init__(request, context,
@@ -808,6 +847,13 @@ class SetAdvancedAction(workflows.Action):
             if context.get('workflow_slug') != 'launch_instance' or (
                     not api.nova.extension_supported("ConfigDrive", request)):
                 del self.fields['config_drive']
+
+            if not api.nova.extension_supported("ServerGroups", request):
+                del self.fields['server_group']
+            else:
+                server_group_choices = instance_utils.server_group_field_data(
+                    request)
+                self.fields['server_group'].choices = server_group_choices
         except Exception:
             exceptions.handle(request, _('Unable to retrieve extensions '
                                          'information.'))
@@ -820,7 +866,7 @@ class SetAdvancedAction(workflows.Action):
 
 class SetAdvanced(workflows.Step):
     action_class = SetAdvancedAction
-    contributes = ("disk_config", "config_drive",)
+    contributes = ("disk_config", "config_drive", "server_group",)
 
     def prepare_action_context(self, request, context):
         context = super(SetAdvanced, self).prepare_action_context(request,
@@ -836,7 +882,8 @@ class LaunchInstance(workflows.Workflow):
     slug = "launch_instance"
     name = _("Launch Instance")
     finalize_button_name = _("Launch")
-    success_message = _('Launched %(count)s named "%(name)s".')
+    success_message = _('Request for launching %(count)s named "%(name)s" '
+                        'has been submitted.')
     failure_message = _('Unable to launch %(count)s named "%(name)s".')
     success_url = "horizon:project:instances:index"
     multipart = True
@@ -844,6 +891,7 @@ class LaunchInstance(workflows.Workflow):
                      SetInstanceDetails,
                      SetAccessControls,
                      SetNetwork,
+                     SetNetworkPorts,
                      PostCreationStep,
                      SetAdvanced)
 
@@ -925,12 +973,23 @@ class LaunchInstance(workflows.Workflow):
 
         avail_zone = context.get('availability_zone', None)
 
+        scheduler_hints = {}
+        server_group = context.get('server_group', None)
+        if server_group:
+            scheduler_hints['group'] = server_group
+
         port_profiles_supported = api.neutron.is_port_profiles_supported()
 
         if port_profiles_supported:
             nics = self.set_network_port_profiles(request,
                                                   context['network_id'],
                                                   context['profile_id'])
+
+        ports = context.get('ports')
+        if ports:
+            if nics is None:
+                nics = []
+            nics.extend([{'port-id': port} for port in ports])
 
         try:
             api.nova.server_create(request,
@@ -947,7 +1006,8 @@ class LaunchInstance(workflows.Workflow):
                                    instance_count=int(context['count']),
                                    admin_pass=context['admin_pass'],
                                    disk_config=context.get('disk_config'),
-                                   config_drive=context.get('config_drive'))
+                                   config_drive=context.get('config_drive'),
+                                   scheduler_hints=scheduler_hints)
             return True
         except Exception:
             if port_profiles_supported:

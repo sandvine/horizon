@@ -68,17 +68,29 @@ class BaseUserForm(forms.SelfHandlingForm):
         # the user has access to.
         user_id = kwargs['initial'].get('id', None)
         domain_id = kwargs['initial'].get('domain_id', None)
-        projects, has_more = api.keystone.tenant_list(request,
-                                                      domain=domain_id,
-                                                      user=user_id)
-        for project in projects:
-            if project.enabled:
-                project_choices.append((project.id, project.name))
-        if not project_choices:
-            project_choices.insert(0, ('', _("No available projects")))
-        elif len(project_choices) > 1:
-            project_choices.insert(0, ('', _("Select a project")))
-        self.fields['project'].choices = project_choices
+        default_project_id = kwargs['initial'].get('project', None)
+
+        try:
+            if api.keystone.VERSIONS.active >= 3:
+                projects, has_more = api.keystone.tenant_list(
+                    request, domain=domain_id)
+            else:
+                projects, has_more = api.keystone.tenant_list(
+                    request, user=user_id)
+
+            for project in projects:
+                if project.enabled:
+                    project_choices.append((project.id, project.name))
+            if not project_choices:
+                project_choices.insert(0, ('', _("No available projects")))
+            # TODO(david-lyle): if keystoneclient is fixed to allow unsetting
+            # the default project, then this condition should be removed.
+            elif len(project_choices) > 1 and default_project_id is None:
+                project_choices.insert(0, ('', _("Select a project")))
+            self.fields['project'].choices = project_choices
+
+        except Exception:
+            LOG.debug("User: %s has no projects" % user_id)
 
 
 ADD_PROJECT_URL = "horizon:identity:projects:create"
@@ -100,11 +112,11 @@ class CreateUserForm(PasswordMixin, BaseUserForm):
     email = forms.EmailField(
         label=_("Email"),
         required=False)
-    project = forms.DynamicChoiceField(label=_("Primary Project"),
-                                       required=PROJECT_REQUIRED,
-                                       add_item_link=ADD_PROJECT_URL)
-    role_id = forms.ChoiceField(label=_("Role"),
-                                required=PROJECT_REQUIRED)
+    project = forms.ThemableDynamicChoiceField(label=_("Primary Project"),
+                                               required=PROJECT_REQUIRED,
+                                               add_item_link=ADD_PROJECT_URL)
+    role_id = forms.ThemableChoiceField(label=_("Role"),
+                                        required=PROJECT_REQUIRED)
     enabled = forms.BooleanField(label=_("Enabled"),
                                  required=False,
                                  initial=True)
@@ -135,7 +147,7 @@ class CreateUserForm(PasswordMixin, BaseUserForm):
     # password and confirm_password strings.
     @sensitive_variables('data')
     def handle(self, request, data):
-        domain = api.keystone.get_default_domain(self.request)
+        domain = api.keystone.get_default_domain(self.request, False)
         try:
             LOG.info('Creating user with name "%s"' % data['name'])
             desc = data["description"]
@@ -194,8 +206,8 @@ class UpdateUserForm(BaseUserForm):
     email = forms.EmailField(
         label=_("Email"),
         required=False)
-    project = forms.ChoiceField(label=_("Primary Project"),
-                                required=PROJECT_REQUIRED)
+    project = forms.ThemableChoiceField(label=_("Primary Project"),
+                                        required=PROJECT_REQUIRED)
 
     def __init__(self, request, *args, **kwargs):
         super(UpdateUserForm, self).__init__(request, *args, **kwargs)
@@ -217,6 +229,9 @@ class UpdateUserForm(BaseUserForm):
 
         data.pop('domain_id')
         data.pop('domain_name')
+
+        if not PROJECT_REQUIRED and 'project' not in self.changed_data:
+            data.pop('project')
 
         if 'description' not in self.changed_data:
             data.pop('description')

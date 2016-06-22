@@ -23,7 +23,7 @@
     beforeEach(module('templates'));
     beforeEach(module('smart-table'));
     beforeEach(module('horizon.framework'));
-    beforeEach(module('MagicSearch'));
+    beforeEach(module('horizon.framework.widgets.magic-search'));
 
     beforeEach(inject(function ($injector) {
       $compile = $injector.get('$compile');
@@ -64,14 +64,15 @@
         }
       ];
 
-      var markup = '<table st-table="rows">' +
-                   '<thead>' +
-                   ' <tr>' +
-                   '   <th>' +
+      var searchBar =
                    '     <hz-magic-search-bar ' +
                    '       filter-facets="filterFacets" ' +
                    '       filter-strings="filterStrings">' +
-                   '     </hz-magic-search-bar>' +
+                   '     </hz-magic-search-bar>';
+      var markup = searchBar + '<table st-table="rows" st-magic-search>' +
+                   '<thead>' +
+                   ' <tr>' +
+                   '   <th>' +
                    '   </th>' +
                    ' </tr>' +
                    '</thead>' +
@@ -82,11 +83,6 @@
 
       $scope.$apply();
     }));
-
-    it('st-magic-search should be defined', function () {
-      var stSearchBar = $element.find('st-magic-search');
-      expect(stSearchBar.length).toBe(1);
-    });
 
     it('magic-search should be defined', function () {
       var searchBar = $element.find('magic-search');

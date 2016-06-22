@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from django.conf import settings
 from django.core.urlresolvers import NoReverseMatch  # noqa
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse  # noqa
@@ -62,7 +63,34 @@ class LaunchVolume(tables.LinkAction):
         return False
 
 
+class LaunchVolumeNG(LaunchVolume):
+    name = "launch_volume_ng"
+    verbose_name = _("Launch as Instance")
+    url = "horizon:project:volumes:index"
+    classes = ("btn-launch", )
+    ajax = False
+
+    def __init__(self, attrs=None, **kwargs):
+        kwargs['preempt'] = True
+        super(LaunchVolume, self).__init__(attrs, **kwargs)
+
+    def get_link_url(self, datum):
+        url = reverse(self.url)
+        vol_id = "%s:vol" % self.table.get_object_id(datum)
+        ngclick = "modal.openLaunchInstanceWizard(" \
+            "{successUrl: '%s', volumeId: '%s'})" \
+                  % (url, vol_id.split(":vol")[0])
+        self.attrs.update({
+            "ng-controller": "LaunchInstanceModalController as modal",
+            "ng-click": ngclick
+        })
+        return "javascript:void(0);"
+
+
 class DeleteVolume(VolumePolicyTargetMixin, tables.DeleteAction):
+    help_text = _("Deleted volumes are not recoverable. "
+                  "All data stored in the volume will be removed.")
+
     @staticmethod
     def action_present(count):
         return ungettext_lazy(
@@ -86,6 +114,10 @@ class DeleteVolume(VolumePolicyTargetMixin, tables.DeleteAction):
 
     def allowed(self, request, volume=None):
         if volume:
+            # Can't delete volume if part of consistency group
+            if getattr(volume, 'consistencygroup_id', None):
+                return False
+
             return (volume.status in DELETABLE_STATES and
                     not getattr(volume, 'has_snapshot', False))
         return True
@@ -125,7 +157,7 @@ class CreateVolume(tables.LinkAction):
 
     def single(self, table, request, object_id=None):
         self.allowed(request, None)
-        return HttpResponse(self.render())
+        return HttpResponse(self.render(is_table_action=True))
 
 
 class ExtendVolume(VolumePolicyTargetMixin, tables.LinkAction):
@@ -217,7 +249,8 @@ class UploadToImage(VolumePolicyTargetMixin, tables.LinkAction):
     url = "horizon:project:volumes:volumes:upload_to_image"
     classes = ("ajax-modal",)
     icon = "cloud-upload"
-    policy_rules = (("volume", "volume:upload_to_image"),)
+    policy_rules = (("volume",
+                     "volume_extension:volume_actions:upload_image"),)
 
     def allowed(self, request, volume=None):
         has_image_service_perm = \
@@ -273,8 +306,8 @@ class DeleteTransfer(VolumePolicyTargetMixin, tables.Action):
     name = "delete_transfer"
     verbose_name = _("Cancel Transfer")
     policy_rules = (("volume", "volume:delete_transfer"),)
-    classes = ('btn-danger',)
     help_text = _("This action cannot be undone.")
+    action_type = "danger"
 
     def allowed(self, request, volume):
         return (volume.status == "awaiting-transfer" and
@@ -450,19 +483,28 @@ class VolumesTable(VolumesTableBase):
         row_class = UpdateRow
         table_actions = (CreateVolume, AcceptTransfer, DeleteVolume,
                          VolumesFilterAction)
-        row_actions = (EditVolume, ExtendVolume, LaunchVolume, EditAttachments,
-                       CreateSnapshot, CreateBackup, RetypeVolume,
-                       UploadToImage, CreateTransfer, DeleteTransfer,
-                       DeleteVolume)
+
+        launch_actions = ()
+        if getattr(settings, 'LAUNCH_INSTANCE_LEGACY_ENABLED', False):
+            launch_actions = (LaunchVolume,) + launch_actions
+        if getattr(settings, 'LAUNCH_INSTANCE_NG_ENABLED', True):
+            launch_actions = (LaunchVolumeNG,) + launch_actions
+
+        row_actions = ((EditVolume, ExtendVolume,) +
+                       launch_actions +
+                       (EditAttachments, CreateSnapshot, CreateBackup,
+                        RetypeVolume, UploadToImage, CreateTransfer,
+                        DeleteTransfer, DeleteVolume))
 
 
 class DetachVolume(tables.BatchAction):
     name = "detach"
-    classes = ('btn-danger', 'btn-detach')
+    classes = ('btn-detach',)
     policy_rules = (("compute", "compute:detach_volume"),)
     help_text = _("The data will remain in the volume and another instance"
                   " will be able to access the data if you attach"
                   " this volume to it.")
+    action_type = "danger"
 
     @staticmethod
     def action_present(count):

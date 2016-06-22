@@ -29,23 +29,31 @@ NETWORKS_DETAIL_URL = 'horizon:admin:networks:detail'
 
 class NetworkPortTests(test.BaseAdminViewTests):
 
-    @test.create_stubs({api.neutron: ('port_get',
+    @test.create_stubs({api.neutron: ('network_get',
+                                      'port_get',
                                       'is_extension_supported',)})
     def test_port_detail(self):
         self._test_port_detail()
 
-    @test.create_stubs({api.neutron: ('port_get',
+    @test.create_stubs({api.neutron: ('network_get',
+                                      'port_get',
                                       'is_extension_supported',)})
     def test_port_detail_with_mac_learning(self):
         self._test_port_detail(mac_learning=True)
 
     def _test_port_detail(self, mac_learning=False):
         port = self.ports.first()
+        network_id = self.networks.first().id
         api.neutron.port_get(IsA(http.HttpRequest), port.id)\
             .AndReturn(self.ports.first())
         api.neutron.is_extension_supported(IsA(http.HttpRequest),
                                            'mac-learning')\
             .MultipleTimes().AndReturn(mac_learning)
+        api.neutron.is_extension_supported(IsA(http.HttpRequest),
+                                           'allowed-address-pairs') \
+            .MultipleTimes().AndReturn(False)
+        api.neutron.network_get(IsA(http.HttpRequest), network_id)\
+            .AndReturn(self.networks.first())
         self.mox.ReplayAll()
 
         res = self.client.get(reverse(DETAIL_URL, args=[port.id]))
@@ -368,6 +376,7 @@ class NetworkPortTests(test.BaseAdminViewTests):
     @test.create_stubs({api.neutron: ('port_delete',
                                       'subnet_list',
                                       'port_list',
+                                      'show_network_ip_availability',
                                       'is_extension_supported',
                                       'list_dhcp_agent_hosting_networks',)})
     def test_port_delete(self):
@@ -376,6 +385,7 @@ class NetworkPortTests(test.BaseAdminViewTests):
     @test.create_stubs({api.neutron: ('port_delete',
                                       'subnet_list',
                                       'port_list',
+                                      'show_network_ip_availability',
                                       'is_extension_supported',
                                       'list_dhcp_agent_hosting_networks',)})
     def test_port_delete_with_mac_learning(self):
@@ -384,14 +394,11 @@ class NetworkPortTests(test.BaseAdminViewTests):
     def _test_port_delete(self, mac_learning=False):
         port = self.ports.first()
         network_id = port.network_id
-        api.neutron.list_dhcp_agent_hosting_networks(IsA(http.HttpRequest),
-                                                     network_id).\
-            AndReturn(self.agents.list())
-        api.neutron.port_delete(IsA(http.HttpRequest), port.id)
-        api.neutron.subnet_list(IsA(http.HttpRequest), network_id=network_id)\
-            .AndReturn([self.subnets.first()])
         api.neutron.port_list(IsA(http.HttpRequest), network_id=network_id)\
             .AndReturn([self.ports.first()])
+        api.neutron.is_extension_supported(
+            IsA(http.HttpRequest),
+            'network-ip-availability').AndReturn(True)
         api.neutron.is_extension_supported(IsA(http.HttpRequest),
                                            'mac-learning')\
             .AndReturn(mac_learning)
@@ -406,6 +413,7 @@ class NetworkPortTests(test.BaseAdminViewTests):
     @test.create_stubs({api.neutron: ('port_delete',
                                       'subnet_list',
                                       'port_list',
+                                      'show_network_ip_availability',
                                       'is_extension_supported',
                                       'list_dhcp_agent_hosting_networks',)})
     def test_port_delete_exception(self):
@@ -414,6 +422,7 @@ class NetworkPortTests(test.BaseAdminViewTests):
     @test.create_stubs({api.neutron: ('port_delete',
                                       'subnet_list',
                                       'port_list',
+                                      'show_network_ip_availability',
                                       'is_extension_supported',
                                       'list_dhcp_agent_hosting_networks')})
     def test_port_delete_exception_with_mac_learning(self):
@@ -422,15 +431,13 @@ class NetworkPortTests(test.BaseAdminViewTests):
     def _test_port_delete_exception(self, mac_learning=False):
         port = self.ports.first()
         network_id = port.network_id
-        api.neutron.list_dhcp_agent_hosting_networks(IsA(http.HttpRequest),
-                                                     network_id).\
-            AndReturn(self.agents.list())
         api.neutron.port_delete(IsA(http.HttpRequest), port.id)\
             .AndRaise(self.exceptions.neutron)
-        api.neutron.subnet_list(IsA(http.HttpRequest), network_id=network_id)\
-            .AndReturn([self.subnets.first()])
         api.neutron.port_list(IsA(http.HttpRequest), network_id=network_id)\
             .AndReturn([self.ports.first()])
+        api.neutron.is_extension_supported(
+            IsA(http.HttpRequest),
+            'network-ip-availability').AndReturn(True)
         api.neutron.is_extension_supported(IsA(http.HttpRequest),
                                            'mac-learning')\
             .AndReturn(mac_learning)

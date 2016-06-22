@@ -10,6 +10,7 @@ horizon.tabs.initTabLoad = function (tab) {
   $(horizon.tabs._init_load_functions).each(function (index, f) {
     f(tab);
   });
+  recompileAngularContent($(tab));
 };
 
 horizon.tabs.load_tab = function () {
@@ -37,7 +38,7 @@ horizon.tabs.load_tab = function () {
 };
 
 horizon.addInitFunction(horizon.tabs.init = function () {
-  var data = horizon.cookies.get("tabs") || {};
+  var data = horizon.cookies.getObject("tabs") || {};
 
   $(".tab-content").find(".js-tab-pane").addClass("tab-pane");
   horizon.modals.addModalInitFunction(function (el) {
@@ -55,8 +56,14 @@ horizon.addInitFunction(horizon.tabs.init = function () {
     $content.find("table.datatable").each(function () {
       horizon.datatables.update_footer_count($(this));
     });
+    // d3 renders incorrectly in a hidden tab, this forces a rerender when the
+    // container size is not 0 from display:none
+    if($content.find(".d3-container").length) {
+      window.dispatchEvent(new Event('resize'));
+    }
+
     data[$tab.closest(".nav-tabs").attr("id")] = $tab.attr('data-target');
-    horizon.cookies.put("tabs", data);
+    horizon.cookies.putObject("tabs", data);
   });
 
   // Initialize stored tab state for tab groups on this page.

@@ -133,12 +133,16 @@ class InstanceViewTest(test.BaseAdminViewTests):
         self.assertMessageCount(res, error=1)
         self.assertItemsEqual(instances, servers)
 
-    @test.create_stubs({api.nova: ('server_list',)})
+    @test.create_stubs({api.nova: ('server_list',),
+                        api.keystone: ('tenant_list',)})
     def test_index_server_list_exception(self):
+        tenants = self.tenants.list()
         search_opts = {'marker': None, 'paginate': True}
         api.nova.server_list(IsA(http.HttpRequest),
                              all_tenants=True, search_opts=search_opts) \
             .AndRaise(self.exceptions.nova)
+        api.keystone.tenant_list(IsA(http.HttpRequest)).\
+            AndReturn([tenants, False])
 
         self.mox.ReplayAll()
 
@@ -148,6 +152,7 @@ class InstanceViewTest(test.BaseAdminViewTests):
 
     @test.create_stubs({api.nova: ('server_get', 'flavor_get',
                                    'extension_supported', ),
+                        api.network: ('servers_update_addresses',),
                         api.keystone: ('tenant_get',)})
     def test_ajax_loading_instances(self):
         server = self.servers.first()
@@ -323,6 +328,29 @@ class InstanceViewTest(test.BaseAdminViewTests):
         api.nova.host_list(IsA(http.HttpRequest)) \
             .AndReturn(self.hosts.list())
         api.nova.server_live_migrate(IsA(http.HttpRequest), server.id, host,
+                                     block_migration=False,
+                                     disk_over_commit=False) \
+            .AndReturn([])
+
+        self.mox.ReplayAll()
+
+        url = reverse('horizon:admin:instances:live_migrate',
+                      args=[server.id])
+        res = self.client.post(url, {'host': host, 'instance_id': server.id})
+        self.assertNoFormErrors(res)
+        self.assertRedirectsNoFollow(res, INDEX_URL)
+
+    @test.create_stubs({api.nova: ('host_list',
+                                   'server_get',
+                                   'server_live_migrate',)})
+    def test_instance_live_migrate_auto_sched(self):
+        server = self.servers.first()
+        host = ""
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+            .AndReturn(server)
+        api.nova.host_list(IsA(http.HttpRequest)) \
+            .AndReturn(self.hosts.list())
+        api.nova.server_live_migrate(IsA(http.HttpRequest), server.id, None,
                                      block_migration=False,
                                      disk_over_commit=False) \
             .AndReturn([])

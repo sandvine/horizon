@@ -94,11 +94,21 @@ class CreateVolumeTypeEncryption(tables.LinkAction):
     policy_rules = (("volume", "volume_extension:volume_type_encryption"),)
 
     def allowed(self, request, volume_type):
-        if _is_vol_type_enc_possible(request):
-            return (hasattr(volume_type, 'encryption')
-                    and not hasattr(volume_type.encryption, 'provider'))
-        else:
-            return False
+        return (_is_vol_type_enc_possible(request) and
+                not _does_vol_type_enc_exist(volume_type))
+
+
+class UpdateVolumeTypeEncryption(tables.LinkAction):
+    name = "update_encryption"
+    verbose_name = _("Update Encryption")
+    url = "horizon:admin:volumes:volume_types:update_type_encryption"
+    classes = ("ajax-modal",)
+    icon = "pencil"
+    policy_rules = (("volume", "volume_extension:volume_type_encryption"),)
+
+    def allowed(self, request, volume_type=None):
+        return (_is_vol_type_enc_possible(request) and
+                _does_vol_type_enc_exist(volume_type))
 
 
 class DeleteVolumeTypeEncryption(tables.DeleteAction):
@@ -127,8 +137,14 @@ class DeleteVolumeTypeEncryption(tables.DeleteAction):
 
     def allowed(self, request, volume_type=None):
         return (_is_vol_type_enc_possible(request) and
-                hasattr(volume_type, 'encryption') and
-                hasattr(volume_type.encryption, 'provider'))
+                _does_vol_type_enc_exist(volume_type))
+
+
+def _does_vol_type_enc_exist(volume_type):
+    # Check to see if there is an existing encryption information
+    # for the volume type or not
+    return (hasattr(volume_type, 'encryption') and
+            hasattr(volume_type.encryption, 'provider'))
 
 
 def _is_vol_type_enc_possible(request):
@@ -187,12 +203,14 @@ class UpdateCell(tables.UpdateAction):
             setattr(vol_type_obj, cell_name, new_cell_value)
             name_value = getattr(vol_type_obj, 'name', None)
             desc_value = getattr(vol_type_obj, 'description', None)
+            public_value = getattr(vol_type_obj, 'public', None)
 
             cinder.volume_type_update(
                 request,
                 volume_type_id,
                 name=name_value,
-                description=desc_value)
+                description=desc_value,
+                is_public=public_value)
         except Exception as ex:
             if ex.code and ex.code == 409:
                 error_message = _('New name conflicts with another '
@@ -223,6 +241,12 @@ class VolumeTypesTable(tables.DataTable):
                                verbose_name=_("Encryption"),
                                link="horizon:admin:volumes:volume_types:"
                                     "type_encryption_detail")
+    public = tables.Column("is_public",
+                           verbose_name=_("Public"),
+                           filters=(filters.yesno, filters.capfirst),
+                           update_action=UpdateCell,
+                           form_field=forms.BooleanField(
+                               label=_('Public'), required=False))
 
     def get_object_display(self, vol_type):
         return vol_type.name
@@ -240,6 +264,7 @@ class VolumeTypesTable(tables.DataTable):
                        ViewVolumeTypeExtras,
                        ManageQosSpecAssociation,
                        EditVolumeType,
+                       UpdateVolumeTypeEncryption,
                        DeleteVolumeTypeEncryption,
                        DeleteVolumeType,)
         row_class = UpdateRow

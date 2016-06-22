@@ -50,12 +50,15 @@ class GroupBase(forms.SelfHandlingForm):
         which will be replaced by the error message.
     """
     name = forms.CharField(label=_("Name"),
-                           max_length=255,
-                           validators=[
-                               utils_validators.validate_printable_ascii])
+                           max_length=255)
     description = forms.CharField(label=_("Description"),
                                   required=False,
                                   widget=forms.Textarea(attrs={'rows': 4}))
+
+    def __init__(self, request, *args, **kwargs):
+        super(GroupBase, self).__init__(request, *args, **kwargs)
+        if not api.base.is_service_enabled(request, 'network'):
+            self.fields['description'].required = True
 
     def _call_network_api(self, request, data):
         """Call the underlying network API: Nova-network or Neutron.
@@ -178,7 +181,7 @@ class AddRule(forms.SelfHandlingForm):
                                      utils_validators.validate_port_range])
 
     icmp_type = forms.IntegerField(label=_("Type"),
-                                   required=False,
+                                   required=True,
                                    help_text=_("Enter a value for ICMP type "
                                                "in the range (-1: 255)"),
                                    widget=forms.TextInput(attrs={
@@ -186,10 +189,11 @@ class AddRule(forms.SelfHandlingForm):
                                        'data-switch-on': 'rule_menu',
                                        'data-rule_menu-icmp': _('Type')}),
                                    validators=[
-                                       utils_validators.validate_port_range])
+                                       utils_validators.
+                                       validate_icmp_type_range])
 
     icmp_code = forms.IntegerField(label=_("Code"),
-                                   required=False,
+                                   required=True,
                                    help_text=_("Enter a value for ICMP code "
                                                "in the range (-1: 255)"),
                                    widget=forms.TextInput(attrs={
@@ -197,7 +201,8 @@ class AddRule(forms.SelfHandlingForm):
                                        'data-switch-on': 'rule_menu',
                                        'data-rule_menu-icmp': _('Code')}),
                                    validators=[
-                                       utils_validators.validate_port_range])
+                                       utils_validators.
+                                       validate_icmp_code_range])
 
     remote = forms.ChoiceField(label=_('Remote'),
                                choices=[('cidr', _('CIDR')),
@@ -290,18 +295,16 @@ class AddRule(forms.SelfHandlingForm):
         icmp_code = cleaned_data.get("icmp_code", None)
 
         self._update_and_pop_error(cleaned_data, 'ip_protocol', rule_menu)
-        if icmp_type is None:
-            msg = _('The ICMP type is invalid.')
+        if icmp_type == -1 and icmp_code != -1:
+            msg = _('ICMP code is provided but ICMP type is missing.')
             raise ValidationError(msg)
-        if icmp_code is None:
-            msg = _('The ICMP code is invalid.')
-            raise ValidationError(msg)
-        if icmp_type not in range(-1, 256):
+        if self.errors.get('icmp_type'):
             msg = _('The ICMP type not in range (-1, 255)')
             raise ValidationError(msg)
-        if icmp_code not in range(-1, 256):
+        if self.errors.get('icmp_code'):
             msg = _('The ICMP code not in range (-1, 255)')
             raise ValidationError(msg)
+
         self._update_and_pop_error(cleaned_data, 'from_port', icmp_type)
         self._update_and_pop_error(cleaned_data, 'to_port', icmp_code)
         self._update_and_pop_error(cleaned_data, 'port', None)
@@ -334,10 +337,18 @@ class AddRule(forms.SelfHandlingForm):
                         'or equal to the "from" port number.')
                 raise ValidationError(msg)
 
+    def _clean_rule_custom(self, cleaned_data, rule_menu):
+        # custom IP protocol rule so we need to fill unused fields so
+        # the validation works
+        self._update_and_pop_error(cleaned_data, 'icmp_code', None)
+        self._update_and_pop_error(cleaned_data, 'icmp_type', None)
+
     def _apply_rule_menu(self, cleaned_data, rule_menu):
         cleaned_data['ip_protocol'] = self.rules[rule_menu]['ip_protocol']
         cleaned_data['from_port'] = int(self.rules[rule_menu]['from_port'])
         cleaned_data['to_port'] = int(self.rules[rule_menu]['to_port'])
+        self._update_and_pop_error(cleaned_data, 'icmp_code', None)
+        self._update_and_pop_error(cleaned_data, 'icmp_type', None)
         if rule_menu not in ['all_tcp', 'all_udp', 'all_icmp']:
             direction = self.rules[rule_menu].get('direction')
             cleaned_data['direction'] = direction
@@ -349,7 +360,7 @@ class AddRule(forms.SelfHandlingForm):
         elif rule_menu == 'tcp' or rule_menu == 'udp':
             self._clean_rule_tcp_udp(cleaned_data, rule_menu)
         elif rule_menu == 'custom':
-            pass
+            self._clean_rule_custom(cleaned_data, rule_menu)
         else:
             self._apply_rule_menu(cleaned_data, rule_menu)
 
@@ -390,6 +401,8 @@ class AddRule(forms.SelfHandlingForm):
         return cleaned_data
 
     def handle(self, request, data):
+        redirect = reverse("horizon:project:access_and_security:"
+                           "security_groups:detail", args=[data['id']])
         try:
             rule = api.network.security_group_rule_create(
                 request,
@@ -405,9 +418,9 @@ class AddRule(forms.SelfHandlingForm):
                              _('Successfully added rule: %s')
                              % six.text_type(rule))
             return rule
+        except exceptions.Conflict as error:
+            exceptions.handle(request, error, redirect=redirect)
         except Exception:
-            redirect = reverse("horizon:project:access_and_security:"
-                               "security_groups:detail", args=[data['id']])
             exceptions.handle(request,
                               _('Unable to add rule to security group.'),
                               redirect=redirect)

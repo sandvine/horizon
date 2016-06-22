@@ -14,8 +14,10 @@ import importlib
 import json
 import types
 
-from openstack_dashboard.test.integration_tests import config
+from selenium.webdriver.common import by
 import six
+
+from openstack_dashboard.test.integration_tests import config
 
 
 class Navigation(object):
@@ -105,21 +107,6 @@ class Navigation(object):
                                     "Containers",
                                 )
                         },
-                    "Data Processing":
-                        {
-                            ITEMS:
-                                (
-                                    "Clusters",
-                                    "Cluster Templates",
-                                    "Node Group Templates",
-                                    "Job Executions",
-                                    "Jobs",
-                                    "Job Binaries",
-                                    "Data Sources",
-                                    "Image Registry",
-                                    "Plugins"
-                                ),
-                        },
                     "Orchestration":
                         {
                             ITEMS:
@@ -169,7 +156,10 @@ class Navigation(object):
                                     "Flavors",
                                     "Images",
                                     "Networks",
-                                    "Routers"
+                                    "Routers",
+                                    "Defaults",
+                                    "Metadata Definitions",
+                                    "System Information"
                                 )
                         },
                 },
@@ -193,6 +183,7 @@ class Navigation(object):
                         )
                 }
         }
+    _main_content_locator = (by.By.ID, 'content_body')
 
     # protected methods
     def _go_to_page(self, path, page_class=None):
@@ -227,7 +218,8 @@ class Navigation(object):
         return self._get_page_class(path, page_class)(self.driver, self.conf)
 
     def _go_to_tab_menu_page(self, item_text):
-        self.driver.find_element_by_link_text(item_text).click()
+        content_body = self.driver.find_element(*self._main_content_locator)
+        content_body.find_element_by_link_text(item_text).click()
 
     def _go_to_settings_page(self, item_text):
         """Go to page that is located under the settings tab."""
@@ -321,7 +313,7 @@ class Navigation(object):
             if isinstance(items, dict):
                 for sub_menu, sub_item in six.iteritems(items):
                     rec(sub_item, sub_menus + (sub_menu,))
-            elif isinstance(items, tuple):
+            elif isinstance(items, (list, tuple)):
                 # exclude ITEMS element from sub_menus
                 paths = (sub_menus[:-1] + (menu_item,) for menu_item in items)
                 for path in paths:

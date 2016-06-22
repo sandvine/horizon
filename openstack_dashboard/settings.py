@@ -21,12 +21,17 @@ import os
 import sys
 import warnings
 
+from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from openstack_dashboard import exceptions
 from openstack_dashboard.static_settings import find_static_files  # noqa
 from openstack_dashboard.static_settings import get_staticfiles_dirs  # noqa
+from openstack_dashboard import theme_settings
 
+from horizon.utils.escape import monkeypatch_escape
+
+monkeypatch_escape()
 
 warnings.formatwarning = lambda message, category, *args, **kwargs: \
     '%s: %s' % (category.__name__, message)
@@ -46,8 +51,11 @@ WEBROOT = '/'
 LOGIN_URL = None
 LOGOUT_URL = None
 LOGIN_REDIRECT_URL = None
+MEDIA_ROOT = None
+MEDIA_URL = None
 STATIC_ROOT = None
 STATIC_URL = None
+INTEGRATION_TESTS_SUPPORT = False
 
 ROOT_URLCONF = 'openstack_dashboard.urls'
 
@@ -69,7 +77,8 @@ HORIZON_CONFIG = {
     'js_files': [],
     'js_spec_files': [],
     'external_templates': [],
-    'plugins': []
+    'plugins': [],
+    'integration_tests_support': INTEGRATION_TESTS_SUPPORT
 }
 
 # Set to True to allow users to upload images to glance via Horizon server.
@@ -102,9 +111,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'horizon.middleware.OperationLogMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'horizon.middleware.HorizonMiddleware',
+    'horizon.themes.ThemeMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.http.ConditionalGetMiddleware',
@@ -121,13 +132,14 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'openstack_dashboard.context_processors.openstack',
 )
 
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-        'horizon.loaders.TemplateLoader',
-    )),
-)
+TEMPLATE_LOADERS = ('horizon.themes.ThemeTemplateLoader',)
+
+CACHED_TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+    'horizon.loaders.TemplateLoader',)
+
+ADD_TEMPLATE_LOADERS = []
 
 TEMPLATE_DIRS = (
     os.path.join(ROOT_PATH, 'templates'),
@@ -135,7 +147,7 @@ TEMPLATE_DIRS = (
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'horizon.contrib.staticfiles.finders.HorizonStaticFinder',
     'compressor.finders.CompressorFinder',
 )
 
@@ -258,15 +270,68 @@ SECURITY_GROUP_RULES = {
 
 ADD_INSTALLED_APPS = []
 
-# directory for custom theme, set as default.
-# It can be overridden in local_settings.py
-DEFAULT_THEME_PATH = 'themes/default'
-CUSTOM_THEME_PATH = DEFAULT_THEME_PATH
+# Deprecated Theme Settings
+CUSTOM_THEME_PATH = None
+DEFAULT_THEME_PATH = None
 
+# 'key', 'label', 'path'
+AVAILABLE_THEMES = [
+    (
+        'default',
+        pgettext_lazy('Default style theme', 'Default'),
+        'themes/default'
+    ), (
+        'material',
+        pgettext_lazy("Google's Material Design style theme", "Material"),
+        'themes/material'
+    ),
+]
+
+# The default theme if no cookie is present
+DEFAULT_THEME = 'default'
+
+# Theme Static Directory
+THEME_COLLECTION_DIR = 'themes'
+
+# Theme Cookie Name
+THEME_COOKIE_NAME = 'theme'
+
+POLICY_CHECK_FUNCTION = None
+
+CSRF_COOKIE_AGE = None
+
+COMPRESS_OFFLINE_CONTEXT = 'horizon.themes.offline_context'
+
+# Notice all customizable configurations should be above this line
 try:
     from local.local_settings import *  # noqa
 except ImportError:
     logging.warning("No local_settings file found.")
+
+if DEBUG:
+    TEMPLATE_LOADERS += CACHED_TEMPLATE_LOADERS + tuple(ADD_TEMPLATE_LOADERS)
+else:
+    TEMPLATE_LOADERS += (
+        ('django.template.loaders.cached.Loader', CACHED_TEMPLATE_LOADERS),
+    ) + tuple(ADD_TEMPLATE_LOADERS)
+
+# allow to drop settings snippets into a local_settings_dir
+LOCAL_SETTINGS_DIR_PATH = os.path.join(ROOT_PATH, "local", "local_settings.d")
+if os.path.exists(LOCAL_SETTINGS_DIR_PATH):
+    for (dirpath, dirnames, filenames) in os.walk(LOCAL_SETTINGS_DIR_PATH):
+        for filename in sorted(filenames):
+            if filename.endswith(".py"):
+                try:
+                    execfile(os.path.join(dirpath, filename))
+                except Exception as e:
+                    logging.exception(
+                        "Can not exec settings snippet %s" % filename)
+
+# The purpose of OPENSTACK_IMAGE_FORMATS is to provide a simple object
+# that does not contain the lazy-loaded translations, so the list can
+# be sent as JSON to the client-side (Angular).
+OPENSTACK_IMAGE_FORMATS = [fmt for (fmt, name)
+                           in OPENSTACK_IMAGE_BACKEND['image_formats']]
 
 if not WEBROOT.endswith('/'):
     WEBROOT += '/'
@@ -277,8 +342,11 @@ if LOGOUT_URL is None:
 if LOGIN_REDIRECT_URL is None:
     LOGIN_REDIRECT_URL = WEBROOT
 
-MEDIA_ROOT = os.path.abspath(os.path.join(ROOT_PATH, '..', 'media'))
-MEDIA_URL = WEBROOT + 'media/'
+if MEDIA_ROOT is None:
+    MEDIA_ROOT = os.path.abspath(os.path.join(ROOT_PATH, '..', 'media'))
+
+if MEDIA_URL is None:
+    MEDIA_URL = WEBROOT + 'media/'
 
 if STATIC_ROOT is None:
     STATIC_ROOT = os.path.abspath(os.path.join(ROOT_PATH, '..', 'static'))
@@ -286,39 +354,26 @@ if STATIC_ROOT is None:
 if STATIC_URL is None:
     STATIC_URL = WEBROOT + 'static/'
 
-STATICFILES_DIRS = get_staticfiles_dirs(STATIC_URL)
-
-CUSTOM_THEME = os.path.join(ROOT_PATH, CUSTOM_THEME_PATH)
-
-# If a custom template directory exists within our custom theme, then prepend
-# it to our first-come, first-serve TEMPLATE_DIRS
-if os.path.exists(os.path.join(CUSTOM_THEME, 'templates')):
-    TEMPLATE_DIRS = \
-        (os.path.join(CUSTOM_THEME, 'templates'),) + TEMPLATE_DIRS
-
-# Only expose the subdirectory 'static' if it exists from a custom theme,
-# allowing other logic to live with a theme that we might not want to expose
-# statically
-if os.path.exists(os.path.join(CUSTOM_THEME, 'static')):
-    CUSTOM_THEME = os.path.join(CUSTOM_THEME, 'static')
-
-# Only collect and expose the default theme if the user chose to set a
-# different theme
-if DEFAULT_THEME_PATH != CUSTOM_THEME_PATH:
-    STATICFILES_DIRS.append(
-        ('themes/default', os.path.join(ROOT_PATH, DEFAULT_THEME_PATH)),
-    )
-
-STATICFILES_DIRS.append(
-    ('custom', CUSTOM_THEME),
+AVAILABLE_THEMES, DEFAULT_THEME = theme_settings.get_available_themes(
+    AVAILABLE_THEMES,
+    CUSTOM_THEME_PATH,
+    DEFAULT_THEME_PATH,
+    DEFAULT_THEME
 )
 
-# Load the subdirectory 'img' of a custom theme if it exists, thereby allowing
-# very granular theme overrides of all dashboard img files using the first-come
-# first-serve filesystem loader.
-if os.path.exists(os.path.join(CUSTOM_THEME, 'img')):
-    STATICFILES_DIRS.insert(0, ('dashboard/img',
-                            os.path.join(CUSTOM_THEME, 'img')))
+STATICFILES_DIRS = get_staticfiles_dirs(STATIC_URL) + \
+    theme_settings.get_theme_static_dirs(
+        AVAILABLE_THEMES,
+        THEME_COLLECTION_DIR,
+        ROOT_PATH)
+
+if CUSTOM_THEME_PATH is not None:
+    logging.warning("CUSTOM_THEME_PATH has been deprecated.  Please convert "
+                    "your settings to make use of AVAILABLE_THEMES.")
+
+if DEFAULT_THEME_PATH is not None:
+    logging.warning("DEFAULT_THEME_PATH has been deprecated.  Please convert "
+                    "your settings to make use of AVAILABLE_THEMES.")
 
 # populate HORIZON_CONFIG with auto-discovered JavaScript sources, mock files,
 # specs files and external templates.
@@ -352,24 +407,23 @@ settings.update_dashboards(
 )
 INSTALLED_APPS[0:0] = ADD_INSTALLED_APPS
 
-from openstack_auth import policy
-POLICY_CHECK_FUNCTION = policy.check
 
-# Add HORIZON_CONFIG to the context information for offline compression
-COMPRESS_OFFLINE_CONTEXT = {
+def check(actions, request, target=None):
+    # Note(Itxaka): This is to prevent circular dependencies and apps not ready
+    # If you do django imports in your settings, you are gonna have a bad time
+    from openstack_auth import policy
+    return policy.check(actions, request, target=None)
+
+if POLICY_CHECK_FUNCTION is None:
+    POLICY_CHECK_FUNCTION = check
+
+# This base context objects gets added to the offline context generator
+# for each theme configured.
+HORIZON_COMPRESS_OFFLINE_CONTEXT_BASE = {
     'WEBROOT': WEBROOT,
     'STATIC_URL': STATIC_URL,
-    'HORIZON_CONFIG': HORIZON_CONFIG,
+    'HORIZON_CONFIG': HORIZON_CONFIG
 }
 
 if DEBUG:
     logging.basicConfig(level=logging.DEBUG)
-
-# during django reloads and an active user is logged in, the monkey
-# patch below will not otherwise be applied in time - resulting in developers
-# appearing to be logged out.  In typical production deployments this section
-# below may be omitted, though it should not be harmful
-from openstack_auth import utils as auth_utils
-auth_utils.patch_middleware_get_user()
-
-CSRF_COOKIE_AGE = None

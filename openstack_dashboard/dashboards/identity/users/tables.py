@@ -50,7 +50,8 @@ class EditUserLink(policy.PolicyTargetMixin, tables.LinkAction):
     icon = "pencil"
     policy_rules = (("identity", "identity:update_user"),
                     ("identity", "identity:list_projects"),)
-    policy_target_attrs = (("user_id", "id"),)
+    policy_target_attrs = (("user_id", "id"),
+                           ("target.user.domain_id", "domain_id"),)
 
     def allowed(self, request, user):
         return api.keystone.keystone_can_edit_user()
@@ -103,10 +104,12 @@ class ToggleEnabled(policy.PolicyTargetMixin, tables.BatchAction):
         )
     classes = ("btn-toggle",)
     policy_rules = (("identity", "identity:update_user"),)
-    policy_target_attrs = (("user_id", "id"),)
+    policy_target_attrs = (("user_id", "id"),
+                           ("target.user.domain_id", "domain_id"))
 
     def allowed(self, request, user=None):
-        if not api.keystone.keystone_can_edit_user():
+        if (not api.keystone.keystone_can_edit_user() or
+                user.id == request.user.id):
             return False
 
         self.enabled = True
@@ -119,16 +122,7 @@ class ToggleEnabled(policy.PolicyTargetMixin, tables.BatchAction):
             self.current_present_action = ENABLE
         return True
 
-    def update(self, request, user=None):
-        super(ToggleEnabled, self).update(request, user)
-        if user and user.id == request.user.id:
-            self.attrs["disabled"] = "disabled"
-
     def action(self, request, obj_id):
-        if obj_id == request.user.id:
-            messages.info(request, _('You cannot disable the user you are '
-                                     'currently logged in as.'))
-            return
         if self.enabled:
             api.keystone.user_update_enabled(request, obj_id, False)
             self.current_past_action = DISABLE
@@ -137,7 +131,7 @@ class ToggleEnabled(policy.PolicyTargetMixin, tables.BatchAction):
             self.current_past_action = ENABLE
 
 
-class DeleteUsersAction(tables.DeleteAction):
+class DeleteUsersAction(policy.PolicyTargetMixin, tables.DeleteAction):
     @staticmethod
     def action_present(count):
         return ungettext_lazy(
@@ -193,6 +187,11 @@ class UpdateCell(tables.UpdateAction):
         try:
             user_obj = datum
             setattr(user_obj, cell_name, new_cell_value)
+            if ((not new_cell_value) or new_cell_value.isspace()) and \
+                    (cell_name == 'name'):
+                message = _("The User Name field cannot be empty.")
+                messages.warning(request, message)
+                raise django_exceptions.ValidationError(message)
             kwargs = {}
             attr_to_keyword_map = {
                 'name': 'name',
@@ -226,7 +225,7 @@ class UsersTable(tables.DataTable):
     name = tables.Column('name',
                          link="horizon:identity:users:detail",
                          verbose_name=_('User Name'),
-                         form_field=forms.CharField(),
+                         form_field=forms.CharField(required=False),
                          update_action=UpdateCell)
     description = tables.Column(lambda obj: getattr(obj, 'description', None),
                                 verbose_name=_('Description'),
@@ -246,7 +245,7 @@ class UsersTable(tables.DataTable):
                           )
     # Default tenant is not returned from Keystone currently.
     # default_tenant = tables.Column('default_tenant',
-    #                               verbose_name=_('Default Project'))
+    #                                verbose_name=_('Default Project'))
     id = tables.Column('id', verbose_name=_('User ID'),
                        attrs={'data-type': 'uuid'})
     enabled = tables.Column('enabled', verbose_name=_('Enabled'),
@@ -255,6 +254,11 @@ class UsersTable(tables.DataTable):
                             filters=(defaultfilters.yesno,
                                      defaultfilters.capfirst),
                             empty_value="False")
+
+    if api.keystone.VERSIONS.active >= 3:
+        domain_name = tables.Column('domain_name',
+                                    verbose_name=_('Domain Name'),
+                                    attrs={'data-type': 'uuid'})
 
     class Meta(object):
         name = "users"

@@ -11,7 +11,6 @@
 # under the License.
 
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 
 from openstack_dashboard.dashboards.admin.volumes.volume_types.extras \
@@ -21,10 +20,8 @@ from openstack_dashboard.dashboards.admin.volumes.volume_types.qos_specs \
 from openstack_dashboard.dashboards.admin.volumes.volume_types \
     import views
 
-VIEWS_MOD = ('openstack_dashboard.dashboards.admin.volumes.volume_types.views')
 
-urlpatterns = patterns(
-    'VIEWS_MOD',
+urlpatterns = [
     url(r'^create_type$', views.CreateVolumeTypeView.as_view(),
         name='create_type'),
     url(r'^(?P<type_id>[^/]+)/update_type/$',
@@ -43,9 +40,12 @@ urlpatterns = patterns(
     url(r'^(?P<volume_type_id>[^/]+)/create_type_encryption/$',
         views.CreateVolumeTypeEncryptionView.as_view(),
         name='create_type_encryption'),
+    url(r'^(?P<volume_type_id>[^/]+)/update_type_encryption/$',
+        views.UpdateVolumeTypeEncryptionView.as_view(),
+        name='update_type_encryption'),
     url(r'^(?P<volume_type_id>[^/]+)/type_encryption_detail/$',
         views.VolumeTypeEncryptionDetailView.as_view(),
         name='type_encryption_detail'),
     url(r'^qos_specs/',
         include(qos_specs_urls, namespace='qos_specs')),
-)
+]

@@ -1,26 +1,21 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# Zbyněk Schwarz <zbynek.schwarz@gmail.com>, 2014-2015
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 # Zbyněk Schwarz <zbynek.schwarz@gmail.com>, 2015. #zanata
+# Lenka Husáková <lenka.husakova@ultimum.io>, 2016. #zanata
+# Stanislav Ulrych <stanislav.ulrych@ultimum.io>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 01:15+0000\n"
+"Project-Id-Version: horizon 10.0.0.0b2.dev133\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-06-16 01:59+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-12-08 03:42+0000\n"
-"Last-Translator: Zbyněk Schwarz <zbynek.schwarz@gmail.com>\n"
-"Language: cs\n"
-"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
+"PO-Revision-Date: 2016-06-14 09:31+0000\n"
+"Last-Translator: Lenka Husáková <lenka.husakova@ultimum.io>\n"
 "Language-Team: Czech\n"
+"Language: cs\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2\n"
 
 #, python-format
 msgid "%s GB"
@@ -42,6 +37,9 @@ msgstr "%s TB"
 msgid "%s bytes"
 msgstr "%s bajtů"
 
+msgid "(Modified)"
+msgstr "(Upraveno)"
+
 msgid "-"
 msgstr "-"
 
@@ -50,6 +48,9 @@ msgstr "0 GB"
 
 msgid "0 MB"
 msgstr "0 MB"
+
+msgid "<hz-cell></hz-cell>"
+msgstr "<hz-cell></hz-cell>"
 
 msgid "Active"
 msgstr "Aktivní"
@@ -73,13 +74,16 @@ msgid "Available"
 msgstr "Dostupné"
 
 msgid "Available Metadata"
-msgstr "Dostupná popisná data"
+msgstr "Dostupná metadata"
 
 msgid "Back"
 msgstr "Zpět"
 
 msgid "Cancel"
 msgstr "Zrušit"
+
+msgid "Click each item to get its description here."
+msgstr "Klepněte na jednotlivé položky, k získání jejich popisů."
 
 msgid "Click here for filters."
 msgstr "Klikněte zde pro zobrazení filtrů"
@@ -124,6 +128,9 @@ msgstr "Současné využití"
 msgid "Custom"
 msgstr "Vlastní"
 
+msgid "Customization Script"
+msgstr "Přizpůsobovací skript"
+
 msgid "Danger"
 msgstr "Nebezpečí"
 
@@ -146,7 +153,7 @@ msgid "Delete Network"
 msgstr "Smazat síť"
 
 msgid "Delete Router"
-msgstr "Smazat směrovač"
+msgstr "Smazat router"
 
 msgid "Delete Subnet"
 msgstr "Smazat podsíť"
@@ -160,7 +167,7 @@ msgstr "Podrobné informace"
 
 #, python-format
 msgid "Displaying %(count)s of %(total)s items"
-msgstr "Zobrazování %(count)s z %(total)s položek"
+msgstr "Zobrazeno %(count)s z %(total)s položek"
 
 #, python-format
 msgid "Displaying %s item"
@@ -178,8 +185,11 @@ msgstr "Chyba"
 msgid "Error: "
 msgstr "Chyba:"
 
+msgid "Example"
+msgstr "Příklad"
+
 msgid "Existing Metadata"
-msgstr "Existující popisná data"
+msgstr "Existující metadata"
 
 msgid "Expand to see allocated items"
 msgstr "Rozbalte pro zobrazení přidělených položek"
@@ -194,16 +204,16 @@ msgid "Finish"
 msgstr "Dokončit"
 
 msgid "Flavor"
-msgstr "Konfigurace"
+msgstr "Typ"
+
+msgid "Full Text Search"
+msgstr "Fulltextové vyhledávání"
 
 msgid "ID"
 msgstr "ID"
 
 msgid "IP Addresses"
 msgstr "IP adresy"
-
-msgid "In current results"
-msgstr "V současných výsledcích"
 
 msgid "Info"
 msgstr "Informace"
@@ -213,6 +223,9 @@ msgstr "Vyžadováno celé číslo"
 
 msgid "Interfaces"
 msgstr "Rozhraní"
+
+msgid "Load script from a file"
+msgstr "Načíst skript ze souboru"
 
 msgid "Loading"
 msgstr "Načítání"
@@ -238,11 +251,14 @@ msgstr "Další"
 msgid "No"
 msgstr "Ne"
 
+msgid "No Limit"
+msgstr "Bez omezení"
+
 msgid "No available items"
 msgstr "Žádné dostupné položky"
 
 msgid "No available metadata"
-msgstr "Žádná dostupná popisná data"
+msgstr "Žádná dostupná metadata"
 
 msgid "No data available."
 msgstr "Data nejsou dostupná."
@@ -251,7 +267,7 @@ msgid "No description available."
 msgstr "Není zadán žádný popis."
 
 msgid "No existing metadata"
-msgstr "Žádná existující popisná data"
+msgstr "Žádná existující metadata"
 
 msgid "No items to display."
 msgstr "Žádné položky k zobrazení."
@@ -280,6 +296,9 @@ msgstr "Hesla se neshodují."
 msgid "Pattern mismatch"
 msgstr "Neshoda vzoru"
 
+msgid "Please Wait"
+msgstr "Čekejte prosím"
+
 msgid "Please confirm your selection. "
 msgstr "Potvrďte prosím váš výběr."
 
@@ -287,7 +306,7 @@ msgid "Prompt"
 msgstr "Výzva"
 
 msgid "Re-order items using drag and drop"
-msgstr "ˇ5azení položek změňte přetažením"
+msgstr "Pořadí položek změňte přetažením"
 
 msgid "Remaining"
 msgstr "Zbývá"
@@ -303,6 +322,17 @@ msgstr "Role"
 
 msgid "STATUS"
 msgstr "STAV"
+
+#. Strings between {$ and $} should be left untranslated.
+msgid ""
+"Script size: {$ (scriptLength || 0) | bytes $} of {$ config.MAX_SCRIPT_SIZE "
+"| bytes $}"
+msgstr ""
+"Velikost skriptu: {$ (scriptLength || 0) | bytes $} z {$ config."
+"MAX_SCRIPT_SIZE | bytes $}"
+
+msgid "Search in current results"
+msgstr "Hledat v aktuálních výsledcích"
 
 msgid "Select an item from Available items below"
 msgstr "Vyberte položku ze seznamu níže"
@@ -341,8 +371,10 @@ msgstr "Text"
 msgid ""
 "The action cannot be performed. The contents of this row have errors or are "
 "missing information."
-msgstr ""
-"Činnost nelze provést. Obsah tohoto řádku má chyby, nebo mu chybí informace."
+msgstr "Činnost nelze provést. Řádek obsahuje chybu chybějící informace."
+
+msgid "The script is larger than the maximum size"
+msgstr "Skript je větší než maximální velikost"
 
 msgid "There was a problem communicating with the server, please try again."
 msgstr "Při komunikaci se serverem nastal problém, zkuste to znovu."
@@ -353,12 +385,18 @@ msgstr "Při odesílání formuláře nastal problém. Zkuste to prosím znovu."
 msgid "Toggle Dropdown"
 msgstr "Přepnout rozbalovací seznam"
 
+msgid "Toggle navigation"
+msgstr "Přepnout navigaci"
+
 msgid "Total"
 msgstr "Celkem"
 
 #, python-format
 msgid "Unable to delete: %s."
 msgstr "Nelze smazat: %s."
+
+msgid "Unlimited"
+msgstr "Neomezeno"
 
 msgid "View Details"
 msgstr "Zobrazit podrobnosti"
@@ -367,7 +405,7 @@ msgid "View Instance Details"
 msgstr "Zobrazit podrobnosti instance"
 
 msgid "View Router Details"
-msgstr "Zobrazit podrobnosti směrovače"
+msgstr "Zobrazit podrobnosti routeru"
 
 msgid "Warning"
 msgstr "Varování"
@@ -387,9 +425,9 @@ msgid ""
 "Glance Metadata Catalog. Use the \"Custom\" option to add metadata with "
 "the key of your choice."
 msgstr ""
-"Popisná data zdroje můžete zadat přesunutím položek z levého sloupce do "
-"pravého. V levém sloupci jsou vypsány definice dat z katalogu popisných dat "
-"Glance. Použijte volbu \"Vlastní\" pro přidání klíče vašeho výběru."
+"Metadata zdroje můžete zadat přesunutím položek z levého sloupce do pravého. "
+"V levém sloupci jsou vypsány definice dat z katalogu popisných dat Glance. "
+"Použijte volbu \"Vlastní\" pro přidání klíče vašeho výběru."
 
 #, python-format
 msgid "You have selected %s. "
@@ -410,3 +448,9 @@ msgstr "výchozí zásoby"
 #, python-format
 msgid "selected \"%s\""
 msgstr "\"%s\" vybráno"
+
+msgid "{$ column.title $}"
+msgstr "{$ column.title $}"
+
+msgid "{$ message || 'No items to display.' $}"
+msgstr "{$ message || '.Žádné položky k zobrazení,' $}"

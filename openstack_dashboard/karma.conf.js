@@ -92,6 +92,7 @@ module.exports = function (config) {
       xstaticPath + 'angular/data/angular-cookies.js',
       xstaticPath + 'angular_bootstrap/data/angular-bootstrap.js',
       xstaticPath + 'angular_gettext/data/angular-gettext.js',
+      xstaticPath + 'angular_fileupload/data/ng-file-upload-all.js',
       xstaticPath + 'angular/data/angular-sanitize.js',
       xstaticPath + 'd3/data/d3.js',
       xstaticPath + 'rickshaw/data/rickshaw.js',
@@ -166,18 +167,14 @@ module.exports = function (config) {
 
     frameworks: ['jasmine'],
 
-    browsers: ['PhantomJS'],
+    browsers: ['Chrome'],
 
-    phantomjsLauncher: {
-      // Have phantomjs exit if a ResourceError is encountered
-      // (useful if karma exits without killing phantom)
-      exitOnResourceError: true
-    },
+    browserNoActivityTimeout: 60000,
 
     reporters: ['progress', 'coverage', 'threshold'],
 
     plugins: [
-      'karma-phantomjs-launcher',
+      'karma-chrome-launcher',
       'karma-jasmine',
       'karma-ng-html2js-preprocessor',
       'karma-coverage',
@@ -187,15 +184,15 @@ module.exports = function (config) {
     // Places coverage report in HTML format in the subdirectory below.
     coverageReporter: {
       type: 'html',
-      dir: './coverage-karma/'
+      dir: '../cover/openstack_dashboard'
     },
 
     // Coverage threshold values.
     thresholdReporter: {
-      statements: 93, // target 100
-      branches: 90, // target 100
-      functions: 92, // target 100
-      lines: 93 // target 100
+      statements: 96, // target 100
+      branches: 93, // target 100
+      functions: 95, // target 100
+      lines: 96 // target 100
     }
   });
 };

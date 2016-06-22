@@ -81,6 +81,10 @@
      *
      * On submit, delete given entities.
      * On cancel, do nothing.
+     *
+     * @return {Promise} From the opened modal. Resolves on modal submit,
+     * rejects on modal cancel.
+     *
      */
     function open(scope, entities, context) {
       var options = {
@@ -89,10 +93,10 @@
         submit: context.labels.submit
       };
 
-      simpleModalService.modal(options).result.then(onModalSubmit);
+      return simpleModalService.modal(options).result.then(onModalSubmit);
 
       function onModalSubmit() {
-        $qExtensions.allSettled(entities.map(deleteEntityPromise)).then(notify);
+        return $qExtensions.allSettled(entities.map(deleteEntityPromise)).then(notify);
       }
 
       function deleteEntityPromise(entity) {
@@ -111,6 +115,8 @@
           scope.$emit(context.failedEvent, failEntities.map(getId));
           toast.add('error', getMessage(context.labels.error, failEntities));
         }
+        // Return the passed and failed entities as part of resolving the promise
+        return result;
       }
     }
 

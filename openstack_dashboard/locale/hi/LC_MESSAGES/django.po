@@ -1,89 +1,18 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# rajesh <rajesh>, 2014
-# Rajesh Ranjan <rranjan@redhat.com>, 2014
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 10:08+0000\n"
+"Project-Id-Version: horizon 10.0.0.0b2.dev164\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-06-21 03:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-09-08 11:14+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
-"Language: hi\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
 "Language-Team: Hindi\n"
-
-msgid ""
-"\n"
-"      Volume type is a type or label that can be selected at volume "
-"creation\n"
-"      time in OpenStack. It usually maps to a set of capabilities of the "
-"storage\n"
-"      back-end driver to be used for this volume. Examples: \"Performance"
-"\",\n"
-"      \"SSD\", \"Backup\", etc. This is equivalent to the\n"
-"      <tt>cinder type-create</tt> command. Once the volume type gets "
-"created,\n"
-"      click the \"View Extra Specs\" button to set up extra specs key-value\n"
-"      pair(s) for that volume type.\n"
-"     "
-msgstr ""
-"\n"
-"      Volume  type is a type or label that can be selected at volume "
-"creation\n"
-"      time in OpenStack. It usually maps to a set of capabilities of the "
-"storage\n"
-"      back-end driver to be used for this volume. Examples: \"Performance"
-"\",\n"
-"      \"SSD\", \"Backup\", etc. This is equivalent to the\n"
-"      <tt>cinder type-create</tt> command. Once the volume type gets "
-"created,\n"
-"      click the \"View Extra Specs\" button to set up extra specs key-value\n"
-"      pair(s) for that volume type.\n"
-"     "
-
-msgid ""
-"\n"
-"    The status of a volume is normally managed automatically.  In some "
-"circumstances an\n"
-"    administrator may need to explicitly update the status value.  This is "
-"equivalent to\n"
-"    the <tt>cinder reset-state</tt> command.\n"
-"    "
-msgstr ""
-"\n"
-"    The  status of a volume is normally managed automatically.  In some "
-"circumstances an\n"
-"    administrator may need to explicitly update the status value.  This is "
-"equivalent to\n"
-"    the <tt>cinder reset-state</tt> command.\n"
-"    "
-
-msgid ""
-"\n"
-"    The status of a volume snapshot is normally managed automatically.  In "
-"some circumstances\n"
-"    an administrator may need to explicitly update the status value. This is "
-"equivalent to\n"
-"    the <tt>cinder snapshot-reset-state</tt> command.\n"
-"    "
-msgstr ""
-"\n"
-"    The  status of a volume snapshot is normally managed automatically.  In "
-"some circumstances\n"
-"    an administrator may need to explicitly update the status value. This is "
-"equivalent to\n"
-"    the <tt>cinder snapshot-reset-state</tt> command.\n"
-"    "
+"Language: hi\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 msgid " - End"
 msgstr " - अंत"
@@ -123,6 +52,7 @@ msgstr "%(used)s %(key)s प्रयुक्त"
 msgid "%s (Default)"
 msgstr "%s (तयशुदा)"
 
+#. Translators: The usage is "<UUID of ext_net> (Not Found)"
 #, python-format
 msgctxt "External network not found"
 msgid "%s (Not Found)"
@@ -186,9 +116,6 @@ msgstr ""
 "कंटेनर के एक असीमित संख्या में बना सकते हैं. आप पिछले डेटा अपलोड करने के लिए अपने खाते में "
 "परिभाषित कम से कम एक कंटेनर होना आवश्यक है ताकि डेटा एक कंटेनर में संग्रहित किया जाना "
 "चाहिए."
-
-msgid "A image or external image location must be specified."
-msgstr "बिंब या बाहरी बिंब स्थान निर्दिष्ट किया जाना चाहिए."
 
 msgid "A local environment to upload."
 msgstr "अपलोड करने के लिए स्थानीय पर्यावरण."
@@ -404,12 +331,6 @@ msgstr ""
 
 msgid "Add hosts to this aggregate. Hosts can be in multiple aggregates."
 msgstr "इस समुच्चय में होस्ट को जोड़ें. होस्ट कई समुच्चय में हो सकता है."
-
-msgid "Add interface"
-msgstr "अंतरफलक जोड़ें"
-
-msgid "Add rule"
-msgstr "नियम जोड़ें"
 
 msgid "Add/Remove Hosts to Aggregate"
 msgstr "सकल से होस्ट जोड़ें / हटाये"
@@ -761,9 +682,6 @@ msgstr "CIDR निर्दिष्ट किया जाना चाहि�
 msgid "CPU time used"
 msgstr "उपयोग किया गया CPU समय"
 
-msgid "Can not specify both image and external image location."
-msgstr "बिंब और बिंब छवि स्थान दोनों निर्दिष्ट नहीं कर सकते."
-
 msgid "Cancel"
 msgstr "रद्द करें"
 
@@ -822,14 +740,6 @@ msgid ""
 msgstr ""
 "उपलब्ध नेटवर्क से पुश बटन या खींचें और ड्रॉप द्वारा चयनित नेटवर्क के लिए नेटवर्क चुनें, आप को "
 "खींच द्वारा एनआईसी क्रम बदल सकते हैं और साथ ही साथ छोड़ सकते हैं."
-
-msgid ""
-"Choose rule(s) from Available Rules to Selected Rule by push button or drag "
-"and drop,\n"
-"you may change their order by drag and drop as well. "
-msgstr ""
-"पुश बटन या खींचें और ड्रॉप द्वारा चयनित नियम को उपलब्ध नियम से नियम (ओं) चुनें, \n"
-" आप को खींच द्वारा उनके आदेश को बदल सकते हैं और साथ ही साथ छोड़ देते हैं."
 
 msgid "Choose the flavor to launch."
 msgstr "लांच करने के लिए फ्लेवर चुनें."
@@ -1749,14 +1659,6 @@ msgstr "EC2 पहचान डाउनलोड करें"
 msgid "Download Key Pair"
 msgstr "कुंजी युग्म डाउनलोड करें"
 
-#, python-format
-msgid "Download key pair &quot;%(keypair_name)s&quot;"
-msgstr "&quot;%(keypair_name)s&quot; कुंजी युग्म डाउनलोड करें"
-
-#, python-format
-msgid "Duration of instance type %s (openstack flavor)"
-msgstr "इंस्टेंस प्रकार की अवधि %s (ओपेनस्टैक फ्लेवर)"
-
 msgid "Edit"
 msgstr "संपादन"
 
@@ -2283,9 +2185,6 @@ msgstr "फायरवॉल नियम"
 msgid "Firewalls"
 msgstr "फायरवाल"
 
-msgid "Fixed IP"
-msgstr "निर्धारित आईपी"
-
 msgid "Fixed IPs"
 msgstr "स्थिर IP"
 
@@ -2349,20 +2248,6 @@ msgstr ""
 "चुन सकते हैं. \"पोर्ट सीमा\" विकल्प चुनने श्रृंखला के लिए दोनों प्रारंभिक और अंतिम पोर्ट "
 "प्रदान करने के लिए स्थान प्रदान किया गया हैं . ICMP नियमों के लिए आप के बजाय रिक्त स्थान "
 "में एक ICMP प्रकार और कोड निर्दिष्ट करें."
-
-#, python-format
-msgid ""
-"For VLAN networks, the VLAN VID on the physical network that realizes the "
-"virtual network. Valid VLAN VIDs are %(vlan_min)s through %(vlan_max)s. For "
-"GRE or VXLAN networks, the tunnel ID. Valid tunnel IDs for GRE networks are "
-"%(gre_min)s through %(gre_max)s. For VXLAN networks, %(vxlan_min)s through "
-"%(vxlan_max)s."
-msgstr ""
-" For VLAN networks, the VLAN VID on the physical network that realizes the "
-"virtual network. Valid VLAN VIDs are %(vlan_min)s through %(vlan_max)s. For "
-"GRE or VXLAN networks, the tunnel ID. Valid tunnel IDs for GRE networks are "
-"%(gre_min)s through %(gre_max)s. For VXLAN networks, %(vxlan_min)s through "
-"%(vxlan_max)s."
 
 msgid "Forbidden"
 msgstr "निषेध"
@@ -2430,6 +2315,7 @@ msgstr "समूह सफलतापूर्वक अद्यतन कि
 msgid "Groups"
 msgstr "समूह"
 
+#. Translators: High Availability mode of Neutron router
 msgid "HA mode"
 msgstr "HA अवस्था"
 
@@ -2755,9 +2641,6 @@ msgstr "इंस्टांस कंसोल"
 msgid "Instance Console Log"
 msgstr "इंस्टांस कंसोल लॉग"
 
-msgid "Instance Count"
-msgstr "इंस्टांस गणना"
-
 msgid "Instance ID"
 msgstr "इंस्टैंस आईडी"
 
@@ -2913,10 +2796,6 @@ msgstr "इन नेटवर्कों के साथ इंस्टे�
 
 msgid "Launch instance with this policy profile"
 msgstr "इस नीति प्रोफाइल के साथ इंस्टेंस लॉन्च करें"
-
-#, python-format
-msgid "Launched %(count)s named \"%(name)s\"."
-msgstr " %(count)s \"%(name)s\" नामित शुभारंभ किया."
 
 msgid ""
 "Launching multiple instances is only supported for images and instance "
@@ -3271,9 +3150,6 @@ msgstr "अगला"
 msgid "Next Hops"
 msgstr "अगला हॉप्स"
 
-msgid "Next&nbsp;&raquo;"
-msgstr "अगला&nbsp;&raquo;"
-
 msgid "No"
 msgstr "नहीं"
 
@@ -3453,9 +3329,6 @@ msgstr "वीएम अंतरफलक के लिए संजाल प�
 
 msgid "Number of incoming packets for a VM interface"
 msgstr "वीएम अंतरफलक के लिए आने वाले पैकेट की संख्या"
-
-msgid "Number of instances to launch."
-msgstr "लॉन्च करने के लिए अनेक इंस्टैंस"
 
 msgid "Number of objects"
 msgstr "वस्तुओं की संख्या"
@@ -3891,9 +3764,6 @@ msgid_plural "Released Floating IPs"
 msgstr[0] "रिलीज किया फ्लोटिंग आईपी"
 msgstr[1] "रिलीज किया फ्लोटिंग आईपी"
 
-msgid "Reload"
-msgstr "फिर लोड करें"
-
 msgid "Remote"
 msgstr "दूरस्थ"
 
@@ -4149,10 +4019,6 @@ msgid_plural "Scheduled migration (pending confirmation) of Instances"
 msgstr[0] "इंस्टैंस का अनुसूचित माइग्रेशन (पुष्टि लंबित)"
 msgstr[1] "इंस्टैंस का अनुसूचित माइग्रेशन (पुष्टि लंबित)"
 
-#, python-format
-msgid "Scheduled resize of instance \"%s\"."
-msgstr "इंस्टेंस \"%s\" के अनुसूचित आकार परिवर्तन."
-
 msgctxt "Task status of an Instance"
 msgid "Scheduling"
 msgstr "समय-सारणी"
@@ -4236,9 +4102,6 @@ msgstr "कुंजी युग्म चुनें"
 #, python-format
 msgid "Select a monitor template for %s"
 msgstr " %s के लिए एक निगरानी टेम्पलेट का चयन करें"
-
-msgid "Select a name for your network."
-msgstr "अपने नेटवर्क के लिए नाम का चयन करें."
 
 msgid "Select a new agent"
 msgstr "नया एजेंट चयन करें"
@@ -4351,9 +4214,6 @@ msgstr "साझा"
 
 msgid "Shared Storage"
 msgstr "साझा भंडार"
-
-msgid "Shared with Me"
-msgstr "मेरे साथ साझा"
 
 msgctxt "Power state of an Instance"
 msgid "Shut Down"
@@ -4674,6 +4534,7 @@ msgid ""
 "number."
 msgstr "पोर्ट संख्या से अधिक है या \"से\" पोर्ट संख्या के बराबर होना चाहिए \"के लिए\"."
 
+#. Translators: Only used inside Horizon code and invisible to users
 #, python-format
 msgid ""
 "The 'operation' parameter for get_feature_permission '%(feature)s' is "
@@ -4685,14 +4546,8 @@ msgstr ""
 msgid "The Aggregate was updated."
 msgstr "सकल अद्यतन किया गया था."
 
-msgid "The ICMP code is invalid."
-msgstr "ICMP कोड अमान्य है."
-
 msgid "The ICMP code not in range (-1, 255)"
 msgstr "ICMP कोड की (-1, 255) रेंज में नहीं हैं"
-
-msgid "The ICMP type is invalid."
-msgstr "ICMP प्रकार अमान्य है."
 
 msgid "The ICMP type not in range (-1, 255)"
 msgstr "श्रृंखला में ICMP प्रकार नहीं (-1, 255) हैं"
@@ -4744,20 +4599,8 @@ msgstr ""
 "फ्लेवर %(flavor)s' के लिए अनुरोध बिंब बहुत छोटा है.\n"
 "न्यूनतम आवश्यकताओं: %(min_ram)s रैम की एमबी और %(min_disk)s जड़ डिस्क के जीबी."
 
-#, python-format
-msgid "The instance is preparing the live migration to host \"%s\"."
-msgstr "इंस्टेंस होस्ट \"%s\" के लिए लाइव माइग्रेशन तैयारी कर रहा है."
-
 msgid "The instance password encrypted with your public key."
 msgstr "आपकी सार्वजनिक कुंजी के साथ एन्क्रिप्टेड इंस्टेंस पासवर्ड."
-
-#, python-format
-msgid ""
-"The key pair &quot;%(keypair_name)s&quot; should download automatically. If "
-"not use the link below."
-msgstr ""
-"कुंजी युग्म &quot;%(keypair_name)s&quot; स्वतः डाउनलोड हो जायेगा. यदि नहीं, तो नीचे "
-"दिए गए लिंक का उपयोग करें."
 
 msgid ""
 "The minimum disk size required to boot the image. If unspecified, this value "
@@ -4801,6 +4644,7 @@ msgstr "वातावरण फ़ाइल की कच्ची साम�
 msgid "The raw contents of the template."
 msgstr "टेम्पलेट का कच्चा सामग्री."
 
+#. Translators: Only used inside Horizon code and invisible to users
 #, python-format
 msgid ""
 "The requested feature '%(feature)s' is unknown. Please make sure to specify "
@@ -5812,9 +5656,6 @@ msgstr "तयशुदा अद्यतन करें"
 msgid "Update Group"
 msgstr "समूह अपडेट करें"
 
-msgid "Update Image"
-msgstr "बिंब अद्यतन करें"
-
 msgid "Update Metadata"
 msgstr "मेटाडाटा अद्यतन करें"
 
@@ -6042,14 +5883,6 @@ msgstr "मान"
 msgid "Value (Avg)"
 msgstr "मान (औसत)"
 
-#, python-format
-msgid ""
-"Version: %(version_info)s\n"
-"      "
-msgstr ""
-"संस्करण: %(version_info)s\n"
-"      "
-
 msgid "View Container"
 msgstr "कंटेनर देखें "
 
@@ -6169,9 +6002,6 @@ msgid ""
 msgstr ""
 "आप वांछित नियम टेम्पलेट निर्दिष्ट या कस्टम नियमों का उपयोग कर सकते हैं, विकल्प कस्टम "
 "टीसीपी नियम, कस्टम यूडीपी नियम, या कस्टम ICMP नियम हैं."
-
-msgid "You cannot disable the user you are currently logged in as."
-msgstr "आप वर्तमान के रूप में लॉग इन कर रहे उपयोक्ता को निष्क्रिय नहीं किया जा सकता है."
 
 msgid ""
 "You cannot revoke your administrative privileges from the domain you are "
@@ -6318,9 +6148,6 @@ msgstr "दोनों"
 
 msgid "clear"
 msgstr "साफ करें"
-
-msgid "console is currently unavailable. Please try again later."
-msgstr "कंसोल वर्तमान में अनुपलब्ध है. बाद में पुन: प्रयास करें."
 
 msgid "disabled"
 msgstr "निष्क्रिय"

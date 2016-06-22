@@ -26,13 +26,29 @@
     'horizon.app.core.openstack-service-api.novaExtensions',
     'horizon.app.core.openstack-service-api.security-group',
     'horizon.app.core.openstack-service-api.serviceCatalog',
-    'horizon.framework.widgets.toast.service'
+    'horizon.app.core.openstack-service-api.settings',
+    'horizon.dashboard.project.workflow.launch-instance.boot-source-types',
+    'horizon.dashboard.project.workflow.launch-instance.non_bootable_image_types',
+    'horizon.framework.widgets.toast.service',
+    'horizon.app.core.openstack-service-api.policy',
+    'horizon.dashboard.project.workflow.launch-instance.step-policy'
   ];
 
   /**
    * @ngdoc service
    * @name launchInstanceModel
    *
+   * @param {Object} $q
+   * @param {Object} $log
+   * @param {Object} cinderAPI
+   * @param {Object} glanceAPI
+   * @param {Object} neutronAPI
+   * @param {Object} novaAPI
+   * @param {Object} novaExtensions
+   * @param {Object} securityGroup
+   * @param {Object} serviceCatalog
+   * @param {Object} settings
+   * @param {Object} toast
    * @description
    * This is the M part in MVC design pattern for launch instance
    * wizard workflow. It is responsible for providing data to the
@@ -40,6 +56,7 @@
    * user's input from view for  creation of new instance.  It is
    * also the center point of communication between launch instance
    * UI and services API.
+   * @returns {Object} The model
    */
   function launchInstanceModel(
     $q,
@@ -51,17 +68,15 @@
     novaExtensions,
     securityGroup,
     serviceCatalog,
-    toast
+    settings,
+    bootSourceTypes,
+    nonBootableImageTypes,
+    toast,
+    policy,
+    stepPolicy
   ) {
 
     var initPromise;
-
-    // Constants (const in ES6)
-    var NON_BOOTABLE_IMAGE_TYPES = ['aki', 'ari'];
-    var SOURCE_TYPE_IMAGE = 'image';
-    var SOURCE_TYPE_SNAPSHOT = 'snapshot';
-    var SOURCE_TYPE_VOLUME = 'volume';
-    var SOURCE_TYPE_VOLUME_SNAPSHOT = 'volume_snapshot';
 
     /**
      * @ngdoc model api object
@@ -114,9 +129,11 @@
         flavor: null,
         image: null,
         volume: null,
-        instance: null
+        instance: null,
+        hints: null
       },
       networks: [],
+      ports: [],
       neutronEnabled: false,
       novaLimits: {},
       profiles: [],
@@ -125,6 +142,7 @@
       volumes: [],
       volumeSnapshots: [],
       metadataTree: null,
+      hintsTree: null,
 
       /**
        * api methods for UI controllers
@@ -152,6 +170,7 @@
         // REQUIRED
         name: null,
         networks: [],
+        ports: [],
         profile: {},
         // REQUIRED Server Key. May be empty.
         security_groups: [],
@@ -159,7 +178,7 @@
         source_type: null,
         source: [],
         // REQUIRED for JS logic
-        vol_create: false,
+        vol_create: true,
         // May be null
         vol_device_name: 'vda',
         vol_delete_on_instance_delete: false,
@@ -204,7 +223,8 @@
           novaAPI.getLimits().then(onGetNovaLimits, noop),
           securityGroup.query().then(onGetSecurityGroups, noop),
           serviceCatalog.ifTypeEnabled('network').then(getNetworks, noop),
-          serviceCatalog.ifTypeEnabled('volume').then(getVolumes, noop)
+          serviceCatalog.ifTypeEnabled('volume').then(getVolumes, noop),
+          settings.getSetting('LAUNCH_INSTANCE_DEFAULTS').then(setDefaultValues, noop)
         ]);
 
         promise.then(onInitSuccess, onInitFail);
@@ -227,6 +247,15 @@
       model.initialized = false;
     }
 
+    function setDefaultValues(defaults) {
+      if (!defaults) {
+        return;
+      }
+      if ('config_drive' in defaults) {
+        model.newInstanceSpec.config_drive = defaults.config_drive;
+      }
+    }
+
     /**
      * @ngdoc method
      * @name launchInstanceModel.createInstance
@@ -244,8 +273,10 @@
       setFinalSpecBootsource(finalSpec);
       setFinalSpecFlavor(finalSpec);
       setFinalSpecNetworks(finalSpec);
+      setFinalSpecPorts(finalSpec);
       setFinalSpecKeyPairs(finalSpec);
       setFinalSpecSecurityGroups(finalSpec);
+      setFinalSpecSchedulerHints(finalSpec);
       setFinalSpecMetadata(finalSpec);
 
       return novaAPI.createServer(finalSpec).then(successMessage);
@@ -275,12 +306,12 @@
       push.apply(
         model.availabilityZones,
         data.data.items.filter(function (zone) {
-                    return zone.zoneState && zone.zoneState.available;
-                  })
-                  .map(function (zone) {
-                    return zone.zoneName;
-                  })
-                );
+          return zone.zoneState && zone.zoneState.available;
+        })
+        .map(function (zone) {
+          return zone.zoneName;
+        })
+      );
 
       if (model.availabilityZones.length > 0) {
         model.newInstanceSpec.availability_zone = model.availabilityZones[0];
@@ -313,6 +344,9 @@
           e.keypair.id = e.keypair.name;
           return e.keypair;
         }));
+      if (data.data.items.length === 1) {
+        model.newInstanceSpec.key_pair.push(data.data.items[0].keypair);
+      }
     }
 
     function setFinalSpecKeyPairs(finalSpec) {
@@ -330,6 +364,15 @@
 
     function onGetSecurityGroups(data) {
       model.securityGroups.length = 0;
+      angular.forEach(data.data.items, function addDefault(item) {
+        // 'default' is a special security group in neutron. It can not be
+        // deleted and is guaranteed to exist. It by default contains all
+        // of the rules needed for an instance to reach out to the network
+        // so the instance can provision itself.
+        if (item.name === 'default') {
+          model.newInstanceSpec.security_groups.push(item);
+        }
+      });
       push.apply(model.securityGroups, data.data.items);
     }
 
@@ -349,13 +392,20 @@
     // Networks
 
     function getNetworks() {
-      return neutronAPI.getNetworks().then(onGetNetworks, noop);
+      return neutronAPI.getNetworks().then(onGetNetworks, noop).then(getPorts, noop);
     }
 
     function onGetNetworks(data) {
       model.neutronEnabled = true;
       model.networks.length = 0;
-      push.apply(model.networks, data.data.items);
+      if (data.data.items.length === 1) {
+        model.newInstanceSpec.networks.push(data.data.items[0]);
+      }
+      push.apply(model.networks,
+        data.data.items.filter(function(net) {
+          return net.subnets.length > 0;
+        }));
+      return data;
     }
 
     function setFinalSpecNetworks(finalSpec) {
@@ -370,6 +420,55 @@
       delete finalSpec.networks;
     }
 
+    function getPorts(networks) {
+      model.ports.length = 0;
+      networks.data.items.forEach(function(network) {
+        return neutronAPI.getPorts({network_id: network.id}).then(
+          function(ports) {
+            onGetPorts(ports, network);
+          }, noop
+        );
+      });
+    }
+
+    function onGetPorts(networkPorts, network) {
+      var ports = [];
+      networkPorts.data.items.forEach(function(port) {
+        // no device_owner means that the port can be attached
+        if (port.device_owner === "" && port.admin_state === "UP") {
+          port.subnet_names = getPortSubnets(port, network.subnets);
+          port.network_name = network.name;
+          ports.push(port);
+        }
+      });
+      push.apply(model.ports, ports);
+    }
+
+    // helper function to return an object of IP:NAME pairs for subnet mapping
+    function getPortSubnets(port, subnets) {
+      var subnetNames = {};
+      port.fixed_ips.forEach(function (ip) {
+        subnets.forEach(function (subnet) {
+          if (ip.subnet_id === subnet.id) {
+            subnetNames[ip.ip_address] = subnet.name;
+          }
+        });
+      });
+
+      return subnetNames;
+    }
+
+    function setFinalSpecPorts(finalSpec) {
+      // nics should already be filled so we only append to it
+      finalSpec.ports.forEach(function (port) {
+        finalSpec.nics.push(
+          {
+            "port-id": port.id
+          });
+      });
+      delete finalSpec.ports;
+    }
+
     // Boot Source
 
     function getImages() {
@@ -380,7 +479,7 @@
       // This is a blacklist of images that can not be booted.
       // If the image container type is in the blacklist
       // The evaluation will result in a 0 or greater index.
-      return NON_BOOTABLE_IMAGE_TYPES.indexOf(image.container_format) < 0;
+      return nonBootableImageTypes.indexOf(image.container_format) < 0;
     }
 
     function onGetImages(data) {
@@ -389,7 +488,7 @@
         return isBootableImageType(image) &&
           (!image.properties || image.properties.image_type !== 'snapshot');
       }));
-      addAllowedBootSource(model.images, SOURCE_TYPE_IMAGE, gettext('Image'));
+      addAllowedBootSource(model.images, bootSourceTypes.IMAGE, gettext('Image'));
 
       model.imageSnapshots.length = 0;
       push.apply(model.imageSnapshots, data.data.items.filter(function (image) {
@@ -399,7 +498,7 @@
 
       addAllowedBootSource(
         model.imageSnapshots,
-        SOURCE_TYPE_SNAPSHOT,
+        bootSourceTypes.INSTANCE_SNAPSHOT,
         gettext('Instance Snapshot')
       );
     }
@@ -408,20 +507,22 @@
       var volumePromises = [];
       // Need to check if Volume service is enabled before getting volumes
       model.volumeBootable = true;
-      addAllowedBootSource(model.volumes, SOURCE_TYPE_VOLUME, gettext('Volume'));
+      addAllowedBootSource(model.volumes, bootSourceTypes.VOLUME, gettext('Volume'));
       addAllowedBootSource(
         model.volumeSnapshots,
-        SOURCE_TYPE_VOLUME_SNAPSHOT,
+        bootSourceTypes.VOLUME_SNAPSHOT,
         gettext('Volume Snapshot')
       );
-      volumePromises.push(cinderAPI.getVolumes({ status: 'available', bootable: 1 })
+      volumePromises.push(cinderAPI.getVolumes({ status: 'available', bootable: true })
                           .then(onGetVolumes));
       volumePromises.push(cinderAPI.getVolumeSnapshots({ status: 'available' })
                           .then(onGetVolumeSnapshots));
 
       // Can only boot image to volume if the Nova extension is enabled.
       novaExtensions.ifNameEnabled('BlockDeviceMappingV2Boot')
-        .then(function() { model.allowCreateVolumeFromImage = true; });
+        .then(function() {
+          model.allowCreateVolumeFromImage = true;
+        });
 
       return $q.all(volumePromises);
     }
@@ -450,15 +551,15 @@
       delete finalSpec.source;
 
       switch (finalSpec.source_type.type) {
-        case SOURCE_TYPE_IMAGE:
+        case bootSourceTypes.IMAGE:
           setFinalSpecBootImageToVolume(finalSpec);
           break;
-        case SOURCE_TYPE_SNAPSHOT:
+        case bootSourceTypes.INSTANCE_SNAPSHOT:
           break;
-        case SOURCE_TYPE_VOLUME:
+        case bootSourceTypes.VOLUME:
           setFinalSpecBootFromVolumeDevice(finalSpec, 'vol');
           break;
-        case SOURCE_TYPE_VOLUME_SNAPSHOT:
+        case bootSourceTypes.VOLUME_SNAPSHOT:
           setFinalSpecBootFromVolumeDevice(finalSpec, 'snap');
           break;
         default:
@@ -484,8 +585,8 @@
         finalSpec.block_device_mapping_v2.push(
           {
             'device_name': deviceName,
-            'source_type': SOURCE_TYPE_IMAGE,
-            'destination_type': SOURCE_TYPE_VOLUME,
+            'source_type': bootSourceTypes.IMAGE,
+            'destination_type': bootSourceTypes.VOLUME,
             'delete_on_termination': finalSpec.vol_delete_on_instance_delete,
             'uuid': finalSpec.source_id,
             'boot_index': '0',
@@ -516,6 +617,20 @@
       angular.extend(model.novaLimits, data.data);
     }
 
+    // Scheduler hints
+
+    function setFinalSpecSchedulerHints(finalSpec) {
+      if (model.hintsTree) {
+        var hints = model.hintsTree.getExisting();
+        if (!angular.equals({}, hints)) {
+          angular.forEach(hints, function(value, key) {
+            hints[key] = value + '';
+          });
+          finalSpec.scheduler_hints = hints;
+        }
+      }
+    }
+
     // Instance metadata
 
     function setFinalSpecMetadata(finalSpec) {
@@ -534,34 +649,42 @@
 
     /**
      * Metadata definitions provide supplemental information in source image detail
-     * rows and are used on the metadata tab for adding metadata to the instance.
+     * rows and are used on the metadata tab for adding metadata to the instance and
+     * on the scheduler hints tab.
      */
     function getMetadataDefinitions() {
-      // Metadata definitions often apply to multiple
-      // resource types. It is optimal to make a single
-      // request for all desired resource types.
+      // Metadata definitions often apply to multiple resource types. It is optimal to make a
+      // single request for all desired resource types.
+      //   <key>: [<resource_type>, <properties_target>]
       var resourceTypes = {
-        flavor: 'OS::Nova::Flavor',
-        image: 'OS::Glance::Image',
-        volume: 'OS::Cinder::Volumes',
-        instance: 'OS::Nova::Instance'
+        flavor: ['OS::Nova::Flavor', ''],
+        image: ['OS::Glance::Image', ''],
+        volume: ['OS::Cinder::Volumes', ''],
+        instance: ['OS::Nova::Server', 'metadata']
       };
 
       angular.forEach(resourceTypes, applyForResourceType);
+
+      // Need to check setting and policy for scheduler hints
+      $q.all([
+        settings.ifEnabled('LAUNCH_INSTANCE_DEFAULTS.enable_scheduler_hints', true, true),
+        policy.ifAllowed(stepPolicy.schedulerHints)
+      ]).then(function getSchedulerHints() {
+        applyForResourceType(['OS::Nova::Server', 'scheduler_hints'], 'hints');
+      });
     }
 
     function applyForResourceType(resourceType, key) {
       glanceAPI
-        .getNamespaces({'resource_type': resourceType}, true)
+        .getNamespaces({ resource_type: resourceType[0],
+                         properties_target: resourceType[1] }, true)
         .then(function(data) {
           var namespaces = data.data.items;
           // This will ensure that the metaDefs model object remains
           // unchanged until metadefs are fully loaded. Otherwise,
           // partial results are loaded and can result in some odd
           // display behavior.
-          if (namespaces.length) {
-            model.metadataDefs[key] = namespaces;
-          }
+          model.metadataDefs[key] = namespaces;
         });
     }
 

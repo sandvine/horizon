@@ -14,11 +14,13 @@
 
 from openstack_dashboard.dashboards.project.networks.ports \
     import tabs as project_tabs
+from openstack_dashboard.dashboards.project.networks.ports.extensions. \
+    allowed_address_pairs import tabs as addr_pairs_tabs
 
 
 class OverviewTab(project_tabs.OverviewTab):
-    template_name = "admin/networks/ports/_detail_overview.html"
+    template_name = "project/networks/ports/_detail_overview.html"
 
 
 class PortDetailTabs(project_tabs.PortDetailTabs):
-    tabs = (OverviewTab,)
+    tabs = (OverviewTab, addr_pairs_tabs.AllowedAddressPairsTab)

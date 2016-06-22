@@ -14,6 +14,7 @@
 
 from collections import defaultdict
 from collections import OrderedDict
+import copy
 import logging
 import types
 import warnings
@@ -95,6 +96,7 @@ class BaseAction(html.HTMLElement):
         self.requires_input = kwargs.get('requires_input', False)
         self.preempt = kwargs.get('preempt', False)
         self.policy_rules = kwargs.get('policy_rules', None)
+        self.action_type = kwargs.get('action_type', 'default')
 
     def data_type_matched(self, datum):
         """Method to see if the action is allowed for a certain type of data.
@@ -351,6 +353,7 @@ class LinkAction(BaseAction):
         self.allowed_data_types = kwargs.get('allowed_data_types', [])
         self.icon = kwargs.get('icon', None)
         self.kwargs = kwargs
+        self.action_type = kwargs.get('action_type', 'default')
 
         if not kwargs.get('verbose_name', None):
             raise NotImplementedError('A LinkAction object must have a '
@@ -367,9 +370,11 @@ class LinkAction(BaseAction):
         )
         return "%s?%s" % (table_url, params)
 
-    def render(self):
-        return render_to_string("horizon/common/_data_table_table_action.html",
-                                {"action": self})
+    def render(self, **kwargs):
+        action_dict = copy.copy(kwargs)
+        action_dict.update({"action": self, "is_single": True})
+        return render_to_string("horizon/common/_data_table_action.html",
+                                action_dict)
 
     def associate_with_table(self, table):
         super(LinkAction, self).associate_with_table(table)
@@ -491,9 +496,13 @@ class FilterAction(BaseAction):
                 # in the __init__. However, the current workflow of DataTable
                 # and actions won't allow it. Need to be fixed in the future.
                 cls_name = self.__class__.__name__
-                raise NotImplementedError("You must define a %s method "
-                                          "for %s data type in %s." %
-                                          (func_name, data_type, cls_name))
+                raise NotImplementedError(
+                    "You must define a %(func_name)s method for %(data_type)s"
+                    " data type in %(cls_name)s."
+                    % {'func_name': func_name,
+                       'data_type': data_type,
+                       'cls_name': cls_name})
+
             _data = filter_func(table, data, filter_string)
             self.assign_type_string(table, _data, data_type)
             filtered_data.extend(_data)
@@ -517,6 +526,12 @@ class FilterAction(BaseAction):
                         choice[2] is True):
                     return True
         return False
+
+    def get_select_options(self):
+        """Provide the value and string for the template to render.
+        """
+        if self.filter_choices:
+            return [x[:2] for x in self.filter_choices]
 
 
 class NameFilterAction(FilterAction):
@@ -813,9 +828,10 @@ class BatchAction(Action):
             datum_display = table.get_object_display(datum) or datum_id
             if not table._filter_action(self, request, datum):
                 action_not_allowed.append(datum_display)
-                LOG.warning(u'Permission denied to %s: "%s"' %
-                            (self._get_action_name(past=True).lower(),
-                             datum_display))
+                LOG.warning(u'Permission denied to %(name)s: "%(dis)s"', {
+                    'name': self._get_action_name(past=True).lower(),
+                    'dis': datum_display
+                })
                 continue
             try:
                 self.action(request, datum_id)
@@ -926,7 +942,8 @@ class DeleteAction(BatchAction):
             self.action_present = kwargs.get('action_present', _("Delete"))
         if not hasattr(self, "action_past"):
             self.action_past = kwargs.get('action_past', _("Deleted"))
-        self.icon = "remove"
+        self.icon = "trash"
+        self.action_type = "danger"
 
     def action(self, request, obj_id):
         """Action entry point. Overrides base class' action method.
@@ -941,16 +958,6 @@ class DeleteAction(BatchAction):
 
         Override to provide delete functionality specific to your data.
         """
-
-    def get_default_classes(self):
-        """Appends ``btn-danger`` to the action's default css classes.
-
-        This method ensures the corresponding button is highlighted
-        as a trigger for a potentially dangerous action.
-        """
-        classes = super(DeleteAction, self).get_default_classes()
-        classes += ("btn-danger",)
-        return classes
 
 
 class UpdateAction(object):

@@ -1,33 +1,20 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
-# Wiktor Jezioro <wikjezioro@op.pl>, 2015
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 # Łukasz Jernas <deejay1@srem.org>, 2015. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-09 00:51+0000\n"
+"Project-Id-Version: horizon 9.0.1.dev255\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-05-12 04:37+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2015-09-27 07:29+0000\n"
 "Last-Translator: Łukasz Jernas <deejay1@srem.org>\n"
-"Language: pl-PL\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
-"|| n%100>=20) ? 1 : 2);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
 "Language-Team: Polish (Poland)\n"
-
-msgid "(Max: 16Kb)"
-msgstr "(Max: 16Kb)"
-
-msgid "(Modified)"
-msgstr "(Zmodyfikowano)"
+"Language: pl-PL\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
+"|| n%100>=20) ? 1 : 2)\n"
 
 msgid "(None)"
 msgstr "(brak)"
@@ -61,15 +48,6 @@ msgstr ""
 " <b>Instancje</b>, kliknąć w menu <b>Akcje</b> po prawej stronie instancji,\n"
 " a następnie wybrać opcję <b>Przypisz pływający adres IP</b> i wprowadzić "
 "potrzebne szczegóły."
-
-msgid ""
-"A key pair allows you to SSH into your newly created instance.\n"
-"      You may select an existing key pair, import a key pair, or generate a "
-"new key pair."
-msgstr ""
-"Para kluczy pozwala na zalogowanie się po SSH do utworzonej instancji.\n"
-"   Można wybrać istniejącą parę kluczy, zaimportować parę kluczy lub "
-"wygenerować nową parę kluczy."
 
 msgid "A name is required for your instance."
 msgstr "Nazwa dla instancji jest wymagana"
@@ -158,15 +136,6 @@ msgstr "Kliknij, aby wyświetlić szczegóły"
 msgid "Configuration"
 msgstr "Konfiguracja"
 
-msgid "Configuration Drive"
-msgstr "Dysk konfiguracyjny"
-
-msgid "Configuration Help"
-msgstr "Pomoc konfiguracji"
-
-msgid "Count"
-msgstr "Liczba"
-
 msgid "Create Key Pair"
 msgstr "Utwórz parę kluczy"
 
@@ -187,9 +156,6 @@ msgstr ""
 "<samp>cloud-init</samp> wewnątrz systemu operacyjnego gościa, można "
 "wykorzystać własny skrypt w celu pobrania klucza publicznego i dodania go do "
 "konta użytkownika."
-
-msgid "Customization Script"
-msgstr "Skrypt modyfikujący"
 
 msgid "Deleted"
 msgstr "Usunięto"
@@ -236,9 +202,6 @@ msgstr "Odcisk palca"
 
 msgid "Flavor"
 msgstr "Odmiana"
-
-msgid "Flavor Help"
-msgstr "Pomoc odmiany"
 
 msgid ""
 "Flavors manage the sizing for the compute, memory and storage capacity of "
@@ -312,17 +275,8 @@ msgstr "Wpływ na limity"
 msgid "Import Key Pair"
 msgstr "Importuj parę kluczy"
 
-msgid "Instance Details"
-msgstr "Szczegóły instancji"
-
-msgid "Instance Name"
-msgstr "Nazwa instancji"
-
 msgid "Instance Snapshot"
 msgstr "Migawka instancji"
-
-msgid "Instance Source"
-msgstr "Źródło instancji"
 
 msgid "Instance count is required and must be an integer of at least 1"
 msgstr ""
@@ -335,38 +289,11 @@ msgstr "Brak uprawnień do przeglądania informacji o użytkowniku."
 msgid "Key Pair"
 msgstr "Para kluczy"
 
-msgid "Key Pair Help"
-msgstr "Pomoc dla par kluczy"
-
-msgid "Key Pair Name"
-msgstr "Nazwa pary kluczy"
-
-msgid ""
-"Key Pairs are how you login to your instance after it is launched.\n"
-"        Choose a key pair name you will recognize and paste your SSH public "
-"key into the\n"
-"        space provided."
-msgstr ""
-"Pary kluczy pozwalają na zalogowanie się na instancję po jej uruchomieniu.\n"
-"   Należy wybrać łatwo rozpoznawalną nazwę a następnie wkleić publiczny "
-"klucz SSH\n"
-"   w podane miejsce."
-
-msgid ""
-"Key Pairs are how you login to your instance after it is launched.\n"
-"        Choose a key pair name you will recognize."
-msgstr ""
-"Pary kluczy pozwalają na zalogowanie się na instancję po jej uruchomieniu.\n"
-"    Należy wybierać łatwo rozpoznawalne nazwe dla nich"
-
 msgid "Killed"
 msgstr "Ubito"
 
 msgid "Launch Instance"
 msgstr "Uruchom instancję"
-
-msgid "Load script from a file"
-msgstr "Wczytaj skrypt z pliku"
 
 msgid "Manual"
 msgstr "Ręczne"
@@ -374,17 +301,11 @@ msgstr "Ręczne"
 msgid "Max Port"
 msgstr "Maks. port"
 
-msgid "Min Disk"
-msgstr "Min. dysku"
-
 msgid "Min Disk (GB)"
 msgstr "Min. dysku (GB)"
 
 msgid "Min Port"
 msgstr "Min. port"
-
-msgid "Min RAM"
-msgstr "Min. RAM"
 
 msgid "Min RAM (MB)"
 msgstr "Min. RAM (MB)"
@@ -394,9 +315,6 @@ msgstr "Nazwa"
 
 msgid "Network"
 msgstr "Sieć"
-
-msgid "Network Help"
-msgstr "Pomoc sieci"
 
 msgid "Network characteristics"
 msgstr "Charakterystyka sieci"
@@ -416,9 +334,6 @@ msgstr "Brak dostępnych pozycji"
 msgid "Number"
 msgstr "liczba"
 
-msgid "OK"
-msgstr "OK"
-
 msgid "Pending Delete"
 msgstr "Oczekuje na usunięcie"
 
@@ -430,9 +345,6 @@ msgstr "Sprawdzenie polityki się nie powiodło."
 
 msgid "Private"
 msgstr "Prywatna"
-
-msgid "Private Key"
-msgstr "Klucz prywatny"
 
 msgid "Profile"
 msgstr "Profil"
@@ -484,9 +396,6 @@ msgstr "Zmień kolejność pozycji poprzez przesuwanie i upuszczanie"
 msgid "Remote"
 msgstr "Zdalne"
 
-msgid "Required"
-msgstr "Wymagane"
-
 msgid "Root Disk"
 msgstr "Główny dysk"
 
@@ -496,14 +405,8 @@ msgstr "Zapisz"
 msgid "Saving"
 msgstr "Zapisywanie"
 
-msgid "Script size"
-msgstr "Rozmiar skryptu"
-
 msgid "Security Groups"
 msgstr "Grupy zabezpieczeń"
-
-msgid "Security Groups Help"
-msgstr "Pomoc grup zabezpieczeń"
 
 msgid ""
 "Security groups are project-specific and cannot be shared across projects."
@@ -557,9 +460,6 @@ msgid "Select one or more security groups from the available groups below."
 msgstr ""
 "Należy wybrać jedną, lub więcej, grupę zabezpieczeń z listy grup poniżej."
 
-msgid "Select the security groups."
-msgstr "Wybór grup zabezpieczeń."
-
 #, python-format
 msgid "Service type is not enabled: %(desiredType)s"
 msgstr "Typ usługi nie jest włączony: %(desiredType)s"
@@ -585,10 +485,6 @@ msgstr "Status"
 
 msgid "Subnets Associated"
 msgstr "Powiązane podsieci"
-
-#, python-format
-msgid "Successfully created key pair %(name)s."
-msgstr "Utworzono parę kluczy %(name)s."
 
 #, python-format
 msgid "Successfully imported key pair %(name)s."
@@ -619,25 +515,6 @@ msgid ""
 msgstr ""
 "Liczba instancji nie może przekraczać dostępnego limitu %(maxInstanceCount)s "
 "instancji"
-
-#, python-format
-msgid ""
-"The selected image source requires a flavor with at least %(minDisk)s GB of "
-"root disk. Select a flavor with a larger root disk or use a different image "
-"source."
-msgstr ""
-"Wybrane źródło obrazu wymaga odmiany z przynajmniej %(minDisk)s GB dysku "
-"głównego. Należy wybrać odmianę z większym dyskiem głównym lub wybrać inne "
-"źródło obrazu."
-
-#, python-format
-msgid ""
-"The selected image source requires a flavor with at least %(minRam)s MB of "
-"RAM. Select a flavor with more RAM or use a different image source."
-msgstr ""
-"Wybrane źródło obrazu wymaga odmiany z przynajmniej %(minRam)s MB pamięci "
-"RAM. Należy wybrać odmianę z większą pamięcią RAM lub wybrać inne źródło "
-"obrazu."
 
 msgid "The status indicates whether the network has an active connection."
 msgstr "Status wskazuje czy sieć ma aktywne połączenie."
@@ -681,11 +558,6 @@ msgid ""
 msgstr ""
 "Odmiana ta wymaga większej ilości VCPU, niż pozwalają na to limity. Należy "
 "wybrać mniejszą odmianę lub zmniejszyć ilość instancji."
-
-msgid "This is your new key pair. Copy this information and keep it secure."
-msgstr ""
-"To jest nowa para kluczy. Należy skopiować te informacje i dbać o ich "
-"bezpieczeństwo."
 
 msgid "Total Disk"
 msgstr "Łącznie dysków"
@@ -946,9 +818,6 @@ msgstr ""
 
 msgid "Yes"
 msgstr "Tak"
-
-msgid "bytes"
-msgstr "bajtów"
 
 msgid "{$ row['provider:network_type'] $}"
 msgstr "{$ row['provider:network_type'] $}"

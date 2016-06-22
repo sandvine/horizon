@@ -19,77 +19,109 @@
 
 import logging
 import os
-import platform
-import shutil
-import subprocess
 
 LOG = logging.getLogger(__name__)
 
+from selenium.common import exceptions
+from selenium.webdriver.common import by
+from selenium.webdriver.common import desired_capabilities as dc
+from selenium.webdriver.remote import webelement
+
 # Select the WebDriver to use based on the --selenium-phantomjs switch.
-# NOTE: Several distributions can't ship Selenium, or the Firefox
-# component of it, due to its non-free license. So they have to patch
-# it out of test-requirements.txt Avoid import failure and force not
-# running selenium tests if we attempt to run selenium tests using the
-# Firefox driver and it is not available.
-try:
-    if os.environ.get('SELENIUM_PHANTOMJS'):
-        from selenium.webdriver import PhantomJS as WebDriver
-    else:
-        from selenium.common import exceptions as selenium_exceptions
-        from selenium.webdriver import firefox
+if os.environ.get('SELENIUM_PHANTOMJS'):
+    from selenium.webdriver import PhantomJS as WebDriver
+    desired_capabilities = dc.DesiredCapabilities.PHANTOMJS
+else:
+    from horizon.test.firefox_binary import WebDriver
+    desired_capabilities = dc.DesiredCapabilities.FIREFOX
 
-        class FirefoxBinary(firefox.firefox_binary.FirefoxBinary):
-            """Workarounds selenium firefox issues.
 
-            There is race condition in the way firefox is spawned. The exact
-            cause hasn't been properly diagnosed yet but it's around:
+class WrapperFindOverride(object):
+    """Mixin for overriding find_element methods."""
 
-            - getting a free port from the OS with
-            selenium.webdriver.common.utils free_port(),
+    def find_element(self, by=by.By.ID, value=None):
+        web_el = super(WrapperFindOverride, self).find_element(by, value)
+        return WebElementWrapper(web_el.parent, web_el.id, (by, value),
+                                 self)
 
-            - release the port immediately but record it in ff prefs so that ff
-            can listen on that port for the internal http server.
+    def find_elements(self, by=by.By.ID, value=None):
+        web_els = super(WrapperFindOverride, self).find_elements(by, value)
+        result = []
+        for index, web_el in enumerate(web_els):
+            result.append(WebElementWrapper(web_el.parent, web_el.id,
+                                            (by, value), self, index))
+        return result
 
-            It has been observed that this leads to hanging processes for
-            'firefox -silent'.
-            """
 
-            def _start_from_profile_path(self, path):
-                self._firefox_env["XRE_PROFILE_PATH"] = path
+class WebElementWrapper(WrapperFindOverride, webelement.WebElement):
+    """WebElement class wrapper.
 
-                if platform.system().lower() == 'linux':
-                    self._modify_link_library_path()
-                command = [self._start_cmd, "-silent"]
-                if self.command_line is not None:
-                    for cli in self.command_line:
-                        command.append(cli)
+    WebElement wrapper that catches the StaleElementReferenceException and
+    tries to reload the element by sending request to its source element
+    (element that created actual element) for reload, in case that source
+    element needs to be reloaded as well, it asks its parent till web
+    driver is reached. In case driver was reached and did not manage to
+    find the element it is probable that programmer made a mistake and
+    actualStaleElementReferenceException is raised.
+    """
 
-        # The following exists upstream and is known to create hanging
-        # firefoxes, leading to zombies.
-        #        subprocess.Popen(command, stdout=self._log_file,
-        #              stderr=subprocess.STDOUT,
-        #              env=self._firefox_env).communicate()
-                command[1] = '-foreground'
-                self.process = subprocess.Popen(
-                    command, stdout=self._log_file, stderr=subprocess.STDOUT,
-                    env=self._firefox_env)
+    def __init__(self, parent, id_, locator, src_element, index=None):
+        super(WebElementWrapper, self).__init__(parent, id_)
+        self.locator = locator
+        self.src_element = src_element
+        # in case element was looked up previously via find_elements
+        # we need his position in the returned list
+        self.index = index
 
-        class WebDriver(firefox.webdriver.WebDriver):
-            """Workarounds selenium firefox issues."""
+    def reload_request(self, locator, index=None):
+        try:
+            # element was found out via find_elements
+            if index is not None:
+                web_els = self.src_element.find_elements(*locator)
+                web_el = web_els[index]
+            else:
+                web_el = self.src_element.find_element(*locator)
+        except (exceptions.NoSuchElementException, IndexError):
+            return False
+        return web_el
 
-            def __init__(self, firefox_profile=None, firefox_binary=None,
-                         timeout=30, capabilities=None, proxy=None):
-                try:
-                    super(WebDriver, self).__init__(
-                        firefox_profile, FirefoxBinary(), timeout,
-                        capabilities, proxy)
-                except selenium_exceptions.WebDriverException:
-                    # If we can't start, cleanup profile
-                    shutil.rmtree(self.profile.path)
-                    if self.profile.tempfolder is not None:
-                        shutil.rmtree(self.profile.tempfolder)
+    def _reload_element(self):
+        """Method for starting reload process on current instance."""
+        web_el = self.src_element.reload_request(self.locator, self.index)
+        if not web_el:
+            return False
+        self._parent = web_el.parent
+        self._id = web_el.id
+        return True
+
+    def _execute(self, command, params=None):
+        """Overriding in order to catch StaleElementReferenceException."""
+        # (schipiga): not need to use while True, trying to catch StaleElement
+        # exception, because driver.implicitly_wait delegates this to browser.
+        # Just we need to catch StaleElement exception, reload chain of element
+        # parents and then to execute command again.
+        repeat = range(2)
+        for i in repeat:
+            try:
+                return super(WebElementWrapper, self)._execute(command, params)
+            except exceptions.StaleElementReferenceException:
+                if i == repeat[-1]:
+                    raise
+                if not self._reload_element():
                     raise
 
-except ImportError as e:
-    LOG.warning("{0}, force WITH_SELENIUM=False".format(str(e)))
-    os.environ['WITH_SELENIUM'] = ''
+
+class WebDriverWrapper(WrapperFindOverride, WebDriver):
+    """Wrapper for webdriver to return WebElementWrapper on find_element.
+    """
+    def reload_request(self, locator, index):
+        try:
+            # element was found out via find_elements
+            if index is not None:
+                web_els = self.find_elements(*locator)
+                web_el = web_els[index]
+            else:
+                web_el = self.find_element(*locator)
+            return web_el
+        except (exceptions.NoSuchElementException, IndexError):
+            return False

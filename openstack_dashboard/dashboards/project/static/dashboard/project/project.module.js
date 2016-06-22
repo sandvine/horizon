@@ -25,7 +25,7 @@
    */
   angular
     .module('horizon.dashboard.project', [
-      'horizon.dashboard.project.images',
+      'horizon.dashboard.project.containers',
       'horizon.dashboard.project.workflow'
     ])
     .config(config);
@@ -37,7 +37,10 @@
 
   /**
    * @name horizon.dashboard.project.basePath
+   * @param {Object} $provide
+   * @param {Object} $windowProvider
    * @description Base path for the project dashboard
+   * @returns {undefined} Returns nothing
    */
   function config($provide, $windowProvider) {
     var path = $windowProvider.$get().STATIC_URL + 'dashboard/project/';

@@ -1,119 +1,18 @@
-# Translations template for PROJECT.
-# Copyright (C) 2015 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-#
-# Translators:
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-01-31 10:08+0000\n"
+"Project-Id-Version: horizon 10.0.0.0b2.dev164\n"
+"Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
+"POT-Creation-Date: 2016-06-21 03:36+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2015-09-08 11:14+0000\n"
-"Last-Translator: openstackjenkins <jenkins@openstack.org>\n"
-"Language: bn-IN\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Generated-By: Babel 2.0\n"
-"X-Generator: Zanata 3.7.3\n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
 "Language-Team: Bengali (India)\n"
-
-#, python-format
-msgid ""
-"\n"
-"            <a href=\"%(volume_url)s\">%(volume_label)s</a> on "
-"%(volume_device)s\n"
-"            "
-msgstr ""
-"\n"
-"            %(volume_device)s তে <a href=\"%(volume_url)s\">"
-"%(volume_label)s</a>\n"
-"            "
-
-#, python-format
-msgid ""
-"\n"
-"        Other IPv6 modes: ipv6_ra_mode=%(ra_mode)s, ipv6_address_mode="
-"%(addr_mode)s\n"
-"        "
-msgstr ""
-"\n"
-"        অন্যান্য IPv6 প্রণালী: ipv6_ra_mode=%(ra_mode)s, ipv6_address_mode="
-"%(addr_mode)s\n"
-"        "
-
-msgid ""
-"\n"
-"      Volume type is a type or label that can be selected at volume "
-"creation\n"
-"      time in OpenStack. It usually maps to a set of capabilities of the "
-"storage\n"
-"      back-end driver to be used for this volume. Examples: \"Performance"
-"\",\n"
-"      \"SSD\", \"Backup\", etc. This is equivalent to the\n"
-"      <tt>cinder type-create</tt> command. Once the volume type gets "
-"created,\n"
-"      click the \"View Extra Specs\" button to set up extra specs key-value\n"
-"      pair(s) for that volume type.\n"
-"     "
-msgstr ""
-"\n"
-"      ভলিয়্যুম প্রকার হল এক প্রকার বা লেবেল যা OpenStackএ ভলিয়্যুম সৃষ্টির সময়\n"
-"      নির্বাচিত করা যেতে পারে. এটি সাধারণতঃ এই ভলিয়্যুমের জন্য ব্যবহৃত ব্যাক-এন্ড\n"
-"      ড্রাইভারের ভাণ্ডারের ক্ষমতার সেট ম্যাপ করে. উদাহরণ: \"Performance\",\n"
-"      \"SSD\", \"Backup\", ইত্যাদি. এটি \n"
-"      <tt>cinder type-create</tt> আদেশের সমান. একবার ভলিয়্যুম প্রকার তৈরি হলে,\n"
-"      ঐ ভলিয়্যুম প্রকারের জন্য অতিরিক্ত স্পেক কী-মান জোড়া সেট আপ করতে \"View Extra "
-"Specs\" \n"
-"      বোতামে ক্লিক করুন.\n"
-"     "
-
-msgid ""
-"\n"
-"    Each QoS Specs entity will have a \"Consumer\" value which indicates "
-"where the\n"
-"    administrator would like the QoS policy to be enforced. This value can "
-"be \"front-end\"\n"
-"    (Nova Compute), \"back-end\" (Cinder back-end), or \"both\".\n"
-"    "
-msgstr ""
-"\n"
-"    প্রতিটি QoS স্পেক স্বত্ত্বায় একটি  \"Consumer\" মান থাকবে যা ইঙ্গিত করে কোথায়\n"
-"    অ্যাডমিনিষ্ট্রেটর QoS নীতি চালু করতে পছন্দ করবে. এই মান \"front-end\"\n"
-"    (Nova Compute), \"back-end\" (Cinder back-end), বা \"both\" হতে পারে.\n"
-"    "
-
-msgid ""
-"\n"
-"    The status of a volume is normally managed automatically.  In some "
-"circumstances an\n"
-"    administrator may need to explicitly update the status value.  This is "
-"equivalent to\n"
-"    the <tt>cinder reset-state</tt> command.\n"
-"    "
-msgstr ""
-"\n"
-"    ভলিয়্যুমের স্থিতি সাধারণত স্বতঃশ্চলভাবে পরিচালিতা হয়.  কিছু ক্ষেত্রে\n"
-"    স্পষ্টভাবে স্থিতি মান আপডেট করতে অ্যাডমিনিষ্ট্রেটর প্রয়োজন হতে পারে.  এটি\n"
-"    <tt>cinder reset-state</tt> আদেশের সমান.\n"
-"    "
-
-msgid ""
-"\n"
-"    The status of a volume snapshot is normally managed automatically.  In "
-"some circumstances\n"
-"    an administrator may need to explicitly update the status value. This is "
-"equivalent to\n"
-"    the <tt>cinder snapshot-reset-state</tt> command.\n"
-"    "
-msgstr ""
-"\n"
-"    ভলিয়্যুম স্ন্যাপশটের স্থিতি সাধারণত স্বতোশ্চলভাবে পরিচালিত হয়.  কিছু ক্ষেত্রে\n"
-"    অ্যাডমিনিষ্ট্রেটরের স্থিতি মান স্পষ্টভাবে আপডেট হওয়া চাই. এটি\n"
-"    <tt>cinder snapshot-reset-state</tt> আদেশের সমরূপ.\n"
-"    "
+"Language: bn-IN\n"
+"X-Generator: Zanata 3.7.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 msgid " - End"
 msgstr " - শেষ"
@@ -141,6 +40,7 @@ msgstr "%(instance_name)s %(fixed_ip)s"
 msgid "%(name)s - %(size)s GB (%(label)s)"
 msgstr "%(name)s - %(size)s GB (%(label)s)"
 
+#. Translators:  UTC offset and timezone label
 #, python-format
 msgid "%(offset)s: %(label)s"
 msgstr "%(offset)s: %(label)s"
@@ -235,9 +135,6 @@ msgstr ""
 "অ্যাকাউন্টের মধ্যে কন্টেনারের অসীম সংখ্য়া তৈরি করতে পারেন. আপনি অগ্রীম আপলোডিং "
 "ডেটাতে আপনার অ্যাকাউন্টে নির্ধারিত কমপক্ষে একটি কন্টেনার থাকা উচিত যাতে ডেটা একটি "
 "কন্টেনারে সঞ্চিত থাকা চাই."
-
-msgid "A image or external image location must be specified."
-msgstr "একটি ইমেজ বা বাহ্যিক ইমেজের অবস্থান নির্দিষ্ট হওয়া চাই."
 
 msgid "A local environment to upload."
 msgstr "আপলোড করতে একটি স্থানীয় পরিবেশ."
@@ -467,9 +364,6 @@ msgstr ""
 msgid "Add hosts to this aggregate. Hosts can be in multiple aggregates."
 msgstr "এই সমুহে হোস্ট যোগ করুন. হোস্ট বহু সমুহে থাকতে পারে."
 
-msgid "Add interface"
-msgstr "ইন্টারফেস যোগ করুন"
-
 msgid ""
 "Add member(s) to the selected pool.\n"
 "\n"
@@ -485,9 +379,6 @@ msgstr ""
 "নির্বাচিত সদস্যদের জন্য সাংখ্যিক ওজন এবং পোর্ট নম্বর নিয়োগ করুন; যেমন, 80. \n"
 "\n"
 "প্রতিটি উদাহরণে কেবলমাত্র একটি পোর্ট মিলিত হতে পারে."
-
-msgid "Add rule"
-msgstr "নিয়ম যোগ করুন"
 
 msgid "Add/Remove Hosts to Aggregate"
 msgstr "সমুহতে হোস্ট যোগ করুন/সরিয়ে ফেলুন"
@@ -831,9 +722,6 @@ msgstr "CIDR নির্দিষ্ট হওয়া চাই."
 msgid "CPU time used"
 msgstr "ব্যবহৃত CPU সময়"
 
-msgid "Can not specify both image and external image location."
-msgstr "ইমেজ ও বাহ্যিক ইমেজ অবস্থান উভয়ই নির্দিষ্ট করতে পারে না."
-
 msgid "Cancel"
 msgstr "বাতিল করুন"
 
@@ -904,14 +792,6 @@ msgid ""
 msgstr ""
 "লভ্য নেটওয়ার্ক থেকে পুশ বোতাম বা ড্র্যাগ ও ড্রপ বোতাম দ্বারা নির্বাচিত নেটওয়ার্কে "
 "নেটওয়ার্ক বাছুন, আপনি সাথে সাথে ড্র্যাগ ও ড্রপ দ্বারা NIC ক্রম বদল করতে পারেন. "
-
-msgid ""
-"Choose rule(s) from Available Rules to Selected Rule by push button or drag "
-"and drop,\n"
-"you may change their order by drag and drop as well. "
-msgstr ""
-"পুশ বোতাম বা টানা ও ফেলা দ্বারা নির্বাচিত নিয়মে লভ্য নিয়মগুলি থেকে নিয়ম বাছুন,\n"
-"আপনি টানা ও ফেলা দ্বারা তাদের ক্রম বদল করতেও পারেন. "
 
 msgid "Choose the flavor to launch."
 msgstr "শুরু করতে ফ্লেভার বাছুন."
@@ -1721,14 +1601,6 @@ msgstr "EC2 ক্রেডেনশিয়াল ডাউনলোড করু
 msgid "Download Key Pair"
 msgstr "কী যুগ্ম ডাউনলোড করুন"
 
-#, python-format
-msgid "Download key pair &quot;%(keypair_name)s&quot;"
-msgstr "&quot;%(keypair_name)s&quot; কী জোড়া ডাউনলোড করুন"
-
-#, python-format
-msgid "Duration of instance type %s (openstack flavor)"
-msgstr "উদাহরণ %s প্রকারের স্থিতিকাল (ওপেনস্ট্যাক ফ্লেভার)"
-
 msgid "EC2 Access Key"
 msgstr "EC2 অ্যাক্সেস কী"
 
@@ -2322,9 +2194,6 @@ msgstr "ফায়ারওয়াল নিয়মগুলি"
 msgid "Firewalls"
 msgstr "ফায়ারওয়াল"
 
-msgid "Fixed IP"
-msgstr "স্থির IP"
-
 msgid "Fixed IPs"
 msgstr "স্থির IPs"
 
@@ -2382,10 +2251,6 @@ msgstr "ভাসমান IPs"
 msgid "Folder created successfully."
 msgstr "ফোল্ডার সফলভাবে তৈরি হয়েছে."
 
-#, python-format
-msgid "For GRE networks, valid tunnel IDs are %(min)s through %(max)s."
-msgstr "GRE নেটওয়ার্কের জন্য, বৈধ tunnel IDs %(min)s থেকে %(max)s পর্যন্ত."
-
 msgid ""
 "For TCP and UDP rules you may choose to open either a single port or a range "
 "of ports. Selecting the \"Port Range\" option will provide you with space to "
@@ -2396,28 +2261,6 @@ msgstr ""
 "পারেন. \"Port Range\" বিকল্প নির্বাচন করে ব্যপ্তির জন্য শুরু এবং শেষ উভয় পোর্টই "
 "প্রদান করে. ICMP নিয়মের জন্য প্রদান করা ফাঁকে একটি ICMP প্রকার এবং  কোড নির্দিষ্ট "
 "করুন ."
-
-#, python-format
-msgid ""
-"For VLAN networks, the VLAN VID on the physical network that realizes the "
-"virtual network. Valid VLAN VIDs are %(vlan_min)s through %(vlan_max)s. For "
-"GRE or VXLAN networks, the tunnel ID. Valid tunnel IDs for GRE networks are "
-"%(gre_min)s through %(gre_max)s. For VXLAN networks, %(vxlan_min)s through "
-"%(vxlan_max)s."
-msgstr ""
-"VLAN নেটওয়ার্কের জন্য, ভৌতিক নেটওয়ার্কে VLAN VID যা কার্যকর নেটওয়ার্ক বাস্তবে "
-"পরিণত করে. বৈধ VLAN VID হল %(vlan_max)s এর মাধ্যমে %(vlan_min)s. GRE বা VXLAN "
-"নেটওয়ার্কের জন্য, টানেল ID. GRE নেটওয়ার্কের জন্য বৈধ টানেল ID গুলি হল %(gre_max)s "
-"এর মাধ্যমে %(gre_min)s. VXLAN নেটওয়ার্কের জন্য, %(vxlan_max)s এর মাধ্যমে "
-"%(vxlan_min)s."
-
-#, python-format
-msgid "For VLAN networks, valid VLAN IDs are %(min)s through %(max)s."
-msgstr "VLAN নেটওয়ার্কের জন্য, বৈধ VLAN IDs %(min)s থেকে %(max)s পর্যন্ত."
-
-#, python-format
-msgid "For VXLAN networks, valid tunnel IDs are %(min)s through %(max)s."
-msgstr "VXLAN নেটওয়ার্কের জন্য, বৈধ tunnel IDs %(min)s থেকে %(max)s পর্যন্ত."
 
 msgid "Forbidden"
 msgstr "নিষিদ্ধ"
@@ -2513,6 +2356,7 @@ msgstr ""
 "অ্যাক্সেস পরিচালনা করতে এবং একবারে একাধিক ব্যবহর্তাতে ভূমিকা নিয়োগ করতে ব্যবহৃত "
 "শ্রেণি. ব্যবহর্তা যোগ করতে শ্রেণি সম্পাদনা করুন."
 
+#. Translators: High Availability mode of Neutron router
 msgid "HA mode"
 msgstr "HA প্রণালী"
 
@@ -2856,9 +2700,6 @@ msgstr "উদাহরণ কনসোল"
 msgid "Instance Console Log"
 msgstr "উদাহরণ কনসোল লগ"
 
-msgid "Instance Count"
-msgstr "উদাহরণ গণনা"
-
 msgid "Instance ID"
 msgstr "উদাহরণ ID"
 
@@ -3025,10 +2866,6 @@ msgstr "এই নেটওয়ার্কগুলি সহ উদাহরণ
 
 msgid "Launch instance with this policy profile"
 msgstr "এই নীতি প্রোফাইল সহ উদাহরণ শুরু করুন"
-
-#, python-format
-msgid "Launched %(count)s named \"%(name)s\"."
-msgstr "%(count)s শুরু করা \"%(name)s\" নামে."
 
 msgid ""
 "Launching multiple instances is only supported for images and instance "
@@ -3626,9 +3463,6 @@ msgstr "VM ইন্টারফেসের জন্য নেটওয়ার�
 msgid "Number of incoming packets for a VM interface"
 msgstr "VM ইন্টারফেসের জন্য আগমী প্যাকেটের সংখ্যা"
 
-msgid "Number of instances to launch."
-msgstr "শুরু করতে উদাহরণের নম্বর."
-
 msgid "Number of objects"
 msgstr "বস্তুর সংখ্যা"
 
@@ -3994,13 +3828,6 @@ msgstr "পাবলিক URL"
 msgid "QCOW2 - QEMU Emulator"
 msgstr "QCOW2 - QEMU ইমুলেটর"
 
-msgid "QoS Spec Consumer"
-msgstr "QoS স্পেক ক্রেতা"
-
-msgid ""
-"QoS Spec consumer value must be different than the current consumer value."
-msgstr "QoS স্পেক ক্রেতা মান বর্তমান ক্রেতা মানের চেয়ে আলাদা হওয়া চাই."
-
 msgid "QoS Spec to be associated"
 msgstr "মিলিত হবে এমন QoS স্পেক"
 
@@ -4083,9 +3910,6 @@ msgstr ""
 "অনুরোধের সম্বন্ধিত অংশ অন্যের তুলনায় এই পুল সদস্য পূর্ণ করে. \n"
 "একই ওজন সকল নির্বাচিত সদস্যের ক্ষেত্রে প্রযোজ্য হবে এবং পরে সংশোধন করা যেতে পারে. "
 "ওজন 1 থেকে 256 ব্যপ্তিতে হওয়া চাই."
-
-msgid "Reload"
-msgstr "আবার লোড করুন"
 
 msgid "Remote"
 msgstr "রিমোট"
@@ -4303,10 +4127,6 @@ msgstr "বাঁচানো অতিরিক্ত স্পেক \"%s\"."
 msgid "Saved spec \"%s\"."
 msgstr "বাঁচানো স্পেক \"%s\"."
 
-#, python-format
-msgid "Scheduled resize of instance \"%s\"."
-msgstr "\"%s\" উদাহরণের পুনঃআয়তন তালিকাভুক্ত."
-
 msgid "Script Data"
 msgstr "স্ক্রিপ্ট ডেটা"
 
@@ -4407,9 +4227,6 @@ msgstr "একটি কী জোড়া নির্বাচন করু�
 #, python-format
 msgid "Select a monitor template for %s"
 msgstr "%s এর জন্য মনিটর টেমপ্লেট নির্বাচন করুন"
-
-msgid "Select a name for your network."
-msgstr "আপনার নেটওয়ার্কের জন্য একটি নাম নির্বাচন করুন."
 
 msgid "Select a new agent"
 msgstr "একটি নতুন এজেন্ট নির্বাচন করুন"
@@ -4540,9 +4357,6 @@ msgstr "অংশীদারী"
 
 msgid "Shared Storage"
 msgstr "অংশীদারী ভাণ্ডার"
-
-msgid "Shared with Me"
-msgstr "আমার সঙ্গে ভাগ করুন"
 
 msgid "Sign Out"
 msgstr "সাইন আউট"
@@ -4815,13 +4629,6 @@ msgstr "QoS স্পেক ক্রেতা সফলভাবে সংশ�
 
 #, python-format
 msgid ""
-"Successfully restored backup %(backup_name)s to volume with id: %(volume_id)s"
-msgstr ""
-"ভলিয়্যুম করতে ব্যাকআপ  %(backup_name)s সফলভাবে পুনরায় সঞ্চয় হয়েছে সঙ্গে id: "
-"%(volume_id)s"
-
-#, python-format
-msgid ""
 "Successfully sent the request to change the volume type to \"%(vtype)s\" for "
 "volume: \"%(name)s\""
 msgstr ""
@@ -4923,6 +4730,7 @@ msgid ""
 "number."
 msgstr "\"প্রতি\" পোর্ট নম্বর \"থেকে\" পোর্ট নম্বরের চেয়ে বড় বা সমান হওয়া চাই."
 
+#. Translators: Only used inside Horizon code and invisible to users
 #, python-format
 msgid ""
 "The 'operation' parameter for get_feature_permission '%(feature)s' is "
@@ -4964,14 +4772,8 @@ msgstr ""
 msgid "The Aggregate was updated."
 msgstr "সমূহ সদ্যতন ছিল."
 
-msgid "The ICMP code is invalid."
-msgstr "ICMP কোড অবৈধ."
-
 msgid "The ICMP code not in range (-1, 255)"
 msgstr "ICMP কোড ব্যপ্তিতে নেই (-1, 255)"
-
-msgid "The ICMP type is invalid."
-msgstr "ICMP প্রকারটি অবৈধ."
 
 msgid "The ICMP type not in range (-1, 255)"
 msgstr "ICMP প্রকার (-1, 255) ব্যপ্তিতে নেই"
@@ -5024,20 +4826,8 @@ msgstr ""
 "অনুরোধ করা ইমেজের জন্য ফ্লেভার '%(flavor)s' খুবই ছোটো.\n"
 "ন্যূনতম প্রয়োজন: RAM  এর %(min_ram)s MB এবং রুট ডিস্কের %(min_disk)s GB."
 
-#, python-format
-msgid "The instance is preparing the live migration to host \"%s\"."
-msgstr "\"%s\" হোস্টে উদাহরণ লাইভ মাইগ্রেশন প্রস্তুতি করছে."
-
 msgid "The instance password encrypted with your public key."
 msgstr "আপনার পাবলিক কী সহ এনক্রিপ্ট করা উদাহরণ পাসওয়ার্ড."
-
-#, python-format
-msgid ""
-"The key pair &quot;%(keypair_name)s&quot; should download automatically. If "
-"not use the link below."
-msgstr ""
-"কী জোড়া &quot;%(keypair_name)s&quot; স্বতোশ্চলভাবে ডাউনলোড হওয়া চাই. না হলে "
-"নিচের লিঙ্ক ব্যবহার করুন."
 
 msgid ""
 "The minimum disk size required to boot the image. If unspecified, this value "
@@ -5092,6 +4882,7 @@ msgstr "পরিবেশ ফাইলের কাঁচা বিষয়বস
 msgid "The raw contents of the template."
 msgstr "টেমপ্লেটের কাঁচা বিষয়."
 
+#. Translators: Only used inside Horizon code and invisible to users
 #, python-format
 msgid ""
 "The requested feature '%(feature)s' is unknown. Please make sure to specify "
@@ -6225,9 +6016,6 @@ msgstr "স্থিতক আপডেট করুন"
 msgid "Update Group"
 msgstr "শ্রেণি আপডেট করুন"
 
-msgid "Update Image"
-msgstr "ইমেজ আপডেট করুন"
-
 msgid "Update Metadata"
 msgstr "মেটাডেটা আপডেট করুন"
 
@@ -6487,14 +6275,6 @@ msgstr "মান (গড়)"
 msgid "Value:"
 msgstr "মান:"
 
-#, python-format
-msgid ""
-"Version: %(version_info)s\n"
-"      "
-msgstr ""
-"সংস্করণ: %(version_info)s\n"
-"      "
-
 msgid "View Container"
 msgstr "কন্টেনার দেখুন"
 
@@ -6670,9 +6450,6 @@ msgstr ""
 "করতে পারেন, বিকল্পগুলি হল ব্যবহর্তা-বিহীত TCP নিয়ম, ব্যবহর্তা-বিহীত UDP নিয়ম, বা "
 "ব্যবহর্তা-বিহীত ICMP নিয়ম."
 
-msgid "You cannot disable the user you are currently logged in as."
-msgstr "বর্তমানে আপনি যে ব্যবহর্তা হিসেবে লগইন করেছেন তা অসমর্থ করতে পারেন না."
-
 msgid ""
 "You cannot revoke your administrative privileges from the domain you are "
 "currently logged into. Please switch to another domain with administrative "
@@ -6814,9 +6591,6 @@ msgstr "দ্বি-মুখী"
 
 msgid "clear"
 msgstr "পরিষ্কার করুন"
-
-msgid "console is currently unavailable. Please try again later."
-msgstr "কনসোল বর্তমানে লভ্য নয়. পরে আবার চেষ্টা করুন."
 
 msgid "disabled"
 msgstr "অসমর্থ"

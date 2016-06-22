@@ -1,4 +1,5 @@
 /*
+ * (c) Copyright 2016 Hewlett Packard Enterprise Development Company LP
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,10 +16,13 @@
   'use strict';
 
   angular
-    .module('MagicSearch')
+    .module('horizon.framework.widgets.magic-search')
     .directive('stMagicSearch', stMagicSearch);
 
-  stMagicSearch.$inject = ['$timeout', '$window'];
+  stMagicSearch.$inject = [
+    '$timeout',
+    'horizon.framework.widgets.magic-search.events'
+  ];
 
   /**
    * @ngdoc directive
@@ -26,8 +30,9 @@
    * @element
    * @description
    * A directive to make Magic Search be a replacement for st-search.
-   * This directive must be outside of a magic-search and inside a
-   * smart-table. This lets MS drive the same filtering capabilities
+   * This directive must be a peer to st-table and contained within an
+   * hz-magic-search-context in order to receive broadcasts.
+   * This lets MS drive the same filtering capabilities
    * in smart-table that st-search does, including filtering on all
    * columns or a specific column (e.g. a facet filters a column).
    *
@@ -36,25 +41,53 @@
    *
    * @example
    * ```
-   * <st-magic-search>
-   *   <magic-search
-   *     template="/static/framework/widgets/magic-search/magic-search.html"
-   *     strings="filterStrings"
-   *     facets="{{ filterFacets }}">
-   *   </magic-search>
-   * </st-magic-search>
+   *
+   *  var filterFacets = [
+   *  {
+   *    label: gettext('Name'),
+   *    name: 'name',
+   *    singleton: true
+   *  },
+   *  {
+   *    label: gettext('VCPUs'),
+   *    name: 'vcpus',
+   *    singleton: true
+   *  },
+   *  {
+   *    label: gettext('RAM'),
+   *    name: 'ram',
+   *    singleton: true
+   *  },
+   *  {
+   *    label: gettext('Public'),
+   *    name: 'isPublic',
+   *    singleton: true,
+   *    options: [
+   *      { label: gettext('No'), key: false },
+   *      { label: gettext('Yes'), key: true }
+   *    ]
+   *  }];
+   *
+   * <hz-magic-search-context
+   *   filter-facets="filterFacets">
+   *   <hz-magic-search-bar></hz-magic-search-bar>
+   *   <table st-table st-magic-search>
+   *   </table>
+   * </hz-magic-search-context>
    * ```
    */
-  function stMagicSearch($timeout, $window) {
+  function stMagicSearch($timeout, magicSearchEvents) {
     var directive = {
       link: link,
-      require: '^stTable',
-      restrict: 'E',
+      require: 'stTable',
+      restrict: 'A',
       scope: true
     };
     return directive;
 
     function link(scope, element, attr, tableCtrl) {
+      scope.currentServerSearchParams = {};
+
       // Generate predicate object from dot notation string
       function setPredObj(predicates, predObj, input) {
         var lastPred = predicates.pop();
@@ -66,26 +99,55 @@
         predObj[lastPred] = input;
       }
 
+      function setServerFacetSearch(scope, query) {
+        var currentServerSearchParams = angular.copy(scope.currentServerSearchParams);
+        currentServerSearchParams.magicSearchQuery = query;
+        checkAndEmit(scope, currentServerSearchParams);
+      }
+
+      function setServerTextSearch(scope, text) {
+        var currentServerSearchParams = angular.copy(scope.currentServerSearchParams);
+        currentServerSearchParams.queryString = text;
+        checkAndEmit(scope, currentServerSearchParams);
+      }
+
+      function checkAndEmit(scope, serverSearchParams) {
+        if (serverSearchParams !== scope.currentServerSearchParams) {
+          serverSearchParams.magicSearchQueryChanged =
+            !angular.equals(scope.currentServerSearchParams.magicSearchQuery,
+                            serverSearchParams.magicSearchQuery);
+
+          serverSearchParams.queryStringChanged =
+            !angular.equals(scope.currentServerSearchParams.queryString,
+                            serverSearchParams.queryString);
+
+          scope.currentServerSearchParams = serverSearchParams;
+
+          if (serverSearchParams.queryStringChanged || serverSearchParams.magicSearchQueryChanged) {
+            scope.$emit(
+              magicSearchEvents.SERVER_SEARCH_UPDATED,
+              angular.copy(scope.currentServerSearchParams)
+            );
+          }
+        }
+      }
+
       // When user types a character, search the table
-      var textSearchWatcher = scope.$on('textSearch', function(event, text) {
+      var textSearchWatcher = scope.$on('textSearch-ms-context', function(event, text) {
         // Timeout needed to prevent
         // $apply already in progress error
         $timeout(function() {
-          tableCtrl.search(text);
+          if (scope.clientFullTextSearch) {
+            tableCtrl.search(text);
+          } else {
+            setServerTextSearch(scope, text);
+          }
         });
       });
 
       // When user changes a facet, use API filter
-      var searchUpdatedWatcher = scope.$on('searchUpdated', function(event, query) {
-        // update url
-        var url = $window.location.href;
-        if (url.indexOf('?') > -1) {
-          url = url.split('?')[0];
-        }
-        if (query.length > 0) {
-          url = url + '?' + query;
-        }
-        $window.history.pushState(query, '', url);
+      var searchUpdatedWatcher = scope.$on('searchUpdated-ms-context', function(event, query) {
+        setServerFacetSearch(scope, query);
 
         // clear each time since Smart-Table
         // search is cumulative

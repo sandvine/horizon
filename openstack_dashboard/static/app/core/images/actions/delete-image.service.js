@@ -17,23 +17,24 @@
 
   angular
     .module('horizon.app.core.images')
-    .factory('horizon.app.core.images.actions.deleteImageService', deleteImageService);
+    .factory('horizon.app.core.images.actions.delete-image.service', deleteImageService);
 
   deleteImageService.$inject = [
     '$q',
     'horizon.app.core.openstack-service-api.glance',
-    'horizon.app.core.openstack-service-api.keystone',
+    'horizon.app.core.openstack-service-api.userSession',
     'horizon.app.core.openstack-service-api.policy',
+    'horizon.framework.util.actions.action-result.service',
     'horizon.framework.util.i18n.gettext',
     'horizon.framework.util.q.extensions',
     'horizon.framework.widgets.modal.deleteModalService',
     'horizon.framework.widgets.toast.service',
-    'horizon.app.core.images.events'
+    'horizon.app.core.images.resourceType'
   ];
 
-  /**
-   * @ngDoc factory
-   * @name horizon.app.core.images.actions.deleteImageService
+  /*
+   * @ngdoc factory
+   * @name horizon.app.core.images.actions.delete-image.service
    *
    * @Description
    * Brings up the delete images confirmation modal dialog.
@@ -44,18 +45,17 @@
   function deleteImageService(
     $q,
     glance,
-    keystone,
+    userSessionService,
     policy,
+    actionResultService,
     gettext,
     $qExtensions,
     deleteModal,
     toast,
-    events
+    imagesResourceType
   ) {
-    var scope, context;
+    var scope, context, deleteImagePromise;
     var notAllowedMessage = gettext("You are not allowed to delete images: %s");
-    var deleteImagePromise = policy.ifAllowed({rules: [['image', 'delete_image']]});
-    var userSessionPromise = createUserSessionPromise();
 
     var service = {
       initScope: initScope,
@@ -67,26 +67,32 @@
 
     //////////////
 
-    function initScope(newScope, actionContext) {
+    function initScope(newScope) {
       scope = newScope;
-      context = {
-        labels: actionContext,
-        successEvent: events.DELETE_SUCCESS
-      };
+      context = { };
+      deleteImagePromise = policy.ifAllowed({rules: [['image', 'delete_image']]});
     }
 
-    function perform(images) {
+    function perform(items) {
+      var images = angular.isArray(items) ? items : [items];
+      context.labels = labelize(images.length);
       context.deleteEntity = deleteImage;
-      $qExtensions.allSettled(images.map(checkPermission)).then(afterCheck);
+      return $qExtensions.allSettled(images.map(checkPermission)).then(afterCheck);
     }
 
     function allowed(image) {
-      return $q.all([
-        notProtected(image),
-        deleteImagePromise,
-        ownedByUser(image),
-        notDeleted(image)
-      ]);
+      // only row actions pass in image
+      // otherwise, assume it is a batch action
+      if (image) {
+        return $q.all([
+          notProtected(image),
+          deleteImagePromise,
+          userSessionService.isCurrentProject(image.owner),
+          notDeleted(image)
+        ]);
+      } else {
+        return policy.ifAllowed({ rules: [['image', 'delete_image']] });
+      }
     }
 
     function checkPermission(image) {
@@ -94,38 +100,53 @@
     }
 
     function afterCheck(result) {
+      var outcome = $q.reject();  // Reject the promise by default
       if (result.fail.length > 0) {
         toast.add('error', getMessage(notAllowedMessage, result.fail));
+        outcome = $q.reject(result.fail);
       }
       if (result.pass.length > 0) {
-        deleteModal.open(scope, result.pass.map(getEntity), context);
+        outcome = deleteModal.open(scope, result.pass.map(getEntity), context).then(createResult);
       }
+      return outcome;
     }
 
-    function createUserSessionPromise() {
-      var deferred = $q.defer();
-      keystone.getCurrentUserSession().success(onUserSessionGet);
-      return deferred.promise;
-
-      function onUserSessionGet(userSession) {
-        deferred.resolve(userSession);
-      }
+    function createResult(deleteModalResult) {
+      // To make the result of this action generically useful, reformat the return
+      // from the deleteModal into a standard form
+      var actionResult = actionResultService.getActionResult();
+      deleteModalResult.pass.forEach(function markDeleted(item) {
+        actionResult.deleted(imagesResourceType, getEntity(item).id);
+      });
+      deleteModalResult.fail.forEach(function markFailed(item) {
+        actionResult.failed(imagesResourceType, getEntity(item).id);
+      });
+      return actionResult.result;
     }
 
-    function ownedByUser(image) {
-      var deferred = $q.defer();
+    function labelize(count) {
+      return {
 
-      userSessionPromise.then(onUserSessionGet);
+        title: ngettext(
+          'Confirm Delete Image',
+          'Confirm Delete Images', count),
 
-      return deferred.promise;
+        message: ngettext(
+          'You have selected "%s". Deleted image is not recoverable.',
+          'You have selected "%s". Deleted images are not recoverable.', count),
 
-      function onUserSessionGet(userSession) {
-        if (userSession.project_id === image.owner) {
-          deferred.resolve();
-        } else {
-          deferred.reject();
-        }
-      }
+        submit: ngettext(
+          'Delete Image',
+          'Delete Images', count),
+
+        success: ngettext(
+          'Deleted Image: %s.',
+          'Deleted Images: %s.', count),
+
+        error: ngettext(
+          'Unable to delete Image: %s.',
+          'Unable to delete Images: %s.', count)
+      };
     }
 
     function notDeleted(image) {

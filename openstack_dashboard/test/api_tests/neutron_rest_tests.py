@@ -27,7 +27,7 @@ TEST = TestData(neutron_data.data)
 class NeutronNetworksTestCase(test.TestCase):
     def setUp(self):
         super(NeutronNetworksTestCase, self).setUp()
-        self._networks = [mock_factory(n)
+        self._networks = [test.mock_factory(n)
                           for n in TEST.api_networks.list()]
 
     @mock.patch.object(neutron.api, 'neutron')
@@ -109,9 +109,9 @@ class NeutronNetworksTestCase(test.TestCase):
 class NeutronSubnetsTestCase(test.TestCase):
     def setUp(self):
         super(NeutronSubnetsTestCase, self).setUp()
-        self._networks = [mock_factory(n)
+        self._networks = [test.mock_factory(n)
                           for n in TEST.api_networks.list()]
-        self._subnets = [mock_factory(n)
+        self._subnets = [test.mock_factory(n)
                          for n in TEST.api_subnets.list()]
 
     @mock.patch.object(neutron.api, 'neutron')
@@ -142,9 +142,9 @@ class NeutronSubnetsTestCase(test.TestCase):
 class NeutronPortsTestCase(test.TestCase):
     def setUp(self):
         super(NeutronPortsTestCase, self).setUp()
-        self._networks = [mock_factory(n)
+        self._networks = [test.mock_factory(n)
                           for n in TEST.api_networks.list()]
-        self._ports = [mock_factory(n)
+        self._ports = [test.mock_factory(n)
                        for n in TEST.api_ports.list()]
 
     @mock.patch.object(neutron.api, 'neutron')
@@ -156,6 +156,22 @@ class NeutronPortsTestCase(test.TestCase):
         self.assertStatusCode(response, 200)
         client.port_list.assert_called_once_with(
             request, network_id=TEST.api_networks.first().get("id"))
+
+
+class NeutronExtensionsTestCase(test.TestCase):
+    def setUp(self):
+        super(NeutronExtensionsTestCase, self).setUp()
+
+        self._extensions = [n for n in TEST.api_extensions.list()]
+
+    @mock.patch.object(neutron.api, 'neutron')
+    def test_list_extensions(self, nc):
+        request = self.mock_rest_request(**{'GET': {}})
+        nc.list_extensions.return_value = self._extensions
+        response = neutron.Extensions().get(request)
+        self.assertStatusCode(response, 200)
+        self.assertItemsCollectionEqual(response, TEST.api_extensions.list())
+        nc.list_extensions.assert_called_once_with(request)
 
 
 def mock_obj_to_dict(r):

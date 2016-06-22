@@ -39,6 +39,7 @@ from horizon import conf
 from horizon import exceptions as horizon_exceptions
 from horizon.utils import functions as utils
 from horizon.utils.memoized import memoized  # noqa
+from horizon.utils.memoized import memoized_with_request  # noqa
 
 from openstack_dashboard.api import base
 from openstack_dashboard.api import network_base
@@ -50,11 +51,14 @@ LOG = logging.getLogger(__name__)
 VERSIONS = base.APIVersionManager("compute", preferred_version=2)
 VERSIONS.load_supported_version(1.1, {"client": nova_client, "version": 1.1})
 VERSIONS.load_supported_version(2, {"client": nova_client, "version": 2})
+VERSIONS.load_supported_version(2.9, {"client": nova_client, "version": 2.9})
 
 # API static values
 INSTANCE_ACTIVE_STATE = 'ACTIVE'
 VOLUME_STATE_AVAILABLE = "available"
 DEFAULT_QUOTA_NAME = 'default'
+INSECURE = getattr(settings, 'OPENSTACK_SSL_NO_VERIFY', False)
+CACERT = getattr(settings, 'OPENSTACK_SSL_CACERT', None)
 
 
 class VNCConsole(base.APIDictWrapper):
@@ -97,10 +101,10 @@ class Server(base.APIResourceWrapper):
     _attrs = ['addresses', 'attrs', 'id', 'image', 'links',
               'metadata', 'name', 'private_ip', 'public_ip', 'status', 'uuid',
               'image_name', 'VirtualInterfaces', 'flavor', 'key_name', 'fault',
-              'tenant_id', 'user_id', 'created', 'OS-EXT-STS:power_state',
-              'OS-EXT-STS:task_state', 'OS-EXT-SRV-ATTR:instance_name',
-              'OS-EXT-SRV-ATTR:host', 'OS-EXT-AZ:availability_zone',
-              'OS-DCF:diskConfig']
+              'tenant_id', 'user_id', 'created', 'locked',
+              'OS-EXT-STS:power_state', 'OS-EXT-STS:task_state',
+              'OS-EXT-SRV-ATTR:instance_name', 'OS-EXT-SRV-ATTR:host',
+              'OS-EXT-AZ:availability_zone', 'OS-DCF:diskConfig']
 
     def __init__(self, apiresource, request):
         super(Server, self).__init__(apiresource)
@@ -286,12 +290,16 @@ class SecurityGroupManager(network_base.SecurityGroupManager):
                     ip_protocol=None, from_port=None, to_port=None,
                     cidr=None, group_id=None):
         # Nova Security Group API does not use direction and ethertype fields.
-        sg = self.client.security_group_rules.create(parent_group_id,
-                                                     ip_protocol,
-                                                     from_port,
-                                                     to_port,
-                                                     cidr,
-                                                     group_id)
+        try:
+            sg = self.client.security_group_rules.create(parent_group_id,
+                                                         ip_protocol,
+                                                         from_port,
+                                                         to_port,
+                                                         cidr,
+                                                         group_id)
+        except nova_exceptions.BadRequest:
+            raise horizon_exceptions.Conflict(
+                _('Security group rule already exists.'))
         return SecurityGroupRule(sg)
 
     def rule_delete(self, security_group_rule_id):
@@ -447,20 +455,31 @@ class FloatingIpManager(network_base.FloatingIpManager):
         return True
 
 
-@memoized
-def novaclient(request):
-    insecure = getattr(settings, 'OPENSTACK_SSL_NO_VERIFY', False)
-    cacert = getattr(settings, 'OPENSTACK_SSL_CACERT', None)
+def get_auth_params_from_request(request):
+    """Extracts the properties from the request object needed by the novaclient
+    call below. These will be used to memoize the calls to novaclient
+    """
+    return (
+        request.user.username,
+        request.user.token.id,
+        request.user.tenant_id,
+        base.url_for(request, 'compute')
+    )
+
+
+@memoized_with_request(get_auth_params_from_request)
+def novaclient(request_auth_params):
+    username, token_id, project_id, auth_url = request_auth_params
     c = nova_client.Client(VERSIONS.get_active_version()['version'],
-                           request.user.username,
-                           request.user.token.id,
-                           project_id=request.user.tenant_id,
-                           auth_url=base.url_for(request, 'compute'),
-                           insecure=insecure,
-                           cacert=cacert,
+                           username,
+                           token_id,
+                           project_id=project_id,
+                           auth_url=auth_url,
+                           insecure=INSECURE,
+                           cacert=CACERT,
                            http_log_debug=settings.DEBUG)
-    c.client.auth_token = request.user.token.id
-    c.client.management_url = base.url_for(request, 'compute')
+    c.client.auth_token = token_id
+    c.client.management_url = auth_url
     return c
 
 
@@ -485,11 +504,13 @@ def server_serial_console(request, instance_id, console_type='serial'):
 
 
 def flavor_create(request, name, memory, vcpu, disk, flavorid='auto',
-                  ephemeral=0, swap=0, metadata=None, is_public=True):
+                  ephemeral=0, swap=0, metadata=None, is_public=True,
+                  rxtx_factor=1):
     flavor = novaclient(request).flavors.create(name, memory, vcpu, disk,
                                                 flavorid=flavorid,
                                                 ephemeral=ephemeral,
-                                                swap=swap, is_public=is_public)
+                                                swap=swap, is_public=is_public,
+                                                rxtx_factor=rxtx_factor)
     if (metadata):
         flavor_extra_set(request, flavor.id, metadata)
     return flavor
@@ -516,10 +537,63 @@ def flavor_list(request, is_public=True, get_extras=False):
     return flavors
 
 
+def update_pagination(entities, page_size, marker, sort_dir, sort_key,
+                      reversed_order):
+    has_more_data = has_prev_data = False
+    if len(entities) > page_size:
+        has_more_data = True
+        entities.pop()
+        if marker is not None:
+            has_prev_data = True
+    # first page condition when reached via prev back
+    elif reversed_order and marker is not None:
+        has_more_data = True
+    # last page condition
+    elif marker is not None:
+        has_prev_data = True
+
+    # restore the original ordering here
+    if reversed_order:
+        entities = sorted(entities, key=lambda entity:
+                          (getattr(entity, sort_key) or '').lower(),
+                          reverse=(sort_dir == 'asc'))
+
+    return entities, has_more_data, has_prev_data
+
+
 @memoized
-def flavor_access_list(request, flavor=None):
+def flavor_list_paged(request, is_public=True, get_extras=False, marker=None,
+                      paginate=False, sort_key="name", sort_dir="desc",
+                      reversed_order=False):
+    """Get the list of available instance sizes (flavors)."""
+    has_more_data = False
+    has_prev_data = False
+
+    if paginate:
+        if reversed_order:
+            sort_dir = 'desc' if sort_dir == 'asc' else 'asc'
+        page_size = utils.get_page_size(request)
+        flavors = novaclient(request).flavors.list(is_public=is_public,
+                                                   marker=marker,
+                                                   limit=page_size + 1,
+                                                   sort_key=sort_key,
+                                                   sort_dir=sort_dir)
+        flavors, has_more_data, has_prev_data = update_pagination(
+            flavors, page_size, marker, sort_dir, sort_key, reversed_order)
+    else:
+        flavors = novaclient(request).flavors.list(is_public=is_public)
+
+    if get_extras:
+        for flavor in flavors:
+            flavor.extras = flavor_get_extras(request, flavor.id, True, flavor)
+
+    return (flavors, has_more_data, has_prev_data)
+
+
+@memoized_with_request(novaclient)
+def flavor_access_list(nova_api, flavor=None):
     """Get the list of access instance sizes (flavors)."""
-    return novaclient(request).flavor_access.list(flavor=flavor)
+    return nova_api.flavor_access.list(flavor=flavor)
 
 
 def add_tenant_to_flavor(request, flavor, tenant):
@@ -587,7 +661,8 @@ def server_create(request, name, image, flavor, key_name, user_data,
                   security_groups, block_device_mapping=None,
                   block_device_mapping_v2=None, nics=None,
                   availability_zone=None, instance_count=1, admin_pass=None,
-                  disk_config=None, config_drive=None, meta=None):
+                  disk_config=None, config_drive=None, meta=None,
+                  scheduler_hints=None):
     return Server(novaclient(request).servers.create(
         name, image, flavor, userdata=user_data,
         security_groups=security_groups,
@@ -596,7 +671,7 @@ def server_create(request, name, image, flavor, key_name, user_data,
         nics=nics, availability_zone=availability_zone,
         min_count=instance_count, admin_pass=admin_pass,
         disk_config=disk_config, config_drive=config_drive,
-        meta=meta), request)
+        meta=meta, scheduler_hints=scheduler_hints), request)
 
 
 def server_delete(request, instance):
@@ -890,6 +965,10 @@ def availability_zone_list(request, detailed=False):
     return novaclient(request).availability_zones.list(detailed=detailed)
 
 
+def server_group_list(request):
+    return novaclient(request).server_groups.list()
+
+
 def service_list(request, binary=None):
     return novaclient(request).services.list(binary=binary)
 
@@ -958,27 +1037,25 @@ def interface_detach(request, server, port_id):
     return novaclient(request).servers.interface_detach(server, port_id)
 
 
-@memoized
-def list_extensions(request):
+@memoized_with_request(novaclient)
+def list_extensions(nova_api):
     """List all nova extensions, except the ones in the blacklist."""
-
     blacklist = set(getattr(settings,
                             'OPENSTACK_NOVA_EXTENSIONS_BLACKLIST', []))
     return [
         extension for extension in
-        nova_list_extensions.ListExtManager(novaclient(request)).show_all()
+        nova_list_extensions.ListExtManager(nova_api).show_all()
         if extension.name not in blacklist
     ]
 
 
-@memoized
-def extension_supported(extension_name, request):
+@memoized_with_request(list_extensions, 1)
+def extension_supported(extension_name, extensions):
     """Determine if nova supports a given extension name.
 
     Example values for the extension_name include AdminActions, ConsoleOutput,
     etc.
     """
-    extensions = list_extensions(request)
     for extension in extensions:
         if extension.name == extension_name:
             return True

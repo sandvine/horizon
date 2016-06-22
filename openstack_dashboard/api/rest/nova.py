@@ -1,4 +1,3 @@
-
 # Copyright 2014, Rackspace, US, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +16,7 @@
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.utils import http as utils_http
+from django.utils.translation import ugettext_lazy as _
 from django.views import generic
 
 from novaclient import exceptions
@@ -25,6 +25,7 @@ from openstack_dashboard import api
 from openstack_dashboard.api.rest import json_encoder
 from openstack_dashboard.api.rest import urls
 from openstack_dashboard.api.rest import utils as rest_utils
+from openstack_dashboard.usage import quotas
 
 
 @urls.register
@@ -185,7 +186,7 @@ class Servers(generic.View):
     _optional_create = [
         'block_device_mapping', 'block_device_mapping_v2', 'nics', 'meta',
         'availability_zone', 'instance_count', 'admin_pass', 'disk_config',
-        'config_drive'
+        'config_drive', 'scheduler_hints'
     ]
 
     @rest_utils.ajax()
@@ -239,7 +240,7 @@ class Servers(generic.View):
             )
         except KeyError as e:
             raise rest_utils.AjaxError(400, 'missing required parameter '
-                                       "'%s'" % e.args[0])
+                                            "'%s'" % e.args[0])
         kw = {}
         for name in self._optional_create:
             if name in request.DATA:
@@ -352,6 +353,33 @@ class Flavors(generic.View):
             result['items'].append(d)
         return result
 
+    @rest_utils.ajax(data_required=True)
+    def post(self, request):
+        flavor_access = request.DATA.get('flavor_access', [])
+        flavor_id = request.DATA['id']
+        is_public = not flavor_access
+
+        flavor = api.nova.flavor_create(request,
+                                        name=request.DATA['name'],
+                                        memory=request.DATA['ram'],
+                                        vcpu=request.DATA['vcpus'],
+                                        disk=request.DATA['disk'],
+                                        ephemeral=request
+                                        .DATA['OS-FLV-EXT-DATA:ephemeral'],
+                                        swap=request.DATA['swap'],
+                                        flavorid=flavor_id,
+                                        is_public=is_public
+                                        )
+
+        for project in flavor_access:
+            api.nova.add_tenant_to_flavor(
+                request, flavor.id, project.get('id'))
+
+        return rest_utils.CreatedResponse(
+            '/api/nova/flavors/%s' % flavor.id,
+            flavor.to_dict()
+        )
+
 
 @urls.register
 class Flavor(generic.View):
@@ -368,13 +396,63 @@ class Flavor(generic.View):
         Example GET:
         http://localhost/api/nova/flavors/1
         """
-        get_extras = request.GET.get('get_extras')
-        get_extras = bool(get_extras and get_extras.lower() == 'true')
+        get_extras = self.extract_boolean(request, 'get_extras')
+        get_access_list = self.extract_boolean(request, 'get_access_list')
         flavor = api.nova.flavor_get(request, flavor_id, get_extras=get_extras)
+
         result = flavor.to_dict()
+        # Bug: nova API stores and returns empty string when swap equals 0
+        # https://bugs.launchpad.net/nova/+bug/1408954
+        if 'swap' in result and result['swap'] == '':
+            result['swap'] = 0
         if get_extras:
             result['extras'] = flavor.extras
+
+        if get_access_list and not flavor.is_public:
+            access_list = [item.tenant_id for item in
+                           api.nova.flavor_access_list(request, flavor_id)]
+            result['access-list'] = access_list
         return result
+
+    @rest_utils.ajax()
+    def delete(self, request, flavor_id):
+        api.nova.flavor_delete(request, flavor_id)
+
+    @rest_utils.ajax(data_required=True)
+    def patch(self, request, flavor_id):
+        flavor_access = request.DATA.get('flavor_access', [])
+        is_public = not flavor_access
+
+        # Grab any existing extra specs, because flavor edit is currently
+        # implemented as a delete followed by a create.
+        extras_dict = api.nova.flavor_get_extras(request, flavor_id, raw=True)
+        # Mark the existing flavor as deleted.
+        api.nova.flavor_delete(request, flavor_id)
+        # Then create a new flavor with the same name but a new ID.
+        # This is in the same try/except block as the delete call
+        # because if the delete fails the API will error out because
+        # active flavors can't have the same name.
+        flavor = api.nova.flavor_create(request,
+                                        name=request.DATA['name'],
+                                        memory=request.DATA['ram'],
+                                        vcpu=request.DATA['vcpus'],
+                                        disk=request.DATA['disk'],
+                                        ephemeral=request
+                                        .DATA['OS-FLV-EXT-DATA:ephemeral'],
+                                        swap=request.DATA['swap'],
+                                        flavorid=flavor_id,
+                                        is_public=is_public
+                                        )
+        for project in flavor_access:
+            api.nova.add_tenant_to_flavor(
+                request, flavor.id, project.get('id'))
+
+        if extras_dict:
+            api.nova.flavor_extra_set(request, flavor.id, extras_dict)
+
+    def extract_boolean(self, request, name):
+        bool_string = request.GET.get(name)
+        return bool(bool_string and bool_string.lower() == 'true')
 
 
 @urls.register
@@ -433,3 +511,64 @@ class AggregateExtraSpecs(generic.View):
             for name in request.DATA.get('removed'):
                 updated[name] = None
         api.nova.aggregate_set_metadata(request, aggregate_id, updated)
+
+
+@urls.register
+class DefaultQuotaSets(generic.View):
+    """API for getting default quotas for nova
+    """
+    url_regex = r'nova/quota-sets/defaults/$'
+
+    @rest_utils.ajax()
+    def get(self, request):
+        """Get the values for Nova specific quotas
+
+        Example GET:
+        http://localhost/api/nova/quota-sets/defaults/
+        """
+        if api.base.is_service_enabled(request, 'compute'):
+            quota_set = api.nova.default_quota_get(request,
+                                                   request.user.tenant_id)
+
+            disabled_quotas = quotas.get_disabled_quotas(request)
+
+            filtered_quotas = [quota for quota in quota_set
+                               if quota.name not in disabled_quotas]
+
+            result = [{
+                'display_name': quotas.QUOTA_NAMES.get(
+                    quota.name,
+                    quota.name.replace("_", " ").title()
+                ) + '',
+                'name': quota.name,
+                'limit': quota.limit
+            } for quota in filtered_quotas]
+
+            return {'items': result}
+        else:
+            raise rest_utils.AjaxError(501, _('Service Nova is disabled.'))
+
+    @rest_utils.ajax(data_required=True)
+    def patch(self, request):
+        """Update the values for Nova specific quotas
+
+        This method returns HTTP 204 (no content) on success.
+        """
+        if api.base.is_service_enabled(request, 'compute'):
+            disabled_quotas = quotas.get_disabled_quotas(request)
+
+            all_quotas = quotas.NOVA_QUOTA_FIELDS + quotas.MISSING_QUOTA_FIELDS
+
+            filtered_quotas = [quota for quota in all_quotas
+                               if quota not in disabled_quotas]
+
+            request_data = {
+                key: request.DATA.get(key, None) for key in filtered_quotas
+            }
+
+            nova_data = {key: value for key, value in request_data.items()
+                         if value is not None}
+
+            api.nova.default_quota_update(request, **nova_data)
+        else:
+            raise rest_utils.AjaxError(501, _('Service Nova is disabled.'))

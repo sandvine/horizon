@@ -13,7 +13,6 @@
 #    under the License.
 
 from django.conf.urls import include
-from django.conf.urls import patterns
 from django.conf.urls import url
 
 from openstack_dashboard.dashboards.project.networks.ports \
@@ -30,11 +29,16 @@ from openstack_dashboard.dashboards.project.networks import views
 NETWORKS = r'^(?P<network_id>[^/]+)/%s$'
 
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
     url(r'^create$', views.CreateView.as_view(), name='create'),
-    url(NETWORKS % 'detail', views.DetailView.as_view(), name='detail'),
+    url(NETWORKS % 'detail(\?tab=network_tabs__overview)?$',
+        views.DetailView.as_view(),
+        name='detail'),
+    url(NETWORKS % 'detail\?tab=network_tabs__ports_tab$',
+        views.DetailView.as_view(), name='ports_tab'),
+    url(NETWORKS % 'detail\?tab=network_tabs__subnets_tab$',
+        views.DetailView.as_view(), name='subnets_tab'),
     url(NETWORKS % 'update', views.UpdateView.as_view(), name='update'),
     url(NETWORKS % 'subnets/create', subnet_views.CreateView.as_view(),
         name='addsubnet'),
@@ -43,4 +47,5 @@ urlpatterns = patterns(
     url(r'^(?P<network_id>[^/]+)/ports/(?P<port_id>[^/]+)/update$',
         port_views.UpdateView.as_view(), name='editport'),
     url(r'^subnets/', include(subnet_urls, namespace='subnets')),
-    url(r'^ports/', include(port_urls, namespace='ports')))
+    url(r'^ports/', include(port_urls, namespace='ports')),
+]

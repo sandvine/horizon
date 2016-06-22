@@ -18,12 +18,12 @@
   "use strict";
 
   describe('st-magic-search directive', function () {
-    var $element, $scope, $timeout;
+    var $element, $scope, $timeout, magicSearchEvents;
 
     beforeEach(module('templates'));
     beforeEach(module('smart-table'));
     beforeEach(module('horizon.framework.widgets'));
-    beforeEach(module('MagicSearch'));
+    beforeEach(module('horizon.framework.widgets.magic-search'));
     beforeEach(module(function ($provide) {
       $provide.value('$window', {
         location: {
@@ -40,6 +40,7 @@
       var $compile = $injector.get('$compile');
       $scope = $injector.get('$rootScope').$new();
       $timeout = $injector.get('$timeout');
+      magicSearchEvents = $injector.get('horizon.framework.widgets.magic-search.events');
 
       $scope.rows = [
         { name: 'name 1', server_name: 'server 1', status: 'active', flavor: 'm1.tiny' },
@@ -92,55 +93,116 @@
       /* eslint-disable angular/window-service */
       var msTemplate = window.STATIC_URL + 'framework/widgets/magic-search/magic-search.html';
       /* eslint-enable angular/window-service */
-      var stMagicSearch =
-        '<st-magic-search>' +
+      var markup =
+        '<hz-magic-search-context filter-facets="filterFacets">' +
         '  <magic-search ' +
         '    template="' + msTemplate + '"' +
         '    strings="filterStrings" ' +
         '    facets="{{ filterFacets }}">' +
         '  </magic-search>' +
-        '</st-magic-search>';
-      var markup = '<table st-table="rows">' +
-                   '<thead>' +
-                   ' <tr>' +
-                   '   <th>' + stMagicSearch + '</th>' +
-                   ' </tr>' +
-                   '</thead>' +
-                   '<tbody>' +
-                   '  <tr ng-repeat="row in rows">' +
-                   '    <td>{{ row.name }}</td>' +
-                   '  </tr>' +
-                   '</tbody>' +
-                   '</table>';
+        '<table st-magic-search st-table="rows">' +
+        '<thead>' +
+        ' <tr>' +
+        '   <th></th>' +
+        ' </tr>' +
+        '</thead>' +
+        '<tbody>' +
+        '  <tr ng-repeat="row in rows">' +
+        '    <td>{{ row.name }}</td>' +
+        '    <td>{{ row.status }}</td>' +
+        '  </tr>' +
+        '</tbody>' +
+        '</table>' +
+        '</hz-magic-search-context>';
 
-      $element = $compile(angular.element(markup))($scope);
+      $element = $compile(angular.element(markup));
 
       $scope.$apply();
     }));
 
-    it('should filter table to two rows if text searching with "active"', function () {
-      $scope.$broadcast('textSearch', 'active');
+    it('should filter table to two rows if text searching with "shutdown"', function () {
+      var element = $element($scope);
+      $scope.$apply();
+
+      $scope.$broadcast(magicSearchEvents.TEXT_SEARCH, 'shutdown');
       $timeout.flush();
-      expect($element.find('tbody tr').length).toBe(2);
+
+      expect(element.find('tbody tr').length).toBe(2);
     });
 
     it('should filter table to two rows if facet with static === "shutdown"', function () {
-      $scope.$broadcast('searchUpdated', 'status=shutdown');
+      var element = $element($scope);
+      $scope.$apply();
+
+      $scope.$broadcast(magicSearchEvents.SEARCH_UPDATED, 'status=shutdown');
       $timeout.flush();
-      expect($element.find('tbody tr').length).toBe(2);
+
+      expect(element.find('tbody tr').length).toBe(2);
+    });
+
+    it('should filter table to two rows if facet with status.what === "shutdown"', function () {
+      var element = $element($scope);
+      $scope.$apply();
+
+      $scope.$broadcast(magicSearchEvents.SEARCH_UPDATED, 'status.what=shutdown');
+      $timeout.flush();
+
+      expect(element.find('tbody tr').length).toBe(0);
     });
 
     it('should filter table to 1 row if facet with name === "name 1"', function () {
-      $scope.$broadcast('searchUpdated', 'name=name 1');
-      $scope.$broadcast('textSearch', 'active');
+      var element = $element($scope);
+      $scope.$apply();
+
+      $scope.$broadcast(magicSearchEvents.SEARCH_UPDATED, 'name=name 1');
+      $scope.$broadcast(magicSearchEvents.TEXT_SEARCH, 'active');
       $timeout.flush();
-      expect($element.find('tbody tr').length).toBe(1);
+
+      expect(element.find('tbody tr').length).toBe(1);
     });
 
-    it('should not filter table if filter is server side', function () {
-      $scope.$broadcast('searchUpdated', 'server_name=server 1');
+    it('should not filter table if filter is server side and raise event', function () {
+      spyOn($scope, '$emit').and.callThrough();
+      var element = $element($scope);
+      $scope.$apply();
+
+      $scope.$broadcast(magicSearchEvents.SEARCH_UPDATED, 'server_name=server 1');
       $timeout.flush();
-      expect($element.find('tbody tr').length).toBe(6);
+
+      expect(element.find('tbody tr').length).toBe(6);
+      expect($scope.$emit).toHaveBeenCalledWith(
+        magicSearchEvents.SERVER_SEARCH_UPDATED,
+        {
+          magicSearchQuery: 'server_name=server 1',
+          magicSearchQueryChanged: true,
+          queryStringChanged: false
+        }
+      );
+    });
+
+    it('should not raise serverSearchUpdated if filter has not changed', function () {
+      spyOn($scope, '$emit').and.callThrough();
+      var element = $element($scope);
+      $scope.$apply();
+
+      $scope.$broadcast(magicSearchEvents.SEARCH_UPDATED, 'server_name=server 1');
+      $timeout.flush();
+
+      $scope.$broadcast(magicSearchEvents.SEARCH_UPDATED, 'server_name=server 1');
+      $timeout.flush();
+
+      expect(element.find('tbody tr').length).toBe(6);
+      expect($scope.$emit).toHaveBeenCalledWith(
+        magicSearchEvents.SERVER_SEARCH_UPDATED,
+        {
+          magicSearchQuery: 'server_name=server 1',
+          magicSearchQueryChanged: true,
+          queryStringChanged: false
+        }
+      );
+
+      // Original expectation was 2.
+      expect($scope.$emit.calls.count()).toEqual(1);
     });
 
   });

@@ -22,6 +22,7 @@ import os
 import xstatic.main
 import xstatic.pkg.angular
 import xstatic.pkg.angular_bootstrap
+import xstatic.pkg.angular_fileupload
 import xstatic.pkg.angular_gettext
 import xstatic.pkg.angular_lrdragndrop
 import xstatic.pkg.angular_smart_table
@@ -38,7 +39,6 @@ import xstatic.pkg.jquery_quicksearch
 import xstatic.pkg.jquery_tablesorter
 import xstatic.pkg.jquery_ui
 import xstatic.pkg.jsencrypt
-import xstatic.pkg.magic_search
 import xstatic.pkg.mdi
 import xstatic.pkg.rickshaw
 import xstatic.pkg.roboto_fontface
@@ -55,6 +55,9 @@ def get_staticfiles_dirs(webroot='/'):
                                  root_url=webroot).base_dir),
         ('horizon/lib/angular',
             xstatic.main.XStatic(xstatic.pkg.angular_bootstrap,
+                                 root_url=webroot).base_dir),
+        ('horizon/lib/angular',
+            xstatic.main.XStatic(xstatic.pkg.angular_fileupload,
                                  root_url=webroot).base_dir),
         ('horizon/lib/angular',
             xstatic.main.XStatic(xstatic.pkg.angular_gettext,
@@ -100,9 +103,6 @@ def get_staticfiles_dirs(webroot='/'):
                                  root_url=webroot).base_dir),
         ('horizon/lib/jsencrypt',
             xstatic.main.XStatic(xstatic.pkg.jsencrypt,
-                                 root_url=webroot).base_dir),
-        ('horizon/lib/magic_search',
-            xstatic.main.XStatic(xstatic.pkg.magic_search,
                                  root_url=webroot).base_dir),
         ('horizon/lib/mdi',
          xstatic.main.XStatic(xstatic.pkg.mdi,

@@ -214,15 +214,44 @@ class HeatApiTests(test.APITestCase):
         from heatclient.v1 import stacks
         self.assertIsInstance(returned_stack, stacks.Stack)
 
+    def test_snapshot_create(self):
+        stack_id = self.stacks.first().id
+        snapshot_create = self.stack_snapshot_create.list()[0]
+
+        heatclient = self.stub_heatclient()
+        heatclient.stacks = self.mox.CreateMockAnything()
+        heatclient.stacks.snapshot(stack_id).AndReturn(snapshot_create)
+        self.mox.ReplayAll()
+
+        returned_snapshot_create_info = api.heat.snapshot_create(self.request,
+                                                                 stack_id)
+
+        self.assertEqual(returned_snapshot_create_info, snapshot_create)
+
+    def test_snapshot_list(self):
+        stack_id = self.stacks.first().id
+        snapshot_list = self.stack_snapshot.list()
+
+        heatclient = self.stub_heatclient()
+        heatclient.stacks = self.mox.CreateMockAnything()
+        heatclient.stacks.snapshot_list(stack_id).AndReturn(snapshot_list)
+        self.mox.ReplayAll()
+
+        returned_snapshots = api.heat.snapshot_list(self.request, stack_id)
+
+        self.assertItemsEqual(returned_snapshots, snapshot_list)
+
     def test_get_template_files_with_template_data(self):
         tmpl = '''
+    # comment
+
     heat_template_version: 2013-05-23
     resources:
       server1:
         type: OS::Nova::Server
         properties:
-            flavor: m1.medium
-            image: cirros
+          flavor: m1.medium
+          image: cirros
     '''
         expected_files = {}
         files = api.heat.get_template_files(template_data=tmpl)[0]
@@ -230,6 +259,8 @@ class HeatApiTests(test.APITestCase):
 
     def test_get_template_files(self):
         tmpl = '''
+    # comment
+
     heat_template_version: 2013-05-23
     resources:
       server1:
@@ -254,6 +285,8 @@ class HeatApiTests(test.APITestCase):
     def test_get_template_files_with_template_url(self):
         url = 'https://test.example/example.yaml'
         data = b'''
+    # comment
+
     heat_template_version: 2013-05-23
     resources:
       server1:
@@ -279,6 +312,8 @@ class HeatApiTests(test.APITestCase):
 
     def test_get_template_files_invalid(self):
         tmpl = '''
+    # comment
+
     heat_template_version: 2013-05-23
     resources:
       server1:
@@ -294,3 +329,30 @@ class HeatApiTests(test.APITestCase):
             api.heat.get_template_files(template_data=tmpl)[0]
         except exceptions.GetFileError:
             self.assertRaises(exceptions.GetFileError)
+
+    def test_template_version_list(self):
+        api_template_versions = self.template_versions.list()
+
+        heatclient = self.stub_heatclient()
+        heatclient.template_versions = self.mox.CreateMockAnything()
+        heatclient.template_versions.list().AndReturn(api_template_versions)
+        self.mox.ReplayAll()
+
+        template_versions = api.heat.template_version_list(self.request)
+
+        self.assertItemsEqual(template_versions, api_template_versions)
+
+    def test_template_function_list(self):
+        template_version = self.template_versions.first().version
+        api_template_functions = self.template_functions.list()
+
+        heatclient = self.stub_heatclient()
+        heatclient.template_versions = self.mox.CreateMockAnything()
+        heatclient.template_versions.get(
+            template_version).AndReturn(api_template_functions)
+        self.mox.ReplayAll()
+
+        template_functions = api.heat.template_function_list(
+            self.request, template_version)
+
+        self.assertItemsEqual(template_functions, api_template_functions)

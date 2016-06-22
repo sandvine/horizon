@@ -22,10 +22,11 @@
 
   launchInstanceWorkflow.$inject = [
     'horizon.dashboard.project.workflow.launch-instance.basePath',
+    'horizon.dashboard.project.workflow.launch-instance.step-policy',
     'horizon.app.core.workflow.factory'
   ];
 
-  function launchInstanceWorkflow(basePath, dashboardWorkflow) {
+  function launchInstanceWorkflow(basePath, stepPolicy, dashboardWorkflow) {
     return dashboardWorkflow({
       title: gettext('Launch Instance'),
 
@@ -60,6 +61,14 @@
           requiredServiceTypes: ['network']
         },
         {
+          id: 'ports',
+          title: gettext('Network Ports'),
+          templateUrl: basePath + 'networkports/ports.html',
+          helpUrl: basePath + 'networkports/ports.help.html',
+          formName: 'launchInstanceNetworkPortForm',
+          requiredServiceTypes: ['network']
+        },
+        {
           id: 'secgroups',
           title: gettext('Security Groups'),
           templateUrl: basePath + 'security-groups/security-groups.html',
@@ -81,6 +90,16 @@
           formName: 'launchInstanceConfigurationForm'
         },
         {
+          id: 'hints',
+          title: gettext('Scheduler Hints'),
+          templateUrl: basePath + 'scheduler-hints/scheduler-hints.html',
+          helpUrl: basePath + 'scheduler-hints/scheduler-hints.help.html',
+          formName: 'launchInstanceSchedulerHintsForm',
+          policy: stepPolicy.schedulerHints,
+          setting: 'LAUNCH_INSTANCE_DEFAULTS.enable_scheduler_hints'
+        },
+        {
+          id: 'metadata',
           title: gettext('Metadata'),
           templateUrl: basePath + 'metadata/metadata.html',
           helpUrl: basePath + 'metadata/metadata.help.html',
@@ -93,7 +112,7 @@
       },
 
       btnIcon: {
-        finish: 'fa fa-cloud-download'
+        finish: 'fa fa-cloud-upload'
       }
     });
   }

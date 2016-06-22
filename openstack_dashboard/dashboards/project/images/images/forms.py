@@ -101,27 +101,29 @@ class CreateImageForm(forms.SelfHandlingForm):
         widget=forms.Select(attrs={
             'class': 'switchable',
             'data-slug': 'source'}))
+    image_url_attrs = {
+        'class': 'switched',
+        'data-switch-on': 'source',
+        'data-source-url': _('Image Location'),
+        'ng-model': 'ctrl.copyFrom',
+        'ng-change': 'ctrl.selectImageFormat(ctrl.copyFrom)'
+    }
     image_url = ImageURLField(label=_("Image Location"),
                               help_text=_("An external (HTTP/HTTPS) URL to "
                                           "load the image from."),
-                              widget=forms.TextInput(attrs={
-                                  'class': 'switched',
-                                  'data-switch-on': 'source',
-                                  'data-source-url': _('Image Location'),
-                                  'ng-model': 'copyFrom',
-                                  'ng-change':
-                                  'ctrl.selectImageFormat(copyFrom)'}),
+                              widget=forms.TextInput(attrs=image_url_attrs),
                               required=False)
+    image_attrs = {
+        'class': 'switched',
+        'data-switch-on': 'source',
+        'data-source-file': _('Image File'),
+        'ng-model': 'ctrl.imageFile',
+        'ng-change': 'ctrl.selectImageFormat(ctrl.imageFile.name)',
+        'image-file-on-change': None
+    }
     image_file = forms.FileField(label=_("Image File"),
                                  help_text=_("A local image to upload."),
-                                 widget=forms.FileInput(attrs={
-                                     'class': 'switched',
-                                     'data-switch-on': 'source',
-                                     'data-source-file': _('Image File'),
-                                     'ng-model': 'imageFile',
-                                     'ng-change':
-                                     'ctrl.selectImageFormat(imageFile.name)',
-                                     'image-file-on-change': None}),
+                                 widget=forms.FileInput(attrs=image_attrs),
                                  required=False)
     kernel = forms.ChoiceField(
         label=_('Kernel'),
@@ -140,8 +142,11 @@ class CreateImageForm(forms.SelfHandlingForm):
                                     widget=forms.Select(attrs={
                                         'class': 'switchable',
                                         'ng-model': 'ctrl.diskFormat'}))
-    architecture = forms.CharField(max_length=255, label=_("Architecture"),
-                                   required=False)
+    architecture = forms.CharField(
+        max_length=255,
+        label=_("Architecture"),
+        help_text=_('CPU architecture of the image.'),
+        required=False)
     minimum_disk = forms.IntegerField(
         label=_("Minimum Disk (GB)"),
         min_value=0,
@@ -163,8 +168,14 @@ class CreateImageForm(forms.SelfHandlingForm):
             'class': 'switched',
             'data-source-url': _('Image Location'),
             'data-switch-on': 'source'}))
-    is_public = forms.BooleanField(label=_("Public"), required=False)
-    protected = forms.BooleanField(label=_("Protected"), required=False)
+    is_public = forms.BooleanField(
+        label=_("Public"),
+        help_text=_('Make the image visible across projects.'),
+        required=False)
+    protected = forms.BooleanField(
+        label=_("Protected"),
+        help_text=_('Prevent the deletion of the image.'),
+        required=False)
 
     def __init__(self, request, *args, **kwargs):
         super(CreateImageForm, self).__init__(request, *args, **kwargs)
@@ -236,15 +247,23 @@ class CreateImageForm(forms.SelfHandlingForm):
 
         # The image_file key can be missing based on particular upload
         # conditions. Code defensively for it here...
+        source_type = data.get('source_type', None)
         image_file = data.get('image_file', None)
         image_url = data.get('image_url', None)
 
         if not image_url and not image_file:
-            raise ValidationError(
-                _("A image or external image location must be specified."))
-        elif image_url and image_file:
-            raise ValidationError(
-                _("Can not specify both image and external image location."))
+            if source_type == 'file':
+                raise ValidationError({'image_file': ["An image file "
+                                                      "or an external "
+                                                      "location must "
+                                                      "be specified.",
+                                                      ]})
+            else:
+                raise ValidationError({'image_url': ["An image file "
+                                                     "or an external "
+                                                     "location must "
+                                                     "be specified.",
+                                                     ]})
         else:
             return data
 
@@ -263,9 +282,9 @@ class CreateImageForm(forms.SelfHandlingForm):
 
         try:
             image = api.glance.image_create(request, **meta)
-            messages.success(request,
-                             _('Your image %s has been queued for creation.') %
-                             meta['name'])
+            messages.info(request,
+                          _('Your image %s has been queued for creation.') %
+                          meta['name'])
             return image
         except Exception as e:
             msg = _('Unable to create new image')
@@ -339,7 +358,9 @@ class UpdateImageForm(forms.SelfHandlingForm):
                                               if value]
         if not policy.check((("image", "publicize_image"),), request):
             self.fields['public'].widget = forms.CheckboxInput(
-                attrs={'readonly': 'readonly'})
+                attrs={'readonly': 'readonly', 'disabled': 'disabled'})
+            self.fields['public'].help_text = _(
+                'Non admin users are not allowed to make images public.')
 
     def handle(self, request, data):
         image_id = data['image_id']

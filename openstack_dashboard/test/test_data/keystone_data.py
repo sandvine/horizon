@@ -24,6 +24,8 @@ from keystoneclient.v2_0 import roles
 from keystoneclient.v2_0 import tenants
 from keystoneclient.v2_0 import users
 from keystoneclient.v3.contrib.federation import identity_providers
+from keystoneclient.v3.contrib.federation import mappings
+from keystoneclient.v3.contrib.federation import protocols
 from keystoneclient.v3 import domains
 from keystoneclient.v3 import groups
 from keystoneclient.v3 import role_assignments
@@ -49,18 +51,6 @@ SERVICE_CATALOG = [
           "adminURL": "http://admin.nova2.example.com:8774/v2",
           "internalURL": "http://int.nova2.example.com:8774/v2",
           "publicURL": "http://public.nova2.example.com:8774/v2"}]},
-    {"type": "volume",
-     "name": "cinder",
-     "endpoints_links": [],
-     "endpoints": [
-         {"region": "RegionOne",
-          "adminURL": "http://admin.nova.example.com:8776/v1",
-          "internalURL": "http://int.nova.example.com:8776/v1",
-          "publicURL": "http://public.nova.example.com:8776/v1"},
-         {"region": "RegionTwo",
-          "adminURL": "http://admin.nova.example.com:8776/v1",
-          "internalURL": "http://int.nova.example.com:8776/v1",
-          "publicURL": "http://public.nova.example.com:8776/v1"}]},
     {"type": "volumev2",
      "name": "cinderv2",
      "endpoints_links": [],
@@ -146,6 +136,8 @@ def data(TEST):
     TEST.ec2 = utils.TestDataContainer()
 
     TEST.identity_providers = utils.TestDataContainer()
+    TEST.idp_mappings = utils.TestDataContainer()
+    TEST.idp_protocols = utils.TestDataContainer()
 
     admin_role_dict = {'id': '1',
                        'name': 'admin'}
@@ -387,3 +379,46 @@ def data(TEST):
         identity_providers.IdentityProviderManager,
         idp_dict_2)
     TEST.identity_providers.add(idp_1, idp_2)
+
+    idp_mapping_dict = {
+        "id": "mapping_1",
+        "rules": [
+            {
+                "local": [
+                    {
+                        "user": {
+                            "name": "{0}"
+                        }
+                    },
+                    {
+                        "group": {
+                            "id": "0cd5e9"
+                        }
+                    }
+                ],
+                "remote": [
+                    {
+                        "type": "UserName"
+                    },
+                    {
+                        "type": "orgPersonType",
+                        "not_any_of": [
+                            "Contractor",
+                            "Guest"
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+    idp_mapping = mappings.Mapping(
+        mappings.MappingManager(None),
+        idp_mapping_dict)
+    TEST.idp_mappings.add(idp_mapping)
+
+    idp_protocol_dict_1 = {'id': 'protocol_1',
+                           'mapping_id': 'mapping_1'}
+    idp_protocol = protocols.Protocol(
+        protocols.ProtocolManager,
+        idp_protocol_dict_1)
+    TEST.idp_protocols.add(idp_protocol)

@@ -18,15 +18,16 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
+from openstack_auth import utils
+
 from horizon import exceptions
 from horizon import forms
 from horizon import messages
 from horizon import workflows
 
 from openstack_dashboard import api
-
 from openstack_dashboard.dashboards.identity.domains import constants
-from openstack_dashboard.utils.identity import IdentityMixIn
+
 
 LOG = logging.getLogger(__name__)
 
@@ -295,7 +296,7 @@ class UpdateDomainInfo(workflows.Step):
                    "enabled")
 
 
-class UpdateDomain(workflows.Workflow, IdentityMixIn):
+class UpdateDomain(workflows.Workflow):
     slug = "update_domain"
     name = _("Edit Domain")
     finalize_button_name = _("Save")
@@ -322,8 +323,16 @@ class UpdateDomain(workflows.Workflow, IdentityMixIn):
             users_roles = api.keystone.get_domain_users_roles(request,
                                                               domain=domain_id)
             users_to_modify = len(users_roles)
+            all_users = api.keystone.user_list(request,
+                                               domain=domain_id)
+            users_dict = {user.id: user.name for user in all_users}
 
             for user_id in users_roles.keys():
+                # Don't remove roles if the user isn't in the domain
+                if user_id not in users_dict:
+                    users_to_modify -= 1
+                    continue
+
                 # Check if there have been any changes in the roles of
                 # Existing domain members.
                 current_role_ids = list(users_roles[user_id])
@@ -353,11 +362,10 @@ class UpdateDomain(workflows.Workflow, IdentityMixIn):
                 # domain_id == request.user.domain_id
                 is_current_domain = True
 
-                _admin_roles = self.get_admin_roles()
-                available_admin_role_ids = [role.id for role in
-                                            available_roles
-                                            if role.name.lower() in
-                                            _admin_roles]
+                available_admin_role_ids = [
+                    role.id for role in available_roles
+                    if role.name.lower() in utils.get_admin_roles()
+                ]
                 admin_role_ids = [role for role in current_role_ids
                                   if role in available_admin_role_ids]
                 if len(admin_role_ids):
@@ -485,7 +493,7 @@ class UpdateDomain(workflows.Workflow, IdentityMixIn):
         try:
             LOG.info('Updating domain with name "%s"' % data['name'])
             api.keystone.domain_update(request,
-                                       domain_id=domain_id,
+                                       domain_id,
                                        name=data['name'],
                                        description=data['description'],
                                        enabled=data['enabled'])

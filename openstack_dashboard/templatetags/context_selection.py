@@ -77,16 +77,15 @@ def show_domain_list(context):
 @register.inclusion_tag('context_selection/_project_list.html',
                         takes_context=True)
 def show_project_list(context):
-    max_proj = getattr(settings,
-                       'DROPDOWN_MAX_ITEMS',
-                       30)
+    max_proj = getattr(settings, 'DROPDOWN_MAX_ITEMS', 30)
     if 'request' not in context:
         return {}
     request = context['request']
-    context = {'projects': sorted(context['authorized_tenants'],
-                                  key=lambda project: project.name)[:max_proj],
+    projects = sorted(context['authorized_tenants'],
+                      key=lambda project: project.name.lower())
+    context = {'projects': projects[:max_proj],
                'project_id': request.user.project_id,
-               'request': request}
+               'page_url': request.horizon.get('panel').get_absolute_url()}
     return context
 
 
@@ -97,8 +96,9 @@ def show_region_list(context):
         return {}
     request = context['request']
     context = {'region_name': request.user.services_region,
-               'regions': sorted(request.user.available_services_regions),
-               'request': request}
+               'regions': sorted(request.user.available_services_regions,
+                                 key=lambda x: x.lower()),
+               'page_url': request.horizon.get('panel').get_absolute_url()}
     return context
 
 
