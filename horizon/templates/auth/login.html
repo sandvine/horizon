@@ -7,6 +7,20 @@
 
 {% block content %}
   {% include 'auth/_login.html' %}
+<div  class="alert alert-success" role="alert" id=motd></div>
+
+<script>
+$(document).ready(function() {
+        $.get("/static/motd.json",function(data) {
+                var el = document.getElementById("motd");
+                var offset = 80 + data.length * 20;
+                data.forEach(function(item) {
+                        el.innerHTML += "<p>" + item.msg + "</p>";
+                        $(".login").css("top",offset.toString() + "px");
+                });
+        })
+});
+</script>
 {% endblock %}
 
 {% block footer %}
