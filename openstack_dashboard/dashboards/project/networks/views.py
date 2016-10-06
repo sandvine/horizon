@@ -15,6 +15,7 @@
 """
 Views for managing Neutron Networks.
 """
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
@@ -43,12 +44,16 @@ class IndexView(tables.DataTableView):
     table_class = project_tables.NetworksTable
     template_name = 'project/networks/index.html'
     page_title = _("Networks")
+    FILTERS_MAPPING = {'shared': {_("yes"): True, _("no"): False},
+                       'router:external': {_("yes"): True, _("no"): False},
+                       'admin_state_up': {_("up"): True, _("down"): False}}
 
     def get_data(self):
         try:
             tenant_id = self.request.user.tenant_id
+            search_opts = self.get_filters(filters_map=self.FILTERS_MAPPING)
             networks = api.neutron.network_list_for_tenant(
-                self.request, tenant_id, include_external=True)
+                self.request, tenant_id, include_external=True, **search_opts)
         except Exception:
             networks = []
             msg = _('Network list can not be retrieved.')
@@ -56,8 +61,22 @@ class IndexView(tables.DataTableView):
         return networks
 
 
-class CreateView(workflows.WorkflowView):
+class DefaultSubnetWorkflowMixin(object):
+
+    def get_default_dns_servers(self):
+        # this returns the default dns servers to be used for new subnets
+        dns_default = "\n".join(getattr(settings, 'OPENSTACK_NEUTRON_NETWORK',
+                                        {}).get('default_dns_nameservers', ''))
+        return dns_default
+
+
+class CreateView(DefaultSubnetWorkflowMixin, workflows.WorkflowView):
     workflow_class = project_workflows.CreateNetwork
+
+    def get_initial(self):
+        results = super(CreateView, self).get_initial()
+        results['dns_nameservers'] = self.get_default_dns_servers()
+        return results
 
 
 class UpdateView(forms.ModalFormView):
@@ -82,7 +101,10 @@ class UpdateView(forms.ModalFormView):
     def _get_object(self, *args, **kwargs):
         network_id = self.kwargs['network_id']
         try:
-            return api.neutron.network_get(self.request, network_id)
+            # no subnet values are read or editable in this view, so
+            # save the subnet expansion overhead
+            return api.neutron.network_get(self.request, network_id,
+                                           expand_subnet=False)
         except Exception:
             redirect = self.success_url
             msg = _('Unable to retrieve network details.')

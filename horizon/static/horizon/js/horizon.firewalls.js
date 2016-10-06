@@ -29,7 +29,7 @@ horizon.firewalls = {
       error: function() {
         if(via_user_submit) {
           horizon.clearErrorMessages();
-          horizon.alert('error', gettext('There was a problem communicating with the server, please try again.'));
+          horizon.toast.add('error', gettext('There was a problem communicating with the server, please try again.'));
         }
       }
     });
@@ -94,8 +94,8 @@ horizon.firewalls = {
       });
       $("#ruleListId ul").html(
         lists.sort(function(a,b){
-          if( $(a).data("index") < $(b).data("index")) { return -1; }
-          if( $(a).data("index") > $(b).data("index")) { return 1; }
+          if($(a).data("index") < $(b).data("index")) { return -1; }
+          if($(a).data("index") > $(b).data("index")) { return 1; }
           return 0;
         })
       );
@@ -201,8 +201,8 @@ horizon.firewalls = {
       });
       $("#routerListId ul").html(
         lists.sort(function(a,b){
-          if( $(a).data("index") < $(b).data("index")) { return -1; }
-          if( $(a).data("index") > $(b).data("index")) { return 1; }
+          if($(a).data("index") < $(b).data("index")) { return -1; }
+          if($(a).data("index") > $(b).data("index")) { return 1; }
           return 0;
         })
       );

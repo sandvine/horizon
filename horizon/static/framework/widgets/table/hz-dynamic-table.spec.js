@@ -61,12 +61,12 @@
     it('has the correct number of column headers', function() {
       var $element = digestMarkup($scope, $compile, markup);
       expect($element).toBeDefined();
-      expect($element.find('thead tr:eq(0) th').length).toBe(5);
+      expect($element.find('thead tr:nth-child(2) th').length).toBe(5);
     });
 
     it('displays selectAll checkbox when config selectAll set to True', function() {
       var $element = digestMarkup($scope, $compile, markup);
-      expect($element.find('thead tr:eq(0) th:first input').attr(
+      expect($element.find('thead tr:nth-child(2) th:first input').attr(
         'hz-select-all')).toBe('items');
     });
 
@@ -82,12 +82,12 @@
         ]
       };
       var $element = digestMarkup($scope, $compile, markup);
-      expect($element.find('thead tr:eq(0) th:first').hasClass('ng-hide')).toBe(true);
+      expect($element.find('thead tr:nth-child(2) th:first').hasClass('ng-hide')).toBe(true);
     });
 
     it('displays expander when config expand set to True', function() {
       var $element = digestMarkup($scope, $compile, markup);
-      expect($element.find('thead tr:eq(0) th:eq(1)').hasClass('expander')).toBe(true);
+      expect($element.find('thead tr:nth-child(2) th:eq(1)').hasClass('expander')).toBe(true);
     });
 
     it('does not display expander when config expand set to False', function() {
@@ -102,7 +102,7 @@
         ]
       };
       var $element = digestMarkup($scope, $compile, markup);
-      expect($element.find('thead tr:eq(0) th:eq(1)').hasClass('ng-hide')).toBe(true);
+      expect($element.find('thead tr:nth-child(2) th:eq(1)').hasClass('ng-hide')).toBe(true);
     });
 
     it('has the correct responsive priority classes', function() {
@@ -123,6 +123,19 @@
       expect($element.find('tbody tr:eq(2) td:eq(4)').text()).toContain('mice');
     });
 
+    it('displays the default no items message if noItemsMessage is not set', function() {
+      $scope.safeTableData = [];
+      var $element = digestMarkup($scope, $compile, markup);
+      expect($element.find('tbody td.no-rows-help').text()).toBe('No items to display.');
+    });
+
+    it('displays a custom no items message if noItemsMessage is provided', function() {
+      $scope.safeTableData = [];
+      $scope.config.noItemsMessage = 'A sample message';
+      var $element = digestMarkup($scope, $compile, markup);
+      expect($element.find('tbody td.no-rows-help').text()).toBe('A sample message');
+    });
+
     it('has no search or action buttons if none configured', function() {
       var $element = digestMarkup($scope, $compile, markup);
       expect($element.find('.hz-dynamic-table-preamble').length).toBe(1);
@@ -130,47 +143,23 @@
     });
 
     describe('search & action button preamble', function () {
-      beforeEach(function() {
-        $scope.filterFacets = [{ label: 'Name', name: 'name' }];
+      beforeEach(function () {
+        $scope.filterFacets = [{label: 'Name', name: 'name'}];
         $scope.batchActions = [
           {
             id: 'action',
-            service: {allowed: function () {
-              return $qExtensions.booleanAsPromise(false);
-            }},
-            template: { type: 'create' }}
+            service: {
+              allowed: function () {
+                return $qExtensions.booleanAsPromise(false);
+              }
+            },
+            template: {type: 'create'}
+          }
         ];
         markup =
           '<hz-dynamic-table config="config" items="safeTableData" ' +
           'filter-facets="filterFacets" batch-actions="batchActions">' +
           '</hz-dynamic-table>';
-      });
-
-      it('has the correct number of default columns', function() {
-        var $element = digestMarkup($scope, $compile, markup);
-        var preamble = $element.find('.hz-dynamic-table-preamble');
-        expect(preamble.length).toBe(1);
-        expect(preamble.find('hz-magic-search-bar').hasClass('col-md-12')).toBe(true);
-        expect(preamble.find('.col-md-12 actions').size()).toBe(1);
-      });
-
-      it('has the configured number of columns calculated', function() {
-        $scope.config.searchColumnSpan = 7;
-        var $element = digestMarkup($scope, $compile, markup);
-        var preamble = $element.find('.hz-dynamic-table-preamble');
-        expect(preamble.length).toBe(1);
-        expect(preamble.find('hz-magic-search-bar').hasClass('col-md-7')).toBe(true);
-        expect(preamble.find('.col-md-5 actions').size()).toBe(1);
-      });
-
-      it('has the configured number of columns', function() {
-        $scope.config.searchColumnSpan = 8;
-        $scope.config.actionColumnSpan = 4;
-        var $element = digestMarkup($scope, $compile, markup);
-        var preamble = $element.find('.hz-dynamic-table-preamble');
-        expect(preamble.length).toBe(1);
-        expect(preamble.find('hz-magic-search-bar').hasClass('col-md-8')).toBe(true);
-        expect(preamble.find('.col-md-4 actions').size()).toBe(1);
       });
     });
 
@@ -246,7 +235,56 @@
         expect($element.find('tbody tr:eq(1) td:eq(3)').text()).toContain('reptile-ish');
         expect($element.find('tbody tr:eq(2) td:eq(3)').text()).toContain('bird-ish');
       });
+
+      it('properly maps the cell content given a mapping', function() {
+
+        $scope.config = {
+          selectAll: true,
+          expand: false,
+          trackId: 'id',
+          columns: [
+            {id: 'animal', title: 'Animal', priority: 1,
+              values: {
+                cat: "Catamount",
+                snake: "Serpent",
+                sparrow: "CAPTAIN Jack Sparrow"
+              }
+            },
+            {id: 'type', title: 'Type', priority: 2},
+            {id: 'diet', title: 'Diet', priority: 1, sortDefault: true},
+            {id: 'domestic', title: 'Domestic', priority: 2}
+          ]
+        };
+        var $element = digestMarkup($scope, $compile, markup);
+        expect($element.find('tbody tr:eq(0) td:eq(2)').text()).toContain('Catamount');
+        expect($element.find('tbody tr:eq(1) td:eq(2)').text()).toContain('Serpent');
+        expect($element.find('tbody tr:eq(2) td:eq(2)').text()).toContain('CAPTAIN Jack Sparrow');
+      });
+
+      it('properly adds a link with urlFunction', function() {
+        $scope.config = {
+          selectAll: true,
+          expand: false,
+          trackId: 'id',
+          columns: [
+            {id: 'animal', title: 'Animal', priority: 1,
+              urlFunction: myFunction
+            },
+            {id: 'type', title: 'Type', priority: 2},
+            {id: 'diet', title: 'Diet', priority: 1, sortDefault: true},
+            {id: 'domestic', title: 'Domestic', priority: 2}
+          ]
+        };
+        var $element = digestMarkup($scope, $compile, markup);
+        expect($element.find('tbody tr:eq(0) td:eq(2) a').attr('href')).toBe('/here/cat');
+        expect($element.find('tbody tr:eq(1) td:eq(2) a').attr('href')).toBe('/here/snake');
+        expect($element.find('tbody tr:eq(2) td:eq(2) a').attr('href')).toBe('/here/sparrow');
+        function myFunction(item) {
+          return '/here/' + item.animal;
+        }
+      });
     });
 
   });
 }());
+

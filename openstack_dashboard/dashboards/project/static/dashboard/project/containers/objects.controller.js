@@ -39,9 +39,13 @@
     '$scope'
   ];
 
-  function ObjectsController(containersModel, containerRoute, batchActions,
-                             rowActions, $q, $routeParams, $scope)
-  {
+  function ObjectsController(containersModel,
+                             containerRoute,
+                             batchActions,
+                             rowActions,
+                             $q,
+                             $routeParams,
+                             $scope) {
     var ctrl = this;
 
     ctrl.rowActions = rowActions;
@@ -81,8 +85,7 @@
     ctrl.tableConfig = {
       selectAll: true,
       expand: false,
-      trackId: 'name',
-      searchColumnSpan: 6,
+      trackId: 'path',
       columns: [
         {
           id: 'name', title: 'Name', priority: 1, sortDefault: true,

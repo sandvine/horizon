@@ -267,7 +267,7 @@ class CinderApiTests(test.APITestCase):
         assoc_vol_types = \
             api.cinder.volume_type_list_with_qos_associations(self.request)
         associate_spec = assoc_vol_types[0].associated_qos_spec
-        self.assertTrue(associate_spec, qos_specs_only_one[0].name)
+        self.assertEqual(associate_spec, qos_specs_only_one[0].name)
 
     def test_volume_type_get_with_qos_association(self):
         volume_type = self.cinder_volume_types.first()
@@ -289,7 +289,7 @@ class CinderApiTests(test.APITestCase):
             api.cinder.volume_type_get_with_qos_association(self.request,
                                                             volume_type.id)
         associate_spec = assoc_vol_type.associated_qos_spec
-        self.assertTrue(associate_spec, qos_specs_only_one[0].name)
+        self.assertEqual(associate_spec, qos_specs_only_one[0].name)
 
     def test_absolute_limits_with_negative_values(self):
         values = {"maxTotalVolumes": -1, "totalVolumesUsed": -1}
@@ -450,7 +450,7 @@ class CinderApiVersionTests(test.TestCase):
         key_value = "snapshot_meta_value"
         metadata_value = {key_name: key_value}
         setattr(snapshot._apiresource, 'metadata', metadata_value)
-        self.assertTrue(key_name in snapshot.metadata.keys())
+        self.assertIn(key_name, snapshot.metadata.keys())
         self.assertEqual(key_value, snapshot.metadata['snapshot_meta_key'])
 
     def test_get_id_for_nameless_volume(self):

@@ -132,6 +132,24 @@ class CreateVolumeFromSnapshot(tables.LinkAction):
         return False
 
 
+class UpdateMetadata(tables.LinkAction):
+    name = "update_metadata"
+    verbose_name = _("Update Metadata")
+
+    ajax = False
+    attrs = {"ng-controller": "MetadataModalHelperController as modal"}
+
+    def __init__(self, **kwargs):
+        kwargs['preempt'] = True
+        super(UpdateMetadata, self).__init__(**kwargs)
+
+    def get_link_url(self, datum):
+        obj_id = self.table.get_object_id(datum)
+        self.attrs['ng-click'] = (
+            "modal.openMetadataModal('volume_snapshot', '%s', true)" % obj_id)
+        return "javascript:void(0);"
+
+
 class UpdateRow(tables.Row):
     ajax = True
 
@@ -141,7 +159,7 @@ class UpdateRow(tables.Row):
         return snapshot
 
 
-class SnapshotVolumeNameColumn(tables.Column):
+class SnapshotVolumeNameColumn(tables.WrappingColumn):
     def get_raw_data(self, snapshot):
         volume = snapshot._volume
         if volume:
@@ -168,9 +186,10 @@ class VolumeSnapshotsFilterAction(tables.FilterAction):
 
 
 class VolumeSnapshotsTable(volume_tables.VolumesTableBase):
-    name = tables.Column("name",
-                         verbose_name=_("Name"),
-                         link="horizon:project:volumes:snapshots:detail")
+    name = tables.WrappingColumn(
+        "name",
+        verbose_name=_("Name"),
+        link="horizon:project:volumes:snapshots:detail")
     volume_name = SnapshotVolumeNameColumn(
         "name",
         verbose_name=_("Volume Name"),
@@ -190,7 +209,8 @@ class VolumeSnapshotsTable(volume_tables.VolumesTableBase):
             launch_actions = (LaunchSnapshotNG,) + launch_actions
 
         row_actions = ((CreateVolumeFromSnapshot,) + launch_actions +
-                       (EditVolumeSnapshot, DeleteVolumeSnapshot))
+                       (EditVolumeSnapshot, DeleteVolumeSnapshot,
+                        UpdateMetadata))
         row_class = UpdateRow
         status_columns = ("status",)
         permissions = [(

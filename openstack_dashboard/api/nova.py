@@ -236,20 +236,18 @@ class SecurityGroupRule(base.APIResourceWrapper):
     _attrs = ['id', 'ip_protocol', 'from_port', 'to_port', 'ip_range', 'group']
 
     def __str__(self):
+        vals = {
+            'range': '%s:%s' % (self.from_port, self.to_port),
+            'ip_protocol': self.ip_protocol
+        }
+        if self.from_port == -1 and self.to_port == -1:
+            vals['range'] = 'any port'
         if 'name' in self.group:
-            vals = {'from': self.from_port,
-                    'to': self.to_port,
-                    'ip_protocol': self.ip_protocol,
-                    'group': self.group['name']}
-            return (_('ALLOW %(from)s:%(to)s/%(ip_protocol)s from %(group)s') %
-                    vals)
+            vals['group'] = self.group['name']
+            return (_('ALLOW %(range)s/%(ip_protocol)s from %(group)s') % vals)
         else:
-            vals = {'from': self.from_port,
-                    'to': self.to_port,
-                    'ip_protocol': self.ip_protocol,
-                    'cidr': self.ip_range['cidr']}
-            return (_('ALLOW %(from)s:%(to)s/%(ip_protocol)s from %(cidr)s') %
-                    vals)
+            vals['cidr'] = self.ip_range['cidr']
+            return (_('ALLOW %(range)s/%(ip_protocol)s from %(cidr)s') % vals)
 
     # The following attributes are defined to keep compatibility with Neutron
     @property
@@ -415,14 +413,16 @@ class FloatingIpManager(network_base.FloatingIpManager):
         return [FloatingIpPool(pool)
                 for pool in self.client.floating_ip_pools.list()]
 
-    def list(self):
-        return [FloatingIp(fip)
-                for fip in self.client.floating_ips.list()]
+    def list(self, all_tenants=False):
+        return [FloatingIp(fip) for fip in
+                self.client.floating_ips.list(
+                    all_tenants=all_tenants)]
 
     def get(self, floating_ip_id):
         return FloatingIp(self.client.floating_ips.get(floating_ip_id))
 
-    def allocate(self, pool):
+    def allocate(self, pool, tenant_id=None, **params):
+        # NOTE: tenant_id will never be used here.
         return FloatingIp(self.client.floating_ips.create(pool=pool))
 
     def release(self, floating_ip_id):
@@ -463,13 +463,14 @@ def get_auth_params_from_request(request):
         request.user.username,
         request.user.token.id,
         request.user.tenant_id,
-        base.url_for(request, 'compute')
+        base.url_for(request, 'compute'),
+        base.url_for(request, 'identity')
     )
 
 
 @memoized_with_request(get_auth_params_from_request)
 def novaclient(request_auth_params):
-    username, token_id, project_id, auth_url = request_auth_params
+    username, token_id, project_id, nova_url, auth_url = request_auth_params
     c = nova_client.Client(VERSIONS.get_active_version()['version'],
                            username,
                            token_id,
@@ -479,7 +480,7 @@ def novaclient(request_auth_params):
                            cacert=CACERT,
                            http_log_debug=settings.DEBUG)
     c.client.auth_token = token_id
-    c.client.management_url = auth_url
+    c.client.management_url = nova_url
     return c
 
 
@@ -674,8 +675,8 @@ def server_create(request, name, image, flavor, key_name, user_data,
         meta=meta, scheduler_hints=scheduler_hints), request)
 
 
-def server_delete(request, instance):
-    novaclient(request).servers.delete(instance)
+def server_delete(request, instance_id):
+    novaclient(request).servers.delete(instance_id)
 
 
 def server_get(request, instance_id):
@@ -810,7 +811,8 @@ def tenant_quota_get(request, tenant_id):
 
 
 def tenant_quota_update(request, tenant_id, **kwargs):
-    novaclient(request).quotas.update(tenant_id, **kwargs)
+    if kwargs:
+        novaclient(request).quotas.update(tenant_id, **kwargs)
 
 
 def default_quota_get(request, tenant_id):
@@ -1082,3 +1084,8 @@ def can_set_mount_point():
 def requires_keypair():
     features = getattr(settings, 'OPENSTACK_HYPERVISOR_FEATURES', {})
     return features.get('requires_keypair', False)
+
+
+def can_set_quotas():
+    features = getattr(settings, 'OPENSTACK_HYPERVISOR_FEATURES', {})
+    return features.get('enable_quotas', True)

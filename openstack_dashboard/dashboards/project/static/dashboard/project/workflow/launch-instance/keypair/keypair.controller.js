@@ -62,12 +62,32 @@
 
     ctrl.tableData = {
       available: launchInstanceModel.keypairs,
-      allocated: launchInstanceModel.newInstanceSpec.key_pair,
-      displayedAvailable: [],
-      displayedAllocated: []
+      allocated: launchInstanceModel.newInstanceSpec.key_pair
     };
 
-    ctrl.tableDetails = basePath + 'keypair/keypair-details.html';
+    ctrl.availableTableConfig = {
+      selectAll: false,
+      trackId: 'id',
+      detailsTemplateUrl: basePath + 'keypair/keypair-details.html',
+      columns: [
+        {id: 'name', title: gettext('Name'), priority: 1},
+        {id: 'fingerprint', title: gettext('Fingerprint'), priority: 2}
+      ]
+    };
+
+    ctrl.allocatedTableConfig = angular.copy(ctrl.availableTableConfig);
+    ctrl.allocatedTableConfig.noItemsMessage = gettext(
+      'Select a key pair from the available key pairs below.');
+
+    ctrl.filterFacets = [{
+      label: gettext('Name'),
+      name: 'name',
+      singleton: true
+    }, {
+      label: gettext('Fingerprint'),
+      name: 'fingerprint',
+      singleton: true
+    }];
 
     ctrl.tableLimits = {
       maxAllocation: 1
@@ -124,7 +144,9 @@
      * @returns {undefined} No return value
      */
     function notifyUserAndAssign(newKeypair) {
-      toastService.add('success', gettext('Created keypair: ' + newKeypair.name));
+      toastService.add('success',
+                       interpolate(gettext('Created keypair: %s'),
+                                   [newKeypair.name]));
       assignKeypair(newKeypair);
       ctrl.createdKeypair = newKeypair;
       ctrl.isKeypairCreated = true;

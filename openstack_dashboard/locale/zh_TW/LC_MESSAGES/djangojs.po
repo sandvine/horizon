@@ -3,9 +3,9 @@
 # Ching Kuo <igene@igene.tw>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: horizon 10.0.0.0b2.dev186\n"
+"Project-Id-Version: horizon 10.0.0.0rc2.dev86\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-06-22 21:54+0000\n"
+"POT-Creation-Date: 2016-09-30 21:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -47,42 +47,6 @@ msgstr "6"
 
 msgid "7"
 msgstr "7"
-
-msgid ""
-"<li><b>Image (with Create New Volume checked)</b>: This options uses an "
-"image to boot the instance, and creates a new volume to persist instance "
-"data. You can specify volume size and whether to delete the volume on "
-"deletion of the instance.</li>"
-msgstr ""
-"<li><b>映像檔（與「新增新的雲硬碟」一併勾選）</b>：這個選項利用映像檔來開機雲"
-"實例，並且新增一個新的雲硬碟來持續保存雲實例資料。您可以指定雲硬碟容量以及在"
-"刪除雲實例時是否一併刪除雲硬碟。</li>"
-
-msgid "<li><b>Image</b>: This option uses an image to boot the instance.</li>"
-msgstr "<li><b>映像檔</b>：這個選項用映像檔來開機雲實例。</li>"
-
-msgid ""
-"<li><b>Instance Snapshot</b>: This option uses an instance snapshot to boot "
-"the instance.</li>"
-msgstr "<li><b>雲實例即時存檔</b>：這個選項用雲實例即時存檔來開機雲實例。</li>"
-
-msgid ""
-"<li><b>Volume Snapshot</b>: This option uses a volume snapshot to boot the "
-"instance, and creates a new volume to persist instance data. You can choose "
-"to delete the volume on deletion of the instance.</li>"
-msgstr ""
-"<li><b>雲硬碟即時存檔</b>：這個選項利用雲硬碟即時存檔來開機雲實例，並新增新的"
-"雲硬碟來持續保存雲實例資料。您可以選擇在刪除雲實例時一併刪除雲硬碟。</li>"
-
-msgid ""
-"<li><b>Volume</b>: This option uses a volume that already exists. It does "
-"not create a new volume. You can choose to delete the volume on deletion of "
-"the instance. <em>Note: when selecting Volume, you can only launch one "
-"instance.</em></li>"
-msgstr ""
-"<li><b>雲硬碟</b>：這個選項利用已存在的雲硬碟。它不會新增新的雲硬碟。您可以選"
-"擇在刪除雲實例時一併刪除雲硬碟。<em>附註：當選取雲硬碟，您只能發動一個雲實"
-"例。</em></li>"
 
 msgid "<small>This line of text is meant to be treated as fine print.</small>"
 msgstr "<small>這一行文字將進行精細列印。</small>"
@@ -360,9 +324,6 @@ msgstr "已新增"
 msgid "Created At"
 msgstr "新增時間"
 
-msgid "Created keypair: "
-msgstr "已新增金鑰組："
-
 msgid "Creating"
 msgstr "正在新增"
 
@@ -444,9 +405,6 @@ msgstr "正在刪除"
 
 msgid "Description"
 msgstr "描述"
-
-msgid "Description:"
-msgstr "說明"
 
 msgid "Details"
 msgstr "詳細資訊"
@@ -631,11 +589,6 @@ msgid "ISO"
 msgstr "ISO"
 
 msgid ""
-"If \"No volume type\" is selected, the volume will be created without a "
-"volume type."
-msgstr "如果選取了「無雲硬碟類型」，則將在不指定雲硬碟類型的情況下新增雲硬碟。"
-
-msgid ""
 "If a network is shared, then all users in the project can access the network."
 msgstr "若網路被共享，所有專案裡的用戶皆可存取這個網路。"
 
@@ -646,9 +599,6 @@ msgid ""
 msgstr ""
 "若未在發動雲實例前指定安全性群組，您在佈署後將只會擁有有限的權限存取雲實例。"
 "您將只可以從 VNC 主控臺存取雲實例。"
-
-msgid "If not, you can manually dowload this keypair at the following link:"
-msgstr "如果未下載，則您可以在以下鏈結手動下載此金鑰組："
 
 msgid ""
 "If you select an availability zone and plan to use the 'boot from volume' "
@@ -1065,9 +1015,6 @@ msgstr ""
 "請提供雲實例的初始主機名稱、將用來部署的可用區域以及雲實例計數。\n"
 "    增加「計數」以使用相同的設定新增多個雲實例。"
 
-msgid "Please try again."
-msgstr "請再試一次。"
-
 msgid "Policy check failed."
 msgstr "政策檢查失敗。"
 
@@ -1160,14 +1107,8 @@ msgstr "Ramdisk ID"
 msgid "Re-order items using drag and drop"
 msgstr "使用拖拉來重新排列"
 
-msgid "Record Properties"
-msgstr "記錄內容"
-
 msgid "Remote"
 msgstr "遠端"
-
-msgid "Required"
-msgstr "需要"
 
 msgid "Right"
 msgstr "右側"
@@ -1197,18 +1138,6 @@ msgid ""
 "Security groups are project-specific and cannot be shared across projects."
 msgstr "安全性群組是專案專屬的，不可與其他專案共享。"
 
-msgid ""
-"Security groups define a set of IP filter rules that determine how network "
-"traffic flows to and from an instance. Users can add additional rules to an "
-"existing security group to further define the access options for an "
-"instance. To create additional rules, go to the <b>Compute | Access & "
-"Security</b> view, then find the security group and click <b>Manage Rules</"
-"b>."
-msgstr ""
-"安全性群組定義一組 IP 篩選規則來決定流入與流出雲實例的網路交通。用戶可以加入"
-"額外的規則到已存在的安全性群組來增進已定義的雲實例存取選項。欲新增額外的規"
-"則，請到<b>運算|存取與安全性</b>檢視並尋找安全性群組並點擊<b>管理規則</b>。"
-
 msgid "Segmentation ID"
 msgstr "分段識別號"
 
@@ -1223,9 +1152,6 @@ msgstr "從下列可用的密鑰對中選擇。"
 
 msgid "Select a source from those listed below."
 msgstr "從下列列表中選擇來源。"
-
-msgid "Select a zone"
-msgstr "選取區域"
 
 msgid "Select an item from Available items below"
 msgstr "從下列可用項目中選擇項目"
@@ -1628,9 +1554,6 @@ msgstr "無法獲得伺服器分類。"
 
 msgid "Unable to fetch the services."
 msgstr "無法獲得服務。"
-
-msgid "Unable to generate"
-msgstr "無法產生"
 
 msgid "Unable to get details of the object."
 msgstr "無法獲得物件的詳細資訊。"

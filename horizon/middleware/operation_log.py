@@ -27,14 +27,23 @@ LOG = logging.getLogger(__name__)
 class OperationLogMiddleware(object):
     """Middleware to output operation log.
 
-    This log can includes information below.
-      <domain name>, <domain id>
-      <project name>, <project id>
-      <user name>, <user id>
-      <request scheme>, <referer url>, <request url>
-      <message>, <method>, <http status>
-      <request parameters>
-    And log format is defined OPERATION_LOG_OPTIONS.
+    This log can includes information below:
+
+    - ``domain name``
+    - ``domain id``
+    - ``project name``
+    - ``project id``
+    - ``user name``
+    - ``user id``
+    - ``request scheme``
+    - ``referer url``
+    - ``request url``
+    - ``message``
+    - ``method``
+    - ``http status``
+    - ``request parameters``
+
+    and log format is defined OPERATION_LOG_OPTIONS.
     """
 
     @property
@@ -84,7 +93,7 @@ class OperationLogMiddleware(object):
         return response
 
     def process_exception(self, request, exception):
-        """Log error info when exception occured."""
+        """Log error info when exception occurred."""
         log_format = self._get_log_format(request)
         if log_format is None:
             return

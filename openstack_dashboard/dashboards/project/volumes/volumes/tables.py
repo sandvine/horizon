@@ -58,6 +58,8 @@ class LaunchVolume(tables.LinkAction):
         return "?".join([base_url, params])
 
     def allowed(self, request, volume=None):
+        if not api.base.is_service_enabled(request, 'compute'):
+            return False
         if getattr(volume, 'bootable', '') == 'true':
             return volume.status == "available"
         return False
@@ -179,6 +181,9 @@ class EditAttachments(tables.LinkAction):
     icon = "pencil"
 
     def allowed(self, request, volume=None):
+        if not api.base.is_service_enabled(request, 'compute'):
+            return False
+
         if volume:
             project_id = getattr(volume, "os-vol-tenant-attr:tenant_id", None)
             attach_allowed = \
@@ -359,7 +364,7 @@ def get_attachment_name(request, attachment):
     return instance
 
 
-class AttachmentColumn(tables.Column):
+class AttachmentColumn(tables.WrappingColumn):
     """Customized column class.
 
     So it that does complex processing on the attachments
@@ -391,6 +396,12 @@ def get_encrypted_value(volume):
         return _("No")
     else:
         return _("Yes")
+
+
+def get_encrypted_link(volume):
+    if hasattr(volume, 'encrypted') and volume.encrypted:
+        return reverse("horizon:project:volumes:volumes:encryption_detail",
+                       kwargs={'volume_id': volume.id})
 
 
 class VolumesTableBase(tables.DataTable):
@@ -458,10 +469,27 @@ class VolumesFilterAction(tables.FilterAction):
                 if q in volume.name.lower()]
 
 
+class UpdateMetadata(tables.LinkAction):
+    name = "update_metadata"
+    verbose_name = _("Update Metadata")
+    ajax = False
+    attrs = {"ng-controller": "MetadataModalHelperController as modal"}
+
+    def __init__(self, **kwargs):
+        kwargs['preempt'] = True
+        super(UpdateMetadata, self).__init__(**kwargs)
+
+    def get_link_url(self, datum):
+        obj_id = self.table.get_object_id(datum)
+        self.attrs['ng-click'] = (
+            "modal.openMetadataModal('volume', '%s', true)" % obj_id)
+        return "javascript:void(0);"
+
+
 class VolumesTable(VolumesTableBase):
-    name = tables.Column("name",
-                         verbose_name=_("Name"),
-                         link="horizon:project:volumes:volumes:detail")
+    name = tables.WrappingColumn("name",
+                                 verbose_name=_("Name"),
+                                 link="horizon:project:volumes:volumes:detail")
     volume_type = tables.Column(get_volume_type,
                                 verbose_name=_("Type"))
     attachments = AttachmentColumn("attachments",
@@ -473,8 +501,7 @@ class VolumesTable(VolumesTableBase):
                              filters=(filters.yesno, filters.capfirst))
     encryption = tables.Column(get_encrypted_value,
                                verbose_name=_("Encrypted"),
-                               link="horizon:project:volumes:"
-                                    "volumes:encryption_detail")
+                               link=get_encrypted_link)
 
     class Meta(object):
         name = "volumes"
@@ -494,7 +521,7 @@ class VolumesTable(VolumesTableBase):
                        launch_actions +
                        (EditAttachments, CreateSnapshot, CreateBackup,
                         RetypeVolume, UploadToImage, CreateTransfer,
-                        DeleteTransfer, DeleteVolume))
+                        DeleteTransfer, DeleteVolume, UpdateMetadata))
 
 
 class DetachVolume(tables.BatchAction):
@@ -533,7 +560,7 @@ class DetachVolume(tables.BatchAction):
         return reverse('horizon:project:volumes:index')
 
 
-class AttachedInstanceColumn(tables.Column):
+class AttachedInstanceColumn(tables.WrappingColumn):
     """Customized column class that does complex processing on the attachments
     for a volume instance.
     """

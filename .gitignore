@@ -9,6 +9,7 @@
 .coverage*
 .noseids
 .DS_STORE
+.DS_Store
 /cover
 coverage.xml
 coverage-karma
@@ -26,9 +27,9 @@ openstack_dashboard/local/local_settings.d/*
 !openstack_dashboard/local/local_settings.d/*.example
 openstack_dashboard/test/.secret_key_store
 openstack_dashboard/test/integration_tests/local-horizon.conf
+openstack_dashboard/test/integration_tests/test_reports/
 openstack_dashboard/wsgi/horizon.wsgi
 doc/build/
-doc/source/sourcecode
 /static/
 integration_tests_screenshots/
 .venv

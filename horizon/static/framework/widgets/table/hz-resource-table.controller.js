@@ -23,39 +23,115 @@
   controller.$inject = [
     '$q',
     '$scope',
+    'horizon.framework.widgets.table.events',
+    'horizon.framework.widgets.magic-search.events',
+    'horizon.framework.widgets.magic-search.service',
     'horizon.framework.util.actions.action-result.service',
     'horizon.framework.conf.resource-type-registry.service'
   ];
 
-  function controller($q, $scope, actionResultService, registry) {
+  function controller(
+    $q,
+    $scope,
+    hzTableEvents,
+    magicSearchEvents,
+    searchService,
+    actionResultService,
+    registry
+  ) {
     var ctrl = this;
+    var lastSearchQuery = {};
 
     // 'Public' Controller members
-
-    ctrl.resourceType = registry.getResourceType(ctrl.resourceTypeName);
+    ctrl.actionResultHandler = actionResultHandler;
+    ctrl.searchFacets = [];
+    ctrl.config = {};
+    ctrl.batchActions = [];
     ctrl.items = [];
     ctrl.itemsSrc = [];
-    ctrl.searchFacets = [];
-    ctrl.config = {
-      detailsTemplateUrl: ctrl.resourceType.summaryTemplateUrl,
-      selectAll: true,
-      expand: true,
-      trackId: ctrl.trackBy || 'id',
-      searchColumnSpan: 7,
-      actionColumnSpan: 5,
-      columns: ctrl.resourceType.getTableColumns()
-    };
-    ctrl.batchActions = ctrl.resourceType.globalActions
-      .concat(ctrl.resourceType.batchActions);
+    ctrl.itemInTransitionFunction = itemInTransitionFunction;
 
-    ctrl.actionResultHandler = actionResultHandler;
+    // Watch for changes to search bar
+    $scope.$on(magicSearchEvents.SERVER_SEARCH_UPDATED, handleServerSearch);
 
-    // Controller Initialization/Loading
+    // Watch for changes to resourceTypeName
+    $scope.$watch(
+      "ctrl.resourceTypeName",
+      onResourceTypeNameChange
+    );
 
-    ctrl.resourceType.listFunction().then(onLoad);
-    registry.initActions(ctrl.resourceType.type, $scope);
+    // Watch for changes to listFunctionExtraParams
+    $scope.$watch(
+      "ctrl.listFunctionExtraParams",
+      onListFunctionExtraParamsChange
+    );
 
     // Local functions
+
+    /**
+     * Handle changes to resource type name
+     *
+     * @param newValue {string}
+     * new resource type name
+     */
+    function onResourceTypeNameChange (newValue) {
+      if (angular.isDefined(newValue)) {
+        ctrl.resourceType = registry.getResourceType(newValue);
+        ctrl.resourceType.initActions($scope);
+        ctrl.searchFacets = ctrl.resourceType.filterFacets;
+        ctrl.config = {
+          detailsTemplateUrl: ctrl.resourceType.summaryTemplateUrl,
+          selectAll: !!ctrl.resourceType.batchActions.length,
+          expand: ctrl.resourceType.summaryTemplateUrl,
+          trackId: ctrl.trackBy || 'id',
+          columns: ctrl.resourceType.getTableColumns()
+        };
+        ctrl.batchActions = ctrl.resourceType.globalActions
+          .concat(ctrl.resourceType.batchActions);
+        listResources();
+      }
+    }
+
+    /**
+     * Handle changes to list function extra params
+     *
+     * @param newValue {object}
+     * new list function extra params
+     */
+    function onListFunctionExtraParamsChange (newValue) {
+      if (angular.isDefined(newValue)) {
+        listResources();
+      }
+    }
+
+    /**
+     * If a resource type has been set, list all resources for this resource type.
+     * In the call to the list function, include the current search terms (if any)
+     * and any extra list function params supplied by the parent (if any).
+     */
+    function listResources() {
+      if (ctrl.resourceType) {
+        ctrl.resourceType
+          .list(angular.extend({}, lastSearchQuery, ctrl.listFunctionExtraParams))
+          .then(onLoad);
+      }
+    }
+
+    function handleServerSearch(evt, magicSearchQueryObj) {
+      // Save the current search. We will use this if an action requires we re-list
+      // resources, but still respect the current search terms.
+      lastSearchQuery = searchService
+        .getSearchTermsFromQueryString(magicSearchQueryObj.magicSearchQuery)
+        .reduce(queryToObject, {});
+
+      listResources();
+
+      function queryToObject(orig, curr) {
+        var fields = searchService.getSearchTermObject(curr);
+        orig[fields.type] = fields.value;
+        return orig;
+      }
+    }
 
     function onLoad(response) {
       ctrl.itemsSrc = response.data.items;
@@ -78,7 +154,7 @@
       // the items page (like create "volume" from image).
       var deletedIds, updatedIds, createdIds, failedIds;
 
-      if ( result ) {
+      if (result) {
         // Reduce the results to just item ids ignoring other types the action
         // may have produced
         deletedIds = actionResultService.getIdsOfType(result.deleted, ctrl.resourceType.type);
@@ -88,15 +164,16 @@
 
         // Handle deleted items
         if (deletedIds.length) {
-          ctrl.itemsSrc = difference(ctrl.itemsSrc, deletedIds,'id');
+          ctrl.itemsSrc = difference(ctrl.itemsSrc, deletedIds, 'id');
+          $scope.$broadcast(hzTableEvents.CLEAR_SELECTIONS);
         }
 
         // Handle updated and created items
-        if ( updatedIds.length || createdIds.length ) {
+        if (updatedIds.length || createdIds.length) {
           // Ideally, get each created item individually, but
           // this is simple and robust for the common use case.
           // TODO: If we want more detailed updates, we could do so here.
-          ctrl.resourceType.listFunction().then(onLoad);
+          listResources();
         }
 
         // Handle failed items
@@ -108,7 +185,7 @@
       } else {
         // promise resolved, but no result returned. Because the action didn't
         // tell us what happened...reload the displayed items just in case.
-        ctrl.resourceType.listFunction().then(onLoad);
+        listResources();
       }
     }
 
@@ -120,6 +197,10 @@
           return deletedItem === elem[key];
         }).length === 0;
       }
+    }
+
+    function itemInTransitionFunction(item) {
+      return ctrl.resourceType.itemInTransitionFunction(item);
     }
   }
 

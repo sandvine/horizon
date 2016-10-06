@@ -18,6 +18,8 @@
 #    under the License.
 
 from collections import OrderedDict
+
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
@@ -28,6 +30,7 @@ from horizon import tables
 from horizon.utils import memoized
 
 from openstack_dashboard import api
+
 from openstack_dashboard.dashboards.admin.instances \
     import forms as project_forms
 from openstack_dashboard.dashboards.admin.instances \
@@ -57,6 +60,11 @@ def rdp(args, **kvargs):
     return views.rdp(args, **kvargs)
 
 
+# re-use get_resource_id_by_name from project.instances.views
+def swap_filter(resources, filters, fake_field, real_field):
+    return views.swap_filter(resources, filters, fake_field, real_field)
+
+
 class AdminUpdateView(views.UpdateView):
     workflow_class = update_instance.AdminUpdateInstance
     success_url = reverse_lazy("horizon:admin:instances:index")
@@ -70,11 +78,28 @@ class AdminIndexView(tables.DataTableView):
     def has_more_data(self, table):
         return self._more
 
+    def needs_filter_first(self, table):
+        return self._needs_filter_first
+
     def get_data(self):
         instances = []
         marker = self.request.GET.get(
             project_tables.AdminInstancesTable._meta.pagination_param, None)
-        search_opts = self.get_filters({'marker': marker, 'paginate': True})
+        default_search_opts = {'marker': marker, 'paginate': True}
+
+        search_opts = self.get_filters(default_search_opts.copy())
+
+        # If filter_first is set and if there are not other filters
+        # selected, then search criteria must be provided and return an empty
+        # list
+        filter_first = getattr(settings, 'FILTER_DATA_FIRST', {})
+        if filter_first.get('admin.instances', False) and \
+                len(search_opts) == len(default_search_opts):
+            self._needs_filter_first = True
+            self._more = False
+            return instances
+
+        self._needs_filter_first = False
         # Gather our tenants to correlate against IDs
         try:
             tenants, has_more = api.keystone.tenant_list(self.request)
@@ -83,15 +108,32 @@ class AdminIndexView(tables.DataTableView):
             msg = _('Unable to retrieve instance project information.')
             exceptions.handle(self.request, msg)
 
-        if 'project' in search_opts:
-            ten_filter_ids = [t.id for t in tenants
-                              if t.name == search_opts['project']]
-            del search_opts['project']
-            if len(ten_filter_ids) > 0:
-                search_opts['tenant_id'] = ten_filter_ids[0]
-            else:
+        # Gather our images to correlate againts IDs
+        try:
+            images = api.glance.image_list_detailed(self.request)[0]
+        except Exception:
+            images = []
+            msg = _("Unable to retrieve image list.")
+
+        # Gather our flavors to correlate against IDs
+        try:
+            flavors = api.nova.flavor_list(self.request)
+        except Exception:
+            # If fails to retrieve flavor list, creates an empty list.
+            flavors = []
+
+        if 'project' in search_opts and \
+                not swap_filter(tenants, search_opts, 'project', 'tenant_id'):
                 self._more = False
-                return []
+                return instances
+        elif 'image_name' in search_opts and \
+                not swap_filter(images, search_opts, 'image_name', 'image'):
+                self._more = False
+                return instances
+        elif "flavor_name" in search_opts and \
+                not swap_filter(flavors, search_opts, 'flavor_name', 'flavor'):
+                self._more = False
+                return instances
 
         try:
             instances, self._more = api.nova.server_list(
@@ -112,13 +154,6 @@ class AdminIndexView(tables.DataTableView):
                     message=_('Unable to retrieve IP addresses from Neutron.'),
                     ignore=True)
 
-            # Gather our flavors to correlate against IDs
-            try:
-                flavors = api.nova.flavor_list(self.request)
-            except Exception:
-                # If fails to retrieve flavor list, creates an empty list.
-                flavors = []
-
             full_flavors = OrderedDict([(f.id, f) for f in flavors])
             tenant_dict = OrderedDict([(t.id, t) for t in tenants])
             # Loop through instances to get flavor and tenant info.
@@ -138,15 +173,6 @@ class AdminIndexView(tables.DataTableView):
                 tenant = tenant_dict.get(inst.tenant_id, None)
                 inst.tenant_name = getattr(tenant, "name", None)
         return instances
-
-    def get_filters(self, filters):
-        filter_field = self.table.get_filter_field()
-        filter_action = self.table._meta._filter_action
-        if filter_action.is_api_filter(filter_field):
-            filter_string = self.table.get_filter_string().strip()
-            if filter_field and filter_string:
-                filters[filter_field] = filter_string
-        return filters
 
 
 class LiveMigrateView(forms.ModalFormView):

@@ -101,14 +101,11 @@ class AdminInstanceFilterAction(tables.FilterAction):
     # session property used for persisting the filter.
     name = "filter_admin_instances"
     filter_type = "server"
-    filter_choices = (('project', _("Project ="), True),
-                      ('host', _("Host ="), True),
-                      ('name', _("Name ="), True),
-                      ('ip', _("IPv4 Address ="), True),
-                      ('ip6', _("IPv6 Address ="), True),
-                      ('status', _("Status ="), True),
-                      ('image', _("Image ID ="), True),
-                      ('flavor', _("Flavor ID ="), True))
+    filter_choices = (
+        ('project', _("Project Name ="), True),
+        ('tenant_id', _("Project ID ="), True),
+        ('host', _("Host Name ="), True),
+    ) + project_tables.INSTANCE_FILTER_CHOICES
 
 
 class AdminInstancesTable(tables.DataTable):
@@ -135,17 +132,17 @@ class AdminInstancesTable(tables.DataTable):
     host = tables.Column("OS-EXT-SRV-ATTR:host",
                          verbose_name=_("Host"),
                          classes=('nowrap-col',))
-    name = tables.Column("name",
-                         link="horizon:admin:instances:detail",
-                         verbose_name=_("Name"))
+    name = tables.WrappingColumn("name",
+                                 link="horizon:admin:instances:detail",
+                                 verbose_name=_("Name"))
     image_name = tables.Column("image_name",
                                verbose_name=_("Image Name"))
     ip = tables.Column(project_tables.get_ips,
                        verbose_name=_("IP Address"),
                        attrs={'data-type': "ip"})
     size = tables.Column(project_tables.get_size,
-                         verbose_name=_("Size"),
-                         attrs={'data-type': 'size'})
+                         sortable=False,
+                         verbose_name=_("Size"))
     status = tables.Column(
         "status",
         filters=(title, filters.replace_underscores),

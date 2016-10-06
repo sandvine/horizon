@@ -43,6 +43,7 @@ How to use Horizon in your own projects.
    topics/settings
    topics/customizing
    topics/packaging
+   browser_support
 
 Developer Docs
 ==============
@@ -95,6 +96,7 @@ the following topic guides.
    topics/angularjs
    topics/javascript_testing
    topics/styling
+   topics/translation
 
 API Reference
 -------------
@@ -117,24 +119,10 @@ In-depth documentation for Horizon and its APIs.
    ref/test
    ref/local_conf
 
-Source Code Reference
----------------------
-
-Auto-generated reference for the complete source code.
-
-.. toctree::
-   :maxdepth: 1
-
-   sourcecode/autoindex
-
 Release Notes
 =============
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-
-   releases/*
+See http://docs.openstack.org/releasenotes/horizon/.
 
 Information
 ===========

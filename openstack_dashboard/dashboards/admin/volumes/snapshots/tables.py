@@ -56,8 +56,8 @@ class UpdateRow(tables.Row):
 
 
 class VolumeSnapshotsTable(volumes_tables.VolumesTableBase):
-    name = tables.Column("name", verbose_name=_("Name"),
-                         link="horizon:admin:volumes:snapshots:detail")
+    name = tables.WrappingColumn("name", verbose_name=_("Name"),
+                                 link="horizon:admin:volumes:snapshots:detail")
     volume_name = snapshots_tables.SnapshotVolumeNameColumn(
         "name", verbose_name=_("Volume Name"),
         link="horizon:admin:volumes:volumes:detail")
@@ -72,7 +72,8 @@ class VolumeSnapshotsTable(volumes_tables.VolumesTableBase):
         table_actions = (snapshots_tables.VolumeSnapshotsFilterAction,
                          snapshots_tables.DeleteVolumeSnapshot,)
         row_actions = (snapshots_tables.DeleteVolumeSnapshot,
-                       UpdateVolumeSnapshotStatus,)
+                       UpdateVolumeSnapshotStatus,
+                       snapshots_tables.UpdateMetadata)
         row_class = UpdateRow
         status_columns = ("status",)
         columns = ('tenant', 'host', 'name', 'description', 'size', 'status',

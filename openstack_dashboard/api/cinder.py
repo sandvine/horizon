@@ -32,6 +32,7 @@ from cinderclient.v2.contrib import list_extensions as cinder_list_extensions
 from horizon import exceptions
 from horizon.utils import functions as utils
 from horizon.utils.memoized import memoized  # noqa
+from horizon.utils.memoized import memoized_with_request  # noqa
 
 from openstack_dashboard.api import base
 from openstack_dashboard.api import nova
@@ -164,13 +165,10 @@ class VolumePool(base.APIResourceWrapper):
               'storage_protocol', 'extra_specs']
 
 
-@memoized
-def cinderclient(request):
+def get_auth_params_from_request(request):
     api_version = VERSIONS.get_active_version()
-
-    insecure = getattr(settings, 'OPENSTACK_SSL_NO_VERIFY', False)
-    cacert = getattr(settings, 'OPENSTACK_SSL_CACERT', None)
     cinder_url = ""
+    auth_url = base.url_for(request, 'identity')
     try:
         # The cinder client assumes that the v2 endpoint type will be
         # 'volumev2'.
@@ -183,14 +181,32 @@ def cinderclient(request):
     except exceptions.ServiceCatalogException:
         LOG.debug('no volume service configured.')
         raise
-    c = api_version['client'].Client(request.user.username,
-                                     request.user.token.id,
-                                     project_id=request.user.tenant_id,
-                                     auth_url=cinder_url,
+
+    return(
+        request.user.username,
+        request.user.token.id,
+        request.user.tenant_id,
+        cinder_url,
+        auth_url,
+    )
+
+
+@memoized_with_request(get_auth_params_from_request)
+def cinderclient(request_auth_params):
+    api_version = VERSIONS.get_active_version()
+    insecure = getattr(settings, 'OPENSTACK_SSL_NO_VERIFY', False)
+    cacert = getattr(settings, 'OPENSTACK_SSL_CACERT', None)
+
+    username, token_id, tenant_id, cinder_url, auth_url =\
+        request_auth_params
+    c = api_version['client'].Client(username,
+                                     token_id,
+                                     project_id=tenant_id,
+                                     auth_url=auth_url,
                                      insecure=insecure,
                                      cacert=cacert,
                                      http_log_debug=settings.DEBUG)
-    c.client.auth_token = request.user.token.id
+    c.client.auth_token = token_id
     c.client.management_url = cinder_url
     return c
 
@@ -339,6 +355,14 @@ def volume_update(request, volume_id, name, description):
                                                 **vol_data)
 
 
+def volume_set_metadata(request, volume_id, metadata):
+    return cinderclient(request).volumes.set_metadata(volume_id, metadata)
+
+
+def volume_delete_metadata(request, volume_id, keys):
+    return cinderclient(request).volumes.delete_metadata(volume_id, keys)
+
+
 def volume_reset_state(request, volume_id, state):
     return cinderclient(request).volumes.reset_state(volume_id, state)
 
@@ -427,6 +451,16 @@ def volume_snapshot_update(request, snapshot_id, name, description):
     snapshot_data = _replace_v2_parameters(snapshot_data)
     return cinderclient(request).volume_snapshots.update(snapshot_id,
                                                          **snapshot_data)
+
+
+def volume_snapshot_set_metadata(request, snapshot_id, metadata):
+    return cinderclient(request).volume_snapshots.set_metadata(
+        snapshot_id, metadata)
+
+
+def volume_snapshot_delete_metadata(request, snapshot_id, keys):
+    return cinderclient(request).volume_snapshots.delete_metadata(
+        snapshot_id, keys)
 
 
 def volume_snapshot_reset_state(request, snapshot_id, state):
@@ -776,7 +810,7 @@ def volume_type_extra_set(request, type_id, metadata):
 
 def volume_type_extra_delete(request, type_id, keys):
     vol_type = volume_type_get(request, type_id)
-    return vol_type.unset_keys([keys])
+    return vol_type.unset_keys(keys)
 
 
 def qos_spec_list(request):
@@ -856,17 +890,15 @@ def availability_zone_list(request, detailed=False):
     return cinderclient(request).availability_zones.list(detailed=detailed)
 
 
-@memoized
-def list_extensions(request):
-    return cinder_list_extensions.ListExtManager(cinderclient(request))\
-        .show_all()
+@memoized_with_request(cinderclient)
+def list_extensions(cinder_api):
+    return tuple(cinder_list_extensions.ListExtManager(cinder_api).show_all())
 
 
-@memoized
-def extension_supported(request, extension_name):
+@memoized_with_request(list_extensions)
+def extension_supported(extensions, extension_name):
     """This method will determine if Cinder supports a given extension name.
     """
-    extensions = list_extensions(request)
     for extension in extensions:
         if extension.name == extension_name:
             return True

@@ -42,6 +42,7 @@
       scope = $rootScope.$new();
       scope.strings = { prompt: "Hello World!" };
       scope.facets_param = [];
+      spyOn(scope, '$on').and.callThrough();
       service = $injector.get('horizon.framework.widgets.magic-search.service');
       magicSearchEvents = $injector.get('horizon.framework.widgets.magic-search.events');
 
@@ -123,13 +124,6 @@
     });
 
     describe("clearSearch", function() {
-
-      it("does nothing when currentSearch is empty", function() {
-        spyOn(scope, '$emit');
-        ctrl.currentSearch = [];
-        ctrl.clearSearch();
-        expect(scope.$emit).not.toHaveBeenCalled();
-      });
 
       it("clears the currentSearch when currentSearch is not empty", function() {
         spyOn(scope, '$emit');
@@ -539,6 +533,51 @@
         ctrl.facetClicked(0);
         $timeout.flush();
         expect(ctrl.isMenuOpen).toBe(true);
+      });
+    });
+
+    describe("initSearch event", function() {
+
+      beforeEach(function() {
+        spyOn(searchInput, 'val').and.callThrough();
+      });
+
+      it("registers a listener", function() {
+        var initSearchHandler = getHandler(
+          scope.$on.calls.allArgs(),
+          magicSearchEvents.INIT_SEARCH);
+        expect(initSearchHandler).toBeDefined();
+      });
+
+      it("initializes text search", function() {
+        var data = {
+          textSearch: "Snarf"
+        };
+        scope.$broadcast('initSearch', data);
+        expect(ctrl.textSearch).toEqual("Snarf");
+      });
+
+      it("clears prior text search", function() {
+        ctrl.textSearch = "Snarf";
+        searchInput.val.calls.reset();
+        var data = {
+          textSearch: undefined
+        };
+        scope.$broadcast('initSearch', data);
+        expect(ctrl.textSearch).toBeUndefined();
+        expect(searchInput.val.calls.count()).toEqual(1);
+        expect(searchInput.val.calls.argsFor(0)).toEqual(['']);
+      });
+
+      it("calls initSearch with the magicSearchQuery", function() {
+        ctrl.facetChoices = "Old";
+        var data = {
+          magicSearchQuery: ["New"]
+        };
+        scope.$broadcast('initSearch', data);
+        // facetChoices is initialized on initSeach. Look for that init
+        // as proof the method was called
+        expect(ctrl.facetChoices).toEqual([]);
       });
     });
   });

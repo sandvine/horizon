@@ -5,13 +5,13 @@
 # Zbyněk Schwarz <zbynek.schwarz@gmail.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: horizon 10.0.0.0b2.dev230\n"
+"Project-Id-Version: horizon 10.0.0.0rc2.dev86\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-06-28 01:54+0000\n"
+"POT-Creation-Date: 2016-09-30 21:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-06-27 11:31+0000\n"
+"PO-Revision-Date: 2016-07-15 09:33+0000\n"
 "Last-Translator: Lenka Husáková <lenka.husakova@ultimum.io>\n"
 "Language-Team: Czech\n"
 "Language: cs\n"
@@ -211,15 +211,6 @@ msgstr "Lokální soubor s definicemi metadat pro upload."
 msgid "A local template to upload."
 msgstr "Lokální šablona pro nahrání."
 
-msgid ""
-"A more specific rule affects a portion of this traffic so a rule cannot be "
-"automatically generated to control the behavior of the entire source/"
-"destination combination."
-msgstr ""
-"Konkrétnější pravidlo ovlivňuje část těchto přenosů, proto nemůže být "
-"automaticky vytvořeno pravidlo kontrolující chování kombinace celého zdroje/"
-"cíle."
-
 msgid "A new uploaded file will replace the content of the current object"
 msgstr "Nově nahraný soubor nahradí obsah současného objektu"
 
@@ -269,14 +260,6 @@ msgstr "POVOLIT"
 msgid "ALLOW %(ethertype)s %(proto_port)s %(direction)s %(remote)s"
 msgstr "POVOLIT %(ethertype)s %(proto_port)s %(direction)s %(remote)s"
 
-#, python-format
-msgid "ALLOW %(from)s:%(to)s/%(ip_protocol)s from %(cidr)s"
-msgstr "Povolit %(from)s:%(to)s/%(ip_protocol)s z %(cidr)s"
-
-#, python-format
-msgid "ALLOW %(from)s:%(to)s/%(ip_protocol)s from %(group)s"
-msgstr "Povolit %(from)s:%(to)s/%(ip_protocol)s z %(group)s"
-
 msgid "AMI - Amazon Machine Image"
 msgstr "AMI - obraz stroje Amazon"
 
@@ -291,9 +274,6 @@ msgstr "API Endpointy"
 
 msgid "ARI - Amazon Ramdisk Image"
 msgstr "ARI - obraz ramdisku Amazon"
-
-msgid "AWS compatible"
-msgstr "Kompatibilní s AWS"
 
 msgid "Accept Transfer"
 msgstr "Přijmout převod"
@@ -318,9 +298,6 @@ msgstr "Log činností"
 
 msgid "Action for the firewall rule"
 msgstr "Činnost pravidla firewall"
-
-msgid "Action:"
-msgstr "Činnost:"
 
 msgctxt "Current status of a Firewall"
 msgid "Active"
@@ -442,9 +419,6 @@ msgstr "Přidat router"
 
 msgid "Add Router Route"
 msgstr "Přidat cestu routeru"
-
-msgid "Add Router Rule"
-msgstr "Přidat pravidlo routeru"
 
 msgid "Add Router to Firewall"
 msgstr "Přidat router k firewallu"
@@ -618,9 +592,6 @@ msgstr "Stav správce"
 
 msgid "Admin State Up"
 msgstr "Správcovský stav aktivní:"
-
-msgid "Admin URL:"
-msgstr "URL správce"
 
 msgid ""
 "Administrator Note: Use the following CLI command to import the default "
@@ -1286,9 +1257,6 @@ msgstr ""
 msgid "Comma-separated key=value pairs"
 msgstr "Čárkou oddělené páry klíč=hodnota"
 
-msgid "Component"
-msgstr "Součást"
-
 msgid "Compute"
 msgstr "Compute"
 
@@ -1340,9 +1308,6 @@ msgstr "Potvrdit nebo Vrátit zpět Změnu velikosti/Přesun"
 msgctxt "Task status of an Instance"
 msgid "Confirming Resize or Migrate"
 msgstr "Potvrzování Změny velikosti nebo Migrace"
-
-msgid "Conflicting Rule"
-msgstr "Konfliktní pravidlo"
 
 msgid "Connection Limit"
 msgstr "Omezení připojení"
@@ -1503,73 +1468,6 @@ msgstr "Vytvořit skupinu"
 msgid "Create Host Aggregate"
 msgstr "Vytvořit agregát hostitelů"
 
-msgid ""
-"Create IKE Policy for current project.\n"
-"\n"
-"An IKE policy is an association of the following attributes:\n"
-"\n"
-"<li>Authorization algorithm: Auth algorithm limited to SHA1 only.</"
-"li><li>Encryption algorithm: The type of algorithm (3des, aes-128, aes-192, "
-"aes-256) used in the IKE Policy.</li><li>IKE version: The type of version "
-"(v1/v2) that needs to be filtered.</li><li>Lifetime: Life time consists of "
-"units and value. Units in 'seconds' and the default value is 3600.</"
-"li><li>Perfect Forward Secrecy: PFS limited to using Diffie-Hellman groups "
-"2, 5(default) and 14.</li><li>IKE Phase 1 negotiation mode: Limited to "
-"'main' mode only.</li>\n"
-"All fields are optional."
-msgstr ""
-"Vytvořit politiku IKE pro současný projekt.\n"
-"\n"
-"Politika IKE je přidružení následujících vlastností:\n"
-"\n"
-"<li>Algoritmus autorizace: Algoritmus podporuje pouze SHA1.</"
-"li><li>Algoritmus šifrování: Typ algoritmu (3des, aes-128, aes-192, aes-256) "
-"použitý v politice IKE.</li><li>Verze IKE: Typ verze (v1/v2), jenž je třeba "
-"filtrovat.</li><li>Životnost: Životnost se skládá z jednotek (ve vteřínách) "
-"a hodnot (výchozí 3600).</li><li>Perfect Forward Secrecy: PFS může používat "
-"pouze Diffie-Hellman groups 2, 5 (výchozí) a 14.</li><li>IKE Phase 1 "
-"negotion mode: Omezeno pouze na režim 'main'.</li>\n"
-"Všechna pole jsou nepovinná."
-
-msgid ""
-"Create IPSec Policy for current project.\n"
-"\n"
-"An IPSec policy is an association of the following attributes:\n"
-"\n"
-"<li>Authorization algorithm: Auth_algorithm limited to SHA1 only.</"
-"li><li>Encapsulation mode: The type of IPsec tunnel (tunnel/transport) to be "
-"used.</li><li>Encryption algorithm: The type of algorithm (3des, aes-128, "
-"aes-192, aes-256) used in the IPSec Policy.</li><li>Lifetime: Life time "
-"consists of units and value. Units in 'seconds' and the default value is "
-"3600.</li><li>Perfect Forward Secrecy: PFS limited to using Diffie-Hellman "
-"groups 2, 5(default) and 14.</li><li>Transform Protocol: The type of "
-"protocol (esp, ah, ah-esp) used in IPSec Policy.</li>\n"
-"All fields are optional."
-msgstr ""
-"Vytvořit politiku IPSec pro současný projekt.\n"
-"\n"
-"Politika IPSec je přidružení následujících vlastností:\n"
-"\n"
-"<li>Algoritmus autorizace: Algoritmus podporuje pouze SHA1.</li><li>Režim "
-"zapouzdření: Použitý typ tunelu IPsec (tunnel/transport).</li><li>Algoritmus "
-"šifrování: Typ algoritmu (3des, aes-128, aes-192, aes-256) použitý v "
-"politice IPSec.</li><li>Životnost: Životnost se skládá z jednotek (vteřiny) "
-"a hodnot (výchozí 3600).</li><li>Perfect Forward Secrecy: PFS může používat "
-"pouze Diffie-Hellman groups 2, 5 (výchozí) a 14.</li><li>Protokol "
-"transformace: Typ protokolu (esp, ah, ah-esp) použitý v politice IPSec.</"
-"li>\n"
-"Všechny pole jsou nepovinná."
-
-msgid ""
-"Create IPSec Site Connection for current project.\n"
-"\n"
-"Assign a name and description for the IPSec Site Connection. All fields in "
-"this tab are required."
-msgstr ""
-"Vytvořit IPSec připojení k síti pro současný projekt.\n"
-"\n"
-"Zvolte název a popis připojení IPSec. Všechna pole jsou povinná."
-
 msgid "Create Image"
 msgstr "Vytvořit obraz"
 
@@ -1639,26 +1537,6 @@ msgstr "Vytvořit přenos"
 
 msgid "Create User"
 msgstr "Vytvořit uživatele"
-
-msgid ""
-"Create VPN Service for current project.\n"
-"\n"
-"The VPN service is attached to a router and references to a single subnet to "
-"push to a remote site.\n"
-"Specify a name, description, router, and subnet for the VPN Service. Admin "
-"State is UP (True) by default.\n"
-"\n"
-"The router, subnet and admin state fields are required, all others are "
-"optional."
-msgstr ""
-"Vytvořte službu VPN pro současný projekt.\n"
-"\n"
-"Služba VPN je připojena k routeru a odkazuje na jednu podsíť, která bude "
-"odeslána vzdálenému místu.\n"
-"Zvolte název, popis, router a podsíť pro službu VPN. Stav správce je "
-"standardně Zapnut (zaškrtnut).\n"
-"\n"
-"Pole router, podsíť a stav správce jsou vyžadována, ostatní nejsou povinná."
 
 msgid "Create Volume"
 msgstr "Vytvořit svazek"
@@ -2349,12 +2227,6 @@ msgstr[0] "Smazat router"
 msgstr[1] "Smazat routery"
 msgstr[2] "Smazat routery"
 
-msgid "Delete Router Rule"
-msgid_plural "Delete Router Rules"
-msgstr[0] "Smazat pravidlo routeru"
-msgstr[1] "Smazat pravidla routerů"
-msgstr[2] "Smazat pravidla routerů"
-
 msgid "Delete Rule"
 msgid_plural "Delete Rules"
 msgstr[0] "Smazat pravidlo"
@@ -2586,12 +2458,6 @@ msgstr[0] "Router smazán"
 msgstr[1] "Routery smazány"
 msgstr[2] "Routery smazány"
 
-msgid "Deleted Router Rule"
-msgid_plural "Deleted Router Rules"
-msgstr[0] "Pravidlo routeru smazána"
-msgstr[1] "Pravidla routerů smazána"
-msgstr[2] "Pravidla routerů smazána"
-
 msgid "Deleted Rule"
 msgid_plural "Deleted Rules"
 msgstr[0] "Pravidlo smazáno"
@@ -2683,9 +2549,6 @@ msgstr "Smazání VIP %s z této zásoby nelze vrátit zpět."
 msgid "Deleting volume consistency group \"%s\""
 msgstr "Mazání svazku konzistenční skupiny \"%s\""
 
-msgid "Deny"
-msgstr "Zamítnout"
-
 msgid "Description"
 msgstr "Popis"
 
@@ -2727,9 +2590,6 @@ msgstr "Cílový název objektu"
 
 msgid "Destination port (integer in [1, 65535] or range in a:b)"
 msgstr "Cílový port (celé číslo v intervalu [1, 65535] nebo rozsahu a:b)"
-
-msgid "Destination:"
-msgstr "Cíl:"
 
 msgid "Detach Interface"
 msgstr "Odpojit rozhraní"
@@ -3546,10 +3406,6 @@ msgid "Failed to add route : %s"
 msgstr "Nelze přidat cestu : %s"
 
 #, python-format
-msgid "Failed to add router rule %s"
-msgstr "Nelze přidat pravidlo routeru %s"
-
-#, python-format
 msgid "Failed to add router(s) to firewall %(name)s: %(reason)s"
 msgstr "Nelze přidat routery do firewallu %(name)s: %(reason)s"
 
@@ -4069,13 +3925,6 @@ msgstr ""
 "Skupiny se používají ke správě přístupu a přidělení rolí mnoha uživatelům "
 "najednou. Po vytvoření skupiny ji můžete upravit a přidat uživatele."
 
-msgid ""
-"Groups are used to manage access and assign roles to multiple users at once. "
-"Edit the group to add users."
-msgstr ""
-"Skupiny se používají ke správě přístupu a přidělení rolí mnoha uživatelům "
-"najednou. Pro přidání uživatelů ji upravte."
-
 #. Translators: High Availability mode of Neutron router
 msgid "HA mode"
 msgstr "Režim HA"
@@ -4326,17 +4175,11 @@ msgstr "IPSec připojení k síti"
 msgid "IPv4"
 msgstr "IPv4"
 
-msgid "IPv4 Address ="
-msgstr "Adresa IPv4 = "
-
 msgid "IPv4:"
 msgstr "IPv4:"
 
 msgid "IPv6"
 msgstr "IPv6"
-
-msgid "IPv6 Address ="
-msgstr "Adresa IPv6 ="
 
 msgid "IPv6 Address Configuration Mode"
 msgstr "Režim nastavení adresy IPv6"
@@ -4482,9 +4325,6 @@ msgstr ""
 "Obrazy mohou být zadány pomocí HTTP/HTTPS URL, nebo nahrány z lokálního "
 "souborového systému."
 
-msgid "Implementation"
-msgstr "Implementace"
-
 msgid "Import Key Pair"
 msgstr "Importovat klíč"
 
@@ -4567,9 +4407,6 @@ msgstr "Cesta vloženého souboru"
 msgid "Injected Files"
 msgstr "Vložené soubory"
 
-msgid "Input must be in CIDR format"
-msgstr "Vstup musí být ve formátu CIDR"
-
 msgid "Insert Rule"
 msgstr "Vložit pravidlo"
 
@@ -4602,9 +4439,6 @@ msgstr "ID instance"
 
 msgid "Instance Name"
 msgstr "Název instance"
-
-msgid "Instance Name ="
-msgstr "Název instance ="
 
 msgid "Instance Overview"
 msgstr "Přehled instancí"
@@ -4662,9 +4496,6 @@ msgstr "Rozhraní"
 msgid "Internal Interface"
 msgstr "Interní rozhraní"
 
-msgid "Internal URL:"
-msgstr "Interní URL"
-
 msgid "Invalid MAC Address format"
 msgstr "Neplatný formát MAC adresy"
 
@@ -4717,13 +4548,6 @@ msgstr "Klíče jsou způsob jak se přihlásit do instance po jejím spuštěn�
 
 msgid "Key Size (bits)"
 msgstr "Velikost klíče (v bitech)"
-
-msgid ""
-"Key pair name may only contain letters, numbers, underscores, spaces and "
-"hyphens."
-msgstr ""
-"Název klíče může obsahovat pouze písmena, čísla, podtržítka, mezery a "
-"pomlčky."
 
 msgid "Key pair to use for authentication."
 msgstr "Klíč použitý pro autentizaci."
@@ -5119,11 +4943,9 @@ msgstr "MidoNet Uplink"
 msgid "Migrate"
 msgstr "Migrovat"
 
+#, fuzzy
 msgid "Migrate Host"
-msgid_plural "Migrate Hosts"
-msgstr[0] "Migrovat hostitele"
-msgstr[1] "Migrovat hostitele"
-msgstr[2] "Migrovat hostitelů"
+msgstr "Migrovat hostitele"
 
 msgid "Migrate Instance"
 msgid_plural "Migrate Instances"
@@ -5153,12 +4975,6 @@ msgstr ""
 "Můžete také zvolit typ přesunu. Všechny běžící instance mohou být migrovány "
 "zaživa. Při cold migraci se používá 'nova migrate' na každou instanci "
 "přesunovaného hostitele."
-
-msgid "Migrated Host"
-msgid_plural "Migrated Hosts"
-msgstr[0] "Hostitel přesunut"
-msgstr[1] "Hostitelé přesunuti"
-msgstr[2] "Hostitelů přesunuto"
 
 msgctxt "Current status of an Instance"
 msgid "Migrating"
@@ -5466,9 +5282,6 @@ msgstr ""
 "Další IP adresa skoku musí být součástí jedné z podsítí, ke které jsou "
 "připojena rozhraní routeru."
 
-msgid "Next Hops"
-msgstr "Další skoky"
-
 msgid "No"
 msgstr "Ne"
 
@@ -5508,9 +5321,6 @@ msgstr "Žádné dostupné projekty"
 
 msgid "No flavors available"
 msgstr "Typy nejsou dostupné"
-
-msgid "No flavors meet minimum criteria for selected image."
-msgstr "Žádné typy neodpovídají minimálním kritériím vybraného obrazu."
 
 msgid "No floating IP addresses allocated"
 msgstr "Žádné plovoucí IP nepřiděleny"
@@ -5827,9 +5637,6 @@ msgstr "Otevřené porty/Rozsah portů:"
 msgid "Optional Parameters"
 msgstr "Volitelné parametry"
 
-msgid "Optional: Next Hop Addresses (comma delimited)"
-msgstr "Nepovinné: Adresa dalšího skoku (oddělená čárkami)"
-
 msgid "Optionally, you may choose to create a new volume."
 msgstr "Můžete také zvolit vytvoření nového svazku."
 
@@ -6006,9 +5813,6 @@ msgstr "Období"
 
 msgid "Period:"
 msgstr "Období:"
-
-msgid "Permit"
-msgstr "Povolit"
 
 msgid "Physical Network"
 msgstr "Fyzická síť"
@@ -6301,9 +6105,6 @@ msgid "Public Key"
 msgstr "Veřejný klíč"
 
 msgid "Public URL"
-msgstr "Veřejná URL"
-
-msgid "Public URL:"
 msgstr "Veřejná URL"
 
 msgid "QCOW2 - QEMU Emulator"
@@ -6630,9 +6431,6 @@ msgctxt "Task status of an Instance"
 msgid "Rescuing"
 msgstr "Zachraňování"
 
-msgid "Reset to Default"
-msgstr "Resetovat na výchozí"
-
 msgid "Resize"
 msgstr "Změnit velikost"
 
@@ -6844,24 +6642,6 @@ msgid "Router"
 msgstr "Router"
 
 #, python-format
-msgid ""
-"Router %(name)s was created but connecting to an external network failed. "
-"Attempts to delete the new router also failed. Router %(name)s still exists "
-"but is not connect to the desired external network."
-msgstr ""
-"Router %(name)s byl vytvořen, ale připojování do externí sítě selhalo. "
-"Pokusy o smazání nového routeru se také nezdařily. Router %(name)s stále "
-"existuje, ale není připojen do požadované externí sítě."
-
-#, python-format
-msgid ""
-"Router %s was created but connecting to an external network failed. The "
-"created router has been deleted, as the overall operation failed."
-msgstr ""
-"Router %s byl vytvořen, ale připojování do externí sítě selhalo. Z důvodu "
-"nezdaření operace byl vytvořený router smazán."
-
-#, python-format
 msgid "Router %s was successfully created."
 msgstr "Router %s byl úspěšně vytvořen."
 
@@ -6875,20 +6655,8 @@ msgstr "ID routeru"
 msgid "Router Name"
 msgstr "Název routeru"
 
-msgid "Router Rule Grid"
-msgstr "Mřížka pravidel routeru"
-
-msgid "Router Rules"
-msgstr "Pravidla routeru"
-
-msgid "Router Rules Grid"
-msgstr "Mřížka pravidel routeru"
-
 msgid "Router Type"
 msgstr "Typ routeru"
-
-msgid "Router rule added"
-msgstr "Pravidlo routeru přidáno"
 
 #, python-format
 msgid "Router(s)  was successfully removed from firewall %(firewall)s."
@@ -6905,14 +6673,6 @@ msgstr "Routery"
 msgid "Routers on %(host)s"
 msgstr "Routery na %(host)s"
 
-msgid ""
-"Routing rules to apply to router. Rules are matched by most specific source "
-"first and then by most specific destination."
-msgstr ""
-"Pravidla směrování která budou použita pro router. Pravidla jsou "
-"upřednostňovávána nejdříve podle nejkonkrétnějšího zdroje a pak podle "
-"nejkonkrétnějšího cíle."
-
 msgid "Rule"
 msgstr "Pravidlo"
 
@@ -6927,9 +6687,6 @@ msgstr "Pravidlo %(rule)s úspěšně odstraněno z politiky %(policy)s."
 #, python-format
 msgid "Rule %s was successfully updated."
 msgstr "Pravidlo %s bylo úspěšně aktualizováno."
-
-msgid "Rule Conflict"
-msgstr "Konflikt pravidla"
 
 msgid "Rule:"
 msgstr "Pravidlo:"
@@ -7566,18 +7323,8 @@ msgstr[0] "Instance měkce restartována"
 msgstr[1] "Instance měkce restartovány"
 msgstr[2] "Instance měkce restartovány"
 
-msgid "Some flavors not meeting minimum image requirements have been disabled."
-msgstr ""
-"Některé typy neodpovídající minimálním požadavkům obrazu byly zakázány."
-
 msgid "Something went wrong!"
 msgstr "Něco se pokazilo"
-
-msgid "Source"
-msgstr "Zdroj"
-
-msgid "Source CIDR"
-msgstr "Zdrojové CIDR"
 
 msgid "Source IP"
 msgstr "Zdrojová IP"
@@ -7609,9 +7356,6 @@ msgid ""
 "make them consistent."
 msgstr ""
 "Zdrojová/cílová síťová adresa a verze IP jsou v rozporu. Prosím napravte."
-
-msgid "Source:"
-msgstr "Zdroj:"
 
 msgctxt "Task status of an Instance"
 msgid "Spawning"
@@ -7829,14 +7573,6 @@ msgstr "Název podsítě"
 
 msgid "Subnet list can not be retrieved."
 msgstr "Nelze získat seznam podsítí."
-
-#, python-format
-msgid "Subnet: %(dest_subnetname)s"
-msgstr "Podsíť: %(dest_subnetname)s"
-
-#, python-format
-msgid "Subnet: %(row_source_subnetname)s"
-msgstr "Podsíť: %(row_source_subnetname)s"
 
 msgid "Subnetpool"
 msgstr "Zásoba podsítě"
@@ -8219,9 +7955,6 @@ msgstr ""
 "klíč pro autorizaci. Prosím uložte oba údaje a poskytněte je příjemci "
 "převodu."
 
-msgid "The User Name field cannot be empty."
-msgstr "Pole 'Uživatelské jméno' nemůže být prázdné."
-
 msgid "The VNIC type that is bound to the neutron port"
 msgstr "Typ VNIC který je spojen s portem pro neutron"
 
@@ -8335,12 +8068,6 @@ msgid ""
 "The name of the physical network over which the virtual network is "
 "implemented."
 msgstr "Název fyzické sítě, přes který je zavedena virtuální síť."
-
-msgid ""
-"The next hop addresses can be used to override the router used by the client."
-msgstr ""
-"Adresy dalšího skoku mohou být použity k potlačení routeru používaného "
-"klientem."
 
 msgid "The page you were looking for doesn't exist"
 msgstr "Stránka, kterou hledáte, neexistuje"
@@ -8543,9 +8270,6 @@ msgid ""
 "the stack"
 msgstr ""
 "Toto je vyžadováno pro operace prováděné během životního cyklu zásobníku"
-
-msgid "This name is already taken."
-msgstr "Název již je používán."
 
 msgid "This panel needs JavaScript support."
 msgstr "Tento panel vyžaduje podporu JavaScript."
@@ -9009,9 +8733,6 @@ msgstr "Nelze smazat zásobu. %s"
 #, python-format
 msgid "Unable to delete router \"%s\""
 msgstr "Nelze smazat router \"%s\""
-
-msgid "Unable to delete router rule."
-msgstr "Nelze smazat pravidlo routeru."
 
 #, python-format
 msgid "Unable to delete rule. %s"
@@ -9970,9 +9691,6 @@ msgstr "Nelze aktualizovat heslo uživatele."
 
 msgid "Unable to update the user."
 msgstr "Nelze aktualizovat uživatele."
-
-msgid "Unable to update the volume type."
-msgstr "Nelze aktualizovat typ svazku."
 
 msgid "Unable to update volume consistency group."
 msgstr "Nelze aktualizovat svazek konzistenční skupiny."
@@ -11035,6 +10753,3 @@ msgstr "v1"
 
 msgid "v2"
 msgstr "v2"
-
-msgid "yes,no,-"
-msgstr "ano,ne,-"

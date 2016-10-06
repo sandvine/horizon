@@ -64,9 +64,35 @@ class IndexView(tables.DataTableView):
         return self._more
 
     def get_data(self):
+        instances = []
         marker = self.request.GET.get(
             project_tables.InstancesTable._meta.pagination_param, None)
+
         search_opts = self.get_filters({'marker': marker, 'paginate': True})
+
+        # Gather our flavors and images and correlate our instances to them
+        try:
+            flavors = api.nova.flavor_list(self.request)
+        except Exception:
+            flavors = []
+            exceptions.handle(self.request, ignore=True)
+
+        try:
+            # TODO(gabriel): Handle pagination.
+            images = api.glance.image_list_detailed(self.request)[0]
+        except Exception:
+            images = []
+            exceptions.handle(self.request, ignore=True)
+
+        if 'image_name' in search_opts and \
+                not swap_filter(images, search_opts, 'image_name', 'image'):
+                self._more = False
+                return instances
+        elif 'flavor_name' in search_opts and \
+                not swap_filter(flavors, search_opts, 'flavor_name', 'flavor'):
+                self._more = False
+                return instances
+
         # Gather our instances
         try:
             instances, self._more = api.nova.server_list(
@@ -86,22 +112,6 @@ class IndexView(tables.DataTableView):
                     self.request,
                     message=_('Unable to retrieve IP addresses from Neutron.'),
                     ignore=True)
-
-            # Gather our flavors and images and correlate our instances to them
-            try:
-                flavors = api.nova.flavor_list(self.request)
-            except Exception:
-                flavors = []
-                exceptions.handle(self.request, ignore=True)
-
-            try:
-                # TODO(gabriel): Handle pagination.
-                images, more, prev = api.glance.image_list_detailed(
-                    self.request)
-            except Exception:
-                images = []
-                exceptions.handle(self.request, ignore=True)
-
             full_flavors = OrderedDict([(str(flavor.id), flavor)
                                        for flavor in flavors])
             image_map = OrderedDict([(str(image.id), image)
@@ -114,7 +124,6 @@ class IndexView(tables.DataTableView):
                     if isinstance(instance.image, dict):
                         if instance.image.get('id') in image_map:
                             instance.image = image_map[instance.image['id']]
-
                 try:
                     flavor_id = instance.flavor["id"]
                     if flavor_id in full_flavors:
@@ -130,15 +139,15 @@ class IndexView(tables.DataTableView):
                     LOG.info(msg)
         return instances
 
-    def get_filters(self, filters):
-        filter_action = self.table._meta._filter_action
-        if filter_action:
-            filter_field = self.table.get_filter_field()
-            if filter_action.is_api_filter(filter_field):
-                filter_string = self.table.get_filter_string().strip()
-                if filter_field and filter_string:
-                    filters[filter_field] = filter_string
-        return filters
+
+def swap_filter(resources, filters, fake_field, real_field):
+    if fake_field in filters:
+        filter_string = filters[fake_field]
+        for resource in resources:
+            if resource.name.lower() == filter_string.lower():
+                filters[real_field] = resource.id
+                del filters[fake_field]
+                return True
 
 
 class LaunchInstanceView(workflows.WorkflowView):
@@ -455,6 +464,71 @@ class AttachInterfaceView(forms.ModalFormView):
         submit_url = "horizon:project:instances:attach_interface"
         self.submit_url = reverse(submit_url, kwargs=args)
         return args
+
+
+class AttachVolumeView(forms.ModalFormView):
+    form_class = project_forms.AttachVolume
+    template_name = 'project/instances/attach_volume.html'
+    modal_header = _("Attach Volume")
+    modal_id = "attach_volume_modal"
+    submit_label = _("Attach Volume")
+    success_url = reverse_lazy('horizon:project:instances:index')
+
+    @memoized.memoized_method
+    def get_object(self):
+        try:
+            return api.nova.server_get(self.request,
+                                       self.kwargs["instance_id"])
+        except Exception:
+            exceptions.handle(self.request,
+                              _("Unable to retrieve instance."))
+
+    def get_initial(self):
+        args = {'instance_id': self.kwargs['instance_id']}
+        submit_url = "horizon:project:instances:attach_volume"
+        self.submit_url = reverse(submit_url, kwargs=args)
+        try:
+            volume_list = api.cinder.volume_list(self.request)
+        except Exception:
+            volume_list = []
+            exceptions.handle(self.request,
+                              _("Unable to retrieve volume information."))
+        return {"instance_id": self.kwargs["instance_id"],
+                "volume_list": volume_list}
+
+    def get_context_data(self, **kwargs):
+        context = super(AttachVolumeView, self).get_context_data(**kwargs)
+        context['instance_id'] = self.kwargs['instance_id']
+        return context
+
+
+class DetachVolumeView(forms.ModalFormView):
+    form_class = project_forms.DetachVolume
+    template_name = 'project/instances/detach_volume.html'
+    modal_header = _("Detach Volume")
+    modal_id = "detach_volume_modal"
+    submit_label = _("Detach Volume")
+    success_url = reverse_lazy('horizon:project:instances:index')
+
+    @memoized.memoized_method
+    def get_object(self):
+        try:
+            return api.nova.server_get(self.request,
+                                       self.kwargs['instance_id'])
+        except Exception:
+            exceptions.handle(self.request,
+                              _("Unable to retrieve instance."))
+
+    def get_initial(self):
+        args = {'instance_id': self.kwargs['instance_id']}
+        submit_url = "horizon:project:instances:detach_volume"
+        self.submit_url = reverse(submit_url, kwargs=args)
+        return {"instance_id": self.kwargs["instance_id"]}
+
+    def get_context_data(self, **kwargs):
+        context = super(DetachVolumeView, self).get_context_data(**kwargs)
+        context['instance_id'] = self.kwargs['instance_id']
+        return context
 
 
 class DetachInterfaceView(forms.ModalFormView):

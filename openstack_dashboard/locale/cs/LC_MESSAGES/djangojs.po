@@ -4,9 +4,9 @@
 # Stanislav Ulrych <stanislav.ulrych@ultimum.io>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: horizon 10.0.0.0b2.dev186\n"
+"Project-Id-Version: horizon 10.0.0.0rc2.dev86\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-06-22 21:54+0000\n"
+"POT-Creation-Date: 2016-09-30 21:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -88,46 +88,6 @@ msgstr ""
 "          <strong>Výborně!</strong>\n"
 "          Úspěšně jste přečetli\n"
 "          <a href=\"#\" class=\"alert-link\">tuto důležitou výstrahu</a>."
-
-msgid ""
-"<li><b>Image (with Create New Volume checked)</b>: This options uses an "
-"image to boot the instance, and creates a new volume to persist instance "
-"data. You can specify volume size and whether to delete the volume on "
-"deletion of the instance.</li>"
-msgstr ""
-"<li><b>Obraz (se zaškrtnutou volbou Vytvořit nový svazek)</b>: Tato volba "
-"využívá obraz k zavedení instance a vytváří nový svazek pro uchování jejích "
-"dat. Můžete zadat velikost svazku a zdali svazek smazat při mazání instance."
-"</li>"
-
-msgid "<li><b>Image</b>: This option uses an image to boot the instance.</li>"
-msgstr "<li><b>Obraz</b>: Tato volba používá obraz k zavedení instance.</li>"
-
-msgid ""
-"<li><b>Instance Snapshot</b>: This option uses an instance snapshot to boot "
-"the instance.</li>"
-msgstr ""
-"<li><b>Snapshot instance</b>: Tato volba využije snapshot instance pro její "
-"zavedení.</li>"
-
-msgid ""
-"<li><b>Volume Snapshot</b>: This option uses a volume snapshot to boot the "
-"instance, and creates a new volume to persist instance data. You can choose "
-"to delete the volume on deletion of the instance.</li>"
-msgstr ""
-"<li><b>Snapshot svazku</b>: Tato volba využívá snapshot svazku k zavedení "
-"instance a vytváří nový svazek pro uchování jejích dat. Můžete zadat zdali "
-"svazek smazat při mazání instance.</li>"
-
-msgid ""
-"<li><b>Volume</b>: This option uses a volume that already exists. It does "
-"not create a new volume. You can choose to delete the volume on deletion of "
-"the instance. <em>Note: when selecting Volume, you can only launch one "
-"instance.</em></li>"
-msgstr ""
-"<li><b>Svazek</b>: Tato volba využívá svazek, který již existuje. Nevytváří "
-"nový svazek. Můžete zadat zdali svazek smazat při mazání instance. "
-"<em>Poznámka: při volbě svazku můžete spustit pouze jednu instanci.</em></li>"
 
 msgid "<small>This line of text is meant to be treated as fine print.</small>"
 msgstr "<small>Tento text má být vypsán drobným písmem.</small>"
@@ -514,20 +474,8 @@ msgstr "Vytvořeno"
 msgid "Created At"
 msgstr "Vytvořeno"
 
-msgid "Created keypair: "
-msgstr "Vytvořený klíč:"
-
 msgid "Creating"
 msgstr "Vytváření"
-
-msgid ""
-"Currently only images available via an HTTP URL are supported. The image "
-"location must be accessible to the Image Service. Compressed image binaries "
-"are supported (.zip and .tar.gz.)"
-msgstr ""
-"V současnosti jsou podporovány pouze obrazy dostupné přes HTTP URL. Umístění "
-"obrazu musí být přístupné pro Službu obrazů. Komprimované binární obrazy "
-"jsou podporovány (.zip a .tar.gz)."
 
 msgid "Custom Properties"
 msgstr "Uživatelské vlastnosti"
@@ -625,9 +573,6 @@ msgstr "Mazání:"
 msgid "Description"
 msgstr "Popis"
 
-msgid "Description:"
-msgstr "Popis:"
-
 msgid "Details"
 msgstr "Podrobnosti"
 
@@ -690,9 +635,6 @@ msgstr "Třídy pro zdůraznění"
 
 msgid "Enabled"
 msgstr "Povoleno"
-
-msgid "Encountered {$ ctrl.model.counted.folders $} failures."
-msgstr "Objeveny  {$ ctrl.model.counted.folders $}  chyby."
 
 msgid "Encrypted"
 msgstr "Zašifrováno"
@@ -837,12 +779,6 @@ msgid "ISO - Optical Disk Image"
 msgstr "ISO - obraz optického disku"
 
 msgid ""
-"If \"No volume type\" is selected, the volume will be created without a "
-"volume type."
-msgstr ""
-"Pokud je vybráno \"Žádný typ svazku\", nebude mít vytvořený svazek žádný typ."
-
-msgid ""
 "If a network is shared, then all users in the project can access the network."
 msgstr ""
 "Pokud je síť sdílená, pak všichni uživatelé v projektu mohou do sítě "
@@ -856,9 +792,6 @@ msgstr ""
 "Pokud bezpečnostní skupina není přidružena k instanci před jejím spuštěním, "
 "pak budete mít k ní velmi omezený přístup po jejím spuštění. Takto budete "
 "mít k instanci přístup pouze pomocí konzole VNC."
-
-msgid "If not, you can manually dowload this keypair at the following link:"
-msgstr "Pokud ne, stáhněte klíč kliknutím na následující odkaz:"
 
 msgid ""
 "If you select an availability zone and plan to use the 'boot from volume' "
@@ -923,10 +856,6 @@ msgstr "Sdílení obrazů"
 msgid "Image Source"
 msgstr "Zdroj obrazu"
 
-#, python-format
-msgid "Image metadata %s was successfully updated."
-msgstr "Metadata obrazu %s byly úspěšně aktualizovány."
-
 msgid "Images"
 msgstr "Obrazy"
 
@@ -974,15 +903,6 @@ msgstr "Snapshot instance"
 
 msgid "Instance count is required and must be an integer of at least 1"
 msgstr "Počet instanci je vyžadován - musí být celé číslo a alespoň 1."
-
-msgid ""
-"Instance source is the template used to create an instance. You can use a "
-"snapshot of an existing instance, an image, or a volume (if enabled).\n"
-"    You can also choose to use persistent storage by creating a new volume."
-msgstr ""
-"Zdroj instance je šablona použitá k jejímu vytvoření. Můžete použít snapshot "
-"existující instance, obraz, nebo svazek (pokud je povolen).\n"
-"      Vytvořením nového svazku můžete také zvolit trvalé úložiště."
 
 msgid "Instances"
 msgstr "Instance"
@@ -1382,9 +1302,6 @@ msgstr "Fyzická síť"
 msgid "Pills"
 msgstr "Zaoblená tlačítka"
 
-msgid "Please note:"
-msgstr "Vezměte prosím na vědomí:"
-
 msgid ""
 "Please provide the initial hostname for the instance, the availability zone "
 "where it will be deployed, and the instance count.\n"
@@ -1393,9 +1310,6 @@ msgstr ""
 "Prosím zadejte název počátečního hostitele instance, zónu dostupnosti, kde "
 "bude nasazena a počet instancí.\n"
 "      Počet zvyšte pro vytvoření mnoha instanci se stejným nastavením."
-
-msgid "Please try again."
-msgstr "Prosím zkuste znovu."
 
 msgid "Policy check failed."
 msgstr "Kontrola politiky selhala."
@@ -1509,14 +1423,8 @@ msgstr "Raw"
 msgid "Re-order items using drag and drop"
 msgstr "Řazení položek změňte přetažením"
 
-msgid "Record Properties"
-msgstr "Záznam vlastností"
-
 msgid "Remote"
 msgstr "Vzdálené"
-
-msgid "Required"
-msgstr "Vyžadováno"
 
 msgid "Right"
 msgstr "Vpravo"
@@ -1558,21 +1466,6 @@ msgstr ""
 "Bezpečnostní skupiny se vztahují k jednotlivým projektům a nelze je mezi "
 "nimi sdílet."
 
-msgid ""
-"Security groups define a set of IP filter rules that determine how network "
-"traffic flows to and from an instance. Users can add additional rules to an "
-"existing security group to further define the access options for an "
-"instance. To create additional rules, go to the <b>Compute | Access & "
-"Security</b> view, then find the security group and click <b>Manage Rules</"
-"b>."
-msgstr ""
-"Bezpečnostní skupiny určují sadu filtrů IP adres, které určují jak přenosy "
-"po síti putují z a do instance. Uživatelé mohou do existující bezpečnostní "
-"skupiny přidat dodatečná pravidla, která podrobněji určují možnosti pro "
-"přístup k instanci. Pro vytvoření dalších pravidel přejděte na <b>Výpočet | "
-"Přístup a zabezpečení</b>, pak klikněte na bezpečnostní skupinu a klikněte "
-"na <b>Správa pravidel</b>."
-
 msgid "Segmentation ID"
 msgstr "ID segmentace"
 
@@ -1587,9 +1480,6 @@ msgstr "Vyberte klíč ze seznamu dostupných níže."
 
 msgid "Select a source from those listed below."
 msgstr "Vyberte zdroj ze seznamu níže"
-
-msgid "Select a zone"
-msgstr "Vybrat zónu"
 
 msgid "Select an item from Available items below"
 msgstr "Vyberte položku ze seznamu níže"
@@ -1714,14 +1604,6 @@ msgstr "Tel"
 
 msgid "Textarea"
 msgstr "Textová oblast"
-
-msgid ""
-"The Image Location field MUST be a valid and direct URL to the image binary. "
-"URLs that redirect or serve error pages will result in unusable images."
-msgstr ""
-"Pole umístění obrazu MUSÍ být platné a přímá URL do spustitelného souboru "
-"obrazu. URL, které přesměrovávají nebo chybové stránky serveru způsobí "
-"nepoužitelnost obrazů."
 
 msgid ""
 "The flavor you select for an instance determines the amount of compute, "
@@ -2054,9 +1936,6 @@ msgstr "Nelze získat katalog služeb."
 msgid "Unable to fetch the services."
 msgstr "Nelze získat služby."
 
-msgid "Unable to generate"
-msgstr "Nelze vytvořit"
-
 msgid "Unable to get details of the object."
 msgstr "Nelze získat detaily objektu."
 
@@ -2281,9 +2160,6 @@ msgstr "Grafy využití"
 
 msgid "Use image as a source"
 msgstr "Použít obraz jako zdroj"
-
-msgid "Use this page to edit information about the image."
-msgstr "Použijte tuto stránku k editaci informací o obrazu."
 
 msgid "User ID"
 msgstr "ID uživatele"

@@ -25,9 +25,8 @@ from django.utils.translation import pgettext_lazy
 from django.utils.translation import ugettext_lazy as _
 
 from openstack_dashboard import exceptions
-from openstack_dashboard.static_settings import find_static_files  # noqa
-from openstack_dashboard.static_settings import get_staticfiles_dirs  # noqa
 from openstack_dashboard import theme_settings
+from openstack_dashboard.utils import settings as settings_utils
 
 from horizon.utils.escape import monkeypatch_escape
 
@@ -43,7 +42,6 @@ if ROOT_PATH not in sys.path:
     sys.path.append(ROOT_PATH)
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 SITE_BRANDING = 'OpenStack Dashboard'
 
@@ -56,6 +54,7 @@ MEDIA_URL = None
 STATIC_ROOT = None
 STATIC_URL = None
 INTEGRATION_TESTS_SUPPORT = False
+NG_TEMPLATE_CACHE_AGE = 2592000
 
 ROOT_URLCONF = 'openstack_dashboard.urls'
 
@@ -80,11 +79,6 @@ HORIZON_CONFIG = {
     'plugins': [],
     'integration_tests_support': INTEGRATION_TESTS_SUPPORT
 }
-
-# Set to True to allow users to upload images to glance via Horizon server.
-# When enabled, a file form field will appear on the create image form.
-# See documentation for deployment considerations.
-HORIZON_IMAGES_ALLOW_UPLOAD = True
 
 # The OPENSTACK_IMAGE_BACKEND settings can be used to customize features
 # in the OpenStack Dashboard related to the Image service, such as the list
@@ -121,29 +115,35 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.http.ConditionalGetMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.request',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.contrib.messages.context_processors.messages',
-    'horizon.context_processors.horizon',
-    'openstack_dashboard.context_processors.openstack',
-)
-
-TEMPLATE_LOADERS = ('horizon.themes.ThemeTemplateLoader',)
-
-CACHED_TEMPLATE_LOADERS = (
+CACHED_TEMPLATE_LOADERS = [
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-    'horizon.loaders.TemplateLoader',)
+    'horizon.loaders.TemplateLoader'
+]
 
 ADD_TEMPLATE_LOADERS = []
 
-TEMPLATE_DIRS = (
-    os.path.join(ROOT_PATH, 'templates'),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(ROOT_PATH, 'templates')],
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.request',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.contrib.messages.context_processors.messages',
+                'horizon.context_processors.horizon',
+                'openstack_dashboard.context_processors.openstack',
+            ],
+            'loaders': [
+                'horizon.themes.ThemeTemplateLoader'
+            ],
+        },
+    },
+]
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -212,6 +212,7 @@ LANGUAGES = (
     ('en-gb', 'British English'),
     ('es', 'Spanish'),
     ('fr', 'French'),
+    ('id', 'Indonesian'),
     ('it', 'Italian'),
     ('ja', 'Japanese'),
     ('ko', 'Korean (Korea)'),
@@ -302,18 +303,34 @@ CSRF_COOKIE_AGE = None
 
 COMPRESS_OFFLINE_CONTEXT = 'horizon.themes.offline_context'
 
+# Dictionary of currently available angular features
+ANGULAR_FEATURES = {
+    'images_panel': True,
+}
+
 # Notice all customizable configurations should be above this line
+XSTATIC_MODULES = settings_utils.BASE_XSTATIC_MODULES
+
 try:
     from local.local_settings import *  # noqa
 except ImportError:
     logging.warning("No local_settings file found.")
 
+# configure template debugging
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+
+# Template loaders
 if DEBUG:
-    TEMPLATE_LOADERS += CACHED_TEMPLATE_LOADERS + tuple(ADD_TEMPLATE_LOADERS)
+    TEMPLATES[0]['OPTIONS']['loaders'].extend(
+        CACHED_TEMPLATE_LOADERS + ADD_TEMPLATE_LOADERS
+    )
 else:
-    TEMPLATE_LOADERS += (
-        ('django.template.loaders.cached.Loader', CACHED_TEMPLATE_LOADERS),
-    ) + tuple(ADD_TEMPLATE_LOADERS)
+    TEMPLATES[0]['OPTIONS']['loaders'].extend(
+        [('django.template.loaders.cached.Loader', CACHED_TEMPLATE_LOADERS)] +
+        ADD_TEMPLATE_LOADERS
+    )
+
+NG_TEMPLATE_CACHE_AGE = NG_TEMPLATE_CACHE_AGE if not DEBUG else 0
 
 # allow to drop settings snippets into a local_settings_dir
 LOCAL_SETTINGS_DIR_PATH = os.path.join(ROOT_PATH, "local", "local_settings.d")
@@ -322,7 +339,8 @@ if os.path.exists(LOCAL_SETTINGS_DIR_PATH):
         for filename in sorted(filenames):
             if filename.endswith(".py"):
                 try:
-                    execfile(os.path.join(dirpath, filename))
+                    with open(os.path.join(dirpath, filename)) as f:
+                        exec(f.read())
                 except Exception as e:
                     logging.exception(
                         "Can not exec settings snippet %s" % filename)
@@ -361,12 +379,6 @@ AVAILABLE_THEMES, DEFAULT_THEME = theme_settings.get_available_themes(
     DEFAULT_THEME
 )
 
-STATICFILES_DIRS = get_staticfiles_dirs(STATIC_URL) + \
-    theme_settings.get_theme_static_dirs(
-        AVAILABLE_THEMES,
-        THEME_COLLECTION_DIR,
-        ROOT_PATH)
-
 if CUSTOM_THEME_PATH is not None:
     logging.warning("CUSTOM_THEME_PATH has been deprecated.  Please convert "
                     "your settings to make use of AVAILABLE_THEMES.")
@@ -375,9 +387,12 @@ if DEFAULT_THEME_PATH is not None:
     logging.warning("DEFAULT_THEME_PATH has been deprecated.  Please convert "
                     "your settings to make use of AVAILABLE_THEMES.")
 
-# populate HORIZON_CONFIG with auto-discovered JavaScript sources, mock files,
-# specs files and external templates.
-find_static_files(HORIZON_CONFIG)
+# Discover all the directories that contain static files; at the same time
+# discover all the xstatic module entry points to embed in our HTML
+STATICFILES_DIRS = settings_utils.get_xstatic_dirs(
+    XSTATIC_MODULES, HORIZON_CONFIG)
+STATICFILES_DIRS += theme_settings.get_theme_static_dirs(
+    AVAILABLE_THEMES, THEME_COLLECTION_DIR, ROOT_PATH)
 
 # Ensure that we always have a SECRET_KEY set, even when no local_settings.py
 # file is present. See local_settings.py.example for full documentation on the
@@ -391,13 +406,18 @@ if not SECRET_KEY:
     SECRET_KEY = secret_key.generate_or_read_from_file(os.path.join(LOCAL_PATH,
                                                        '.secret_key_store'))
 
+# populate HORIZON_CONFIG with auto-discovered JavaScript sources, mock files,
+# specs files and external templates.
+settings_utils.find_static_files(HORIZON_CONFIG, AVAILABLE_THEMES,
+                                 THEME_COLLECTION_DIR, ROOT_PATH)
+
+
 # Load the pluggable dashboard settings
 import openstack_dashboard.enabled
 import openstack_dashboard.local.enabled
-from openstack_dashboard.utils import settings
 
 INSTALLED_APPS = list(INSTALLED_APPS)  # Make sure it's mutable
-settings.update_dashboards(
+settings_utils.update_dashboards(
     [
         openstack_dashboard.enabled,
         openstack_dashboard.local.enabled,
@@ -412,18 +432,34 @@ def check(actions, request, target=None):
     # Note(Itxaka): This is to prevent circular dependencies and apps not ready
     # If you do django imports in your settings, you are gonna have a bad time
     from openstack_auth import policy
-    return policy.check(actions, request, target=None)
+    return policy.check(actions, request, target)
 
 if POLICY_CHECK_FUNCTION is None:
     POLICY_CHECK_FUNCTION = check
+
+NG_TEMPLATE_CACHE_AGE = NG_TEMPLATE_CACHE_AGE if not DEBUG else 0
 
 # This base context objects gets added to the offline context generator
 # for each theme configured.
 HORIZON_COMPRESS_OFFLINE_CONTEXT_BASE = {
     'WEBROOT': WEBROOT,
     'STATIC_URL': STATIC_URL,
-    'HORIZON_CONFIG': HORIZON_CONFIG
+    'HORIZON_CONFIG': HORIZON_CONFIG,
+    'NG_TEMPLATE_CACHE_AGE': NG_TEMPLATE_CACHE_AGE,
 }
 
 if DEBUG:
     logging.basicConfig(level=logging.DEBUG)
+
+
+# Here comes the Django settings deprecation section. Being at the very end
+# of settings.py allows it to catch the settings defined in local_settings.py
+# or inside one of local_settings.d/ snippets.
+if 'HORIZON_IMAGES_ALLOW_UPLOAD' in globals():
+    message = 'The setting HORIZON_IMAGES_ALLOW_UPLOAD is deprecated in ' \
+              'Newton and will be removed in P release. Use the setting ' \
+              'HORIZON_IMAGES_UPLOAD_MODE instead.'
+    if not HORIZON_IMAGES_ALLOW_UPLOAD:
+        message += ' Keep in mind that HORIZON_IMAGES_ALLOW_UPLOAD set to ' \
+                   'False overrides the value of HORIZON_IMAGES_UPLOAD_MODE.'
+    logging.warning(message)

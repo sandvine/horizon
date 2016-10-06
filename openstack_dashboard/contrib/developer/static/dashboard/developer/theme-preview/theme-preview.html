@@ -3,7 +3,7 @@
 </p>
 
 <div class="row">
-  <div class="col-lg-3 col-md-1 col-sm-4">
+  <div class="col-lg-3 col-sm-4">
     <div class="list-group">
       <a translate class="list-group-item" href="#navbar" target="_self">Navbar</a>
       <a translate class="list-group-item" href="#buttons" target="_self">Buttons</a>
@@ -564,7 +564,7 @@
                 </div>
                 <div class="themable-checkbox">
                   <input type="checkbox" id="themable-checkbox">
-                  <label for="themable-checkbox" translate>Checkbox</label>
+                  <label for="themable-checkbox" translate>Themable Checkbox</label>
                 </div>
               </div>
             </div>
@@ -593,6 +593,23 @@
               </div>
             </div>
             <div class="form-group">
+              <label translate class="col-lg-2 control-label">Themable Radios</label>
+              <div class="col-lg-10">
+                <div class="themable-radio">
+                  <input type="radio" name="optionsThemableRadios" id="optionsRadios3" value="option1" checked="">
+                  <label for="optionsRadios3">
+                    <span>{$ 'Themable Option 1' | translate $}</span>
+                  </label>
+                </div>
+                <div class="themable-radio">
+                  <input type="radio" name="optionsThemableRadios" id="optionsRadios4" value="option2">
+                  <label for="optionsRadios4">
+                    <span>{$ 'Themable Option 2' | translate $}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
               <label translate for="select" class="col-lg-2 control-label">Selects</label>
               <div class="col-lg-10">
                 <select class="form-control" id="select">
@@ -608,6 +625,42 @@
                   <option translate>2</option>
                   <option translate>3</option>
                 </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label translate for="select" class="col-lg-2 control-label">Themable Selects</label>
+              <div class="col-lg-10">
+                <div class="themable-select dropdown form-control">
+                  <button data-toggle="dropdown" type="button" class="btn btn-default dropdown-toggle" aria-expanded="false">
+                    <span class="dropdown-title" translate>Select Title</span>
+                    <span class="fa fa-caret-down"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a href="#" data-select-value="1" translate>1</a>
+                    </li>
+                    <li>
+                      <a href="#" data-select-value="2" translate>2</a>
+                    </li>
+                    <li>
+                      <a href="#" data-select-value="3" translate>3</a>
+                    </li>
+                    <li>
+                      <a href="#" data-select-value="4" translate>4</a>
+                    </li>
+                    <li>
+                      <a href="#" data-select-value="5" translate>5</a>
+                    </li>
+                  </ul>
+
+                  <select class="form-control" id="select">
+                    <option value="1" translate>1</option>
+                    <option value="2" translate>2</option>
+                    <option value="3" translate>3</option>
+                    <option value="4" translate>4</option>
+                    <option value="5" translate>5</option>
+                  </select>
+                </div>
               </div>
             </div>
             <div class="form-group">
@@ -1129,6 +1182,31 @@
           <div class="progress-bar progress-bar-danger" style="width: 10%"></div>
         </div>
       </div>
+
+      <h3 translate id="progress-info">Text</h3>
+      <div class="bs-component">
+        <div class="progress-text">
+          <div class="progress">
+            <div class="progress-bar" style="width: 10%;"></div>
+          </div>
+          <span class="progress-bar-text" translate>10%</span>
+        </div>
+        <div class="progress-text">
+          <div class="progress">
+            <div class="progress-bar" style="width: 75%;"></div>
+          </div>
+          <span class="progress-bar-text" translate>75%</span>
+        </div>
+      </div>
+
+      <h3 translate id="progress-info">Loading</h3>
+      <div class="bs-component">
+        <div class="horizon-loading-bar">
+          <div class="progress">
+            <div class="progress-bar"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1298,6 +1376,116 @@
         <div translate class="well well-lg">
           Look, I'm in a large well!
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <h2 translate>Other lists</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-4">
+      <h3 translate>Unordered</h3>
+      <div class="bs-component">
+        <ul>
+          <li>Lorem ipsum dolor sit amet</li>
+          <li>Consectetur adipiscing elit</li>
+          <li>Integer molestie lorem at massa</li>
+          <li>Facilisis in pretium nisl aliquet</li>
+          <li>Nulla volutpat aliquam velit
+            <ul>
+              <li>Phasellus iaculis neque</li>
+              <li>Purus sodales ultricies</li>
+              <li>Vestibulum laoreet porttitor sem</li>
+              <li>Ac tristique libero volutpat at</li>
+            </ul>
+          </li>
+          <li>Faucibus porta lacus fringilla vel</li>
+          <li>Aenean sit amet erat nunc</li>
+          <li>Eget porttitor lorem</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <h3 translate>Ordered</h3>
+      <div class="bs-component">
+        <ol>
+          <li>Lorem ipsum dolor sit amet</li>
+          <li>Consectetur adipiscing elit</li>
+          <li>Integer molestie lorem at massa</li>
+          <li>Facilisis in pretium nisl aliquet</li>
+          <li>Nulla volutpat aliquam velit</li>
+          <li>Faucibus porta lacus fringilla vel</li>
+          <li>Aenean sit amet erat nunc</li>
+          <li>Eget porttitor lorem</li>
+        </ol>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <h3 translate>Unstyled</h3>
+      <div class="bs-component">
+        <ul class="list-unstyled">
+          <li>Lorem ipsum dolor sit amet</li>
+          <li>Consectetur adipiscing elit</li>
+          <li>Integer molestie lorem at massa</li>
+          <li>Facilisis in pretium nisl aliquet</li>
+          <li>Nulla volutpat aliquam velit
+            <ul>
+              <li>Phasellus iaculis neque</li>
+              <li>Purus sodales ultricies</li>
+              <li>Vestibulum laoreet porttitor sem</li>
+              <li>Ac tristique libero volutpat at</li>
+            </ul>
+          </li>
+          <li>Faucibus porta lacus fringilla vel</li>
+          <li>Aenean sit amet erat nunc</li>
+          <li>Eget porttitor lorem</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-4">
+      <h3 translate>Inline</h3>
+      <div class="bs-component">
+        <ul class="list-inline">
+          <li>Lorem ipsum</li>
+          <li>Phasellus iaculis</li>
+          <li>Nulla volutpat</li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <h3 translate>Definition list</h3>
+      <div class="bs-component">
+        <dl>
+          <dt translate>Description lists</dt>
+          <dd translate>A description list is perfect for defining terms.</dd>
+          <dt>Euismod</dt>
+          <dd>Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.</dd>
+          <dd>Donec id elit non mi porta gravida at eget metus.</dd>
+          <dt>Malesuada porta</dt>
+          <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
+        </dl>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <h3 translate>Horizontal Definition List</h3>
+      <div class="bs-component">
+        <dl class="dl-horizontal">
+          <dt translate>Description lists</dt>
+          <dd translate>A description list is perfect for defining terms.</dd>
+          <dt>Euismod</dt>
+          <dd>Vestibulum id ligula porta felis euismod semper eget lacinia odio sem nec elit.</dd>
+          <dd>Donec id elit non mi porta gravida at eget metus.</dd>
+          <dt>Malesuada porta</dt>
+          <dd>Etiam porta sem malesuada magna mollis euismod.</dd>
+          <dt>Felis euismod semper eget lacinia</dt>
+          <dd>Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</dd>
+        </dl>
       </div>
     </div>
   </div>

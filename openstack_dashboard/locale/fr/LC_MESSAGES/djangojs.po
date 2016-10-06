@@ -5,6 +5,7 @@
 # OpenStack Infra <zanata@openstack.org>, 2015. #zanata
 # Romain Chantereau <rchanter@redhat.com>, 2015. #zanata
 # andrew melim <nokostya.translation@gmail.com>, 2015. #zanata
+# Adrien Cunin <adrien@adriencunin.fr>, 2016. #zanata
 # Andreas Jaeger <jaegerandi@gmail.com>, 2016. #zanata
 # Corinne Verheyde <cverheyd@gmail.com>, 2016. #zanata
 # Gael Rehault <gael_rehault@dell.com>, 2016. #zanata
@@ -12,14 +13,14 @@
 # Marcellin Fom Tchassem <mf6510@att.com>, 2016. #zanata
 msgid ""
 msgstr ""
-"Project-Id-Version: horizon 10.0.0.0b2.dev186\n"
+"Project-Id-Version: horizon 10.0.0.0rc2.dev86\n"
 "Report-Msgid-Bugs-To: https://bugs.launchpad.net/openstack-i18n/\n"
-"POT-Creation-Date: 2016-06-22 21:54+0000\n"
+"POT-Creation-Date: 2016-09-30 21:11+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2016-05-10 08:26+0000\n"
-"Last-Translator: Gérald LONLAS <g.lonlas@gmail.com>\n"
+"PO-Revision-Date: 2016-08-09 01:29+0000\n"
+"Last-Translator: Adrien Cunin <adrien@adriencunin.fr>\n"
 "Language-Team: French\n"
 "Language: fr\n"
 "X-Generator: Zanata 3.7.3\n"
@@ -96,51 +97,6 @@ msgstr ""
 "          Vous avez bien lu\n"
 "          <a href=\"#\" class=\"alert-link\">cet important message d'alerte</"
 "a>."
-
-msgid ""
-"<li><b>Image (with Create New Volume checked)</b>: This options uses an "
-"image to boot the instance, and creates a new volume to persist instance "
-"data. You can specify volume size and whether to delete the volume on "
-"deletion of the instance.</li>"
-msgstr ""
-"<li><b>Image (avec Créer Nouveau volume sélectionné)</b>: cette option "
-"utilise une image pour démarrer d'instance, et crée un nouveau volume pour "
-"persister les données de l'instance. Vous pouvez spécifier la taille du "
-"volume et définir si on doit supprimer le volume lorsque l'instance se "
-"termine.</li>"
-
-msgid "<li><b>Image</b>: This option uses an image to boot the instance.</li>"
-msgstr ""
-"<li><b>Image</b>: cette option utilise une image pour démarrer l'instance.</"
-"li>"
-
-msgid ""
-"<li><b>Instance Snapshot</b>: This option uses an instance snapshot to boot "
-"the instance.</li>"
-msgstr ""
-"<li><b>Capture d'instance</b>: cette option utilise une capture d'instantané "
-"d'instance pour démarrer l'instance.</li>"
-
-msgid ""
-"<li><b>Volume Snapshot</b>: This option uses a volume snapshot to boot the "
-"instance, and creates a new volume to persist instance data. You can choose "
-"to delete the volume on deletion of the instance.</li>"
-msgstr ""
-"<li><b>Capture de volume</b>: cette option utilise une capture d'instantané "
-"de volume pour démarrer d'instance, et crée un nouveau volume pour persister "
-"les données de l'instance. Vous pouvez définir si on doit supprimer le "
-"volume lorsque l'instance se termine.</li>"
-
-msgid ""
-"<li><b>Volume</b>: This option uses a volume that already exists. It does "
-"not create a new volume. You can choose to delete the volume on deletion of "
-"the instance. <em>Note: when selecting Volume, you can only launch one "
-"instance.</em></li>"
-msgstr ""
-"<li><b>Volume</b>: cette option utilise un volume déjà existant. Elle ne "
-"crée pas de nouveau volume. Vous pouvez choisir de supprimer le volume "
-"lorsque l'instance est terminée.<em> Remarque : quand vous sélectionnez un "
-"volume, vous ne pouvez exécuter qu'une instance.</em></li>"
 
 msgid "<small>This line of text is meant to be treated as fine print.</small>"
 msgstr "<small>Cette ligne de texte s'affichera en petits caractères.</small>"
@@ -499,9 +455,6 @@ msgstr "Créé"
 msgid "Created At"
 msgstr "Créé le"
 
-msgid "Created keypair: "
-msgstr "Pair de clés créée :"
-
 msgid "Creating"
 msgstr "Création en cours"
 
@@ -599,9 +552,6 @@ msgstr "Suppression"
 
 msgid "Description"
 msgstr "Description"
-
-msgid "Description:"
-msgstr "Description :"
 
 msgid "Details"
 msgstr "Détails"
@@ -809,13 +759,6 @@ msgid "ISO - Optical Disk Image"
 msgstr "ISO - Image disque optique"
 
 msgid ""
-"If \"No volume type\" is selected, the volume will be created without a "
-"volume type."
-msgstr ""
-"Si \"Pas de Type de Volume\" est sélectionner, le volume sera créé sans type "
-"de volume."
-
-msgid ""
 "If a network is shared, then all users in the project can access the network."
 msgstr ""
 "Si un réseau est partagé, alors tous les utilisateurs du projet pourront "
@@ -830,11 +773,6 @@ msgstr ""
 "lancement, vous aurez un accès très limité à cette instance une fois que "
 "celle-ci aura été déployée. Vous ne pourrez accéder à l'instance qu'à partir "
 "d'une console VNC."
-
-msgid "If not, you can manually dowload this keypair at the following link:"
-msgstr ""
-"Si non, vous pouvez téléchargement manuellement cet paire de clés avec le "
-"lien suivant :"
 
 msgid ""
 "If you select an availability zone and plan to use the 'boot from volume' "
@@ -894,10 +832,6 @@ msgstr "Pré-requis pour l'image"
 msgid "Image Sharing"
 msgstr "Partage d'image"
 
-#, python-format
-msgid "Image metadata %s was successfully updated."
-msgstr "Les meta-données de l'image %s ont été mise à jour."
-
 msgid "Images"
 msgstr "Images"
 
@@ -947,17 +881,6 @@ msgid "Instance count is required and must be an integer of at least 1"
 msgstr ""
 "Le nombre d'instances est obligatoire et doit correspondre à un nombre "
 "entier supérieur ou égal à 1"
-
-msgid ""
-"Instance source is the template used to create an instance. You can use a "
-"snapshot of an existing instance, an image, or a volume (if enabled).\n"
-"    You can also choose to use persistent storage by creating a new volume."
-msgstr ""
-"La source d'instance est le modèle utilisé pour créer une instance. Vous "
-"pouvez utiliser un instantané d'instance déjà existant, une    image ou un "
-"volume (si activé).\n"
-"      Vous pouvez aussi opter pour un stockage persistant en créant un "
-"nouveau volume."
 
 msgid "Instances"
 msgstr "Instances"
@@ -1229,6 +1152,10 @@ msgstr "Aucun Scheduler Hints existant"
 msgid "Normal"
 msgstr "Normal"
 
+#, fuzzy
+msgid "Not Set"
+msgstr "Non défini"
+
 msgid ""
 "Note: A Public Container will allow anyone with the Public URL to\n"
 "          gain access to your objects in the container."
@@ -1301,7 +1228,7 @@ msgid "One fine body…"
 msgstr "Un paragraphe..."
 
 msgid "One more separated link"
-msgstr "Un autre Lien séparé"
+msgstr "Un autre lien séparé"
 
 msgid "Option one is this"
 msgstr "La première option est ceci"
@@ -1372,9 +1299,6 @@ msgstr ""
 "disponibilité où elle sera déployée, et le nombre d'instances au compteur.\n"
 "    Augmenter le nombre pour pouvoir créer plusieurs instances sur les mêmes "
 "bases de configuration."
-
-msgid "Please try again."
-msgstr "Veuillez recommencer."
 
 msgid "Policy check failed."
 msgstr "La vérification de la stratégie a échoué."
@@ -1492,14 +1416,8 @@ msgid "Re-order items using drag and drop"
 msgstr ""
 "Ordonnancer les éléments à nouveau en utilisant l'opération glisser-déplacer"
 
-msgid "Record Properties"
-msgstr "Propriétés d'enregistrement"
-
 msgid "Remote"
 msgstr "Distant"
-
-msgid "Required"
-msgstr "Requis"
 
 msgid "Right"
 msgstr "Droite"
@@ -1543,22 +1461,6 @@ msgstr ""
 "Les groupes de sécurité sont spécifiques à des projets et ne peuvent pas "
 "être partagés entre projets."
 
-msgid ""
-"Security groups define a set of IP filter rules that determine how network "
-"traffic flows to and from an instance. Users can add additional rules to an "
-"existing security group to further define the access options for an "
-"instance. To create additional rules, go to the <b>Compute | Access & "
-"Security</b> view, then find the security group and click <b>Manage Rules</"
-"b>."
-msgstr ""
-"Les groupes de sécurité définissent un ensemble de règles de filtrage "
-"d'adresses IP qui  déterminent comment le trafic réseau se dirige vers une "
-"instance et en repart. Les utilisateurs peuvent ajouter des règles "
-"supplémentaires à un groupe de sécurité existant pour définir plus "
-"précisément les options d'accès à une instance. Pour créer des règles "
-"supplémentaires, allez dans la vue <b>Compute | Accès & Sécurité</b>, "
-"cherchez le groupe de sécurité, et cliquez sur <b>Gestion des règles</b>."
-
 msgid "Segmentation ID"
 msgstr "ID de segmentation"
 
@@ -1573,9 +1475,6 @@ msgstr "Sélectionner une paire de clés parmi les paires de clés ci-dessous."
 
 msgid "Select a source from those listed below."
 msgstr "Sélectionnez une source parmi celles qui sont listées ci-dessous."
-
-msgid "Select a zone"
-msgstr "Sélectionner une zone"
 
 msgid "Select an item from Available items below"
 msgstr "Sélectionner un élément depuis les éléments disponibles ci-dessous"
@@ -1605,6 +1504,10 @@ msgstr "Sélectionner les groupes de sécurité pour lancer l'instance."
 
 msgid "Selects"
 msgstr "Liste déroulante"
+
+#, fuzzy
+msgid "Send invitation"
+msgstr "Envoyer une invitation"
 
 msgid "Separated link"
 msgstr "Lien séparé"
@@ -1689,6 +1592,10 @@ msgstr "Etiquettes"
 
 msgid "Tel"
 msgstr "Tél."
+
+#, fuzzy
+msgid "Text"
+msgstr "Texte"
 
 msgid "Textarea"
 msgstr "Champ de texte"
@@ -2028,9 +1935,6 @@ msgstr "Impossible d'extraire le catalogue de services."
 msgid "Unable to fetch the services."
 msgstr "Impossible de rapporter les services."
 
-msgid "Unable to generate"
-msgstr "Impossible de générer"
-
 msgid "Unable to get details of the object."
 msgstr "Impossible de récupérer les informations sur l'objet."
 
@@ -2248,10 +2152,6 @@ msgstr "Graphiques d'utilisation"
 
 msgid "Use image as a source"
 msgstr "Utiliser une image comme source"
-
-msgid "Use this page to edit information about the image."
-msgstr ""
-"Utilisez cette page pour modifier les informations au sujet de l'image."
 
 msgid "User ID"
 msgstr "ID Utilisateur"

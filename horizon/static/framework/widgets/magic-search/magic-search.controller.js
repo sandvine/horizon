@@ -38,8 +38,7 @@
     $window,
     service,
     magicSearchEvents
-  )
-  {
+  ) {
     var ctrl = this;
     var searchInput = $element.find('.search-input');
     ctrl.mainPromptString = $scope.strings.prompt;
@@ -83,6 +82,20 @@
 
     initSearch(service.getSearchTermsFromQueryString($window.location.search));
     emitQuery();
+
+    $scope.$on(magicSearchEvents.INIT_SEARCH, function(event, data) {
+      if ( data ) {
+        if ( data.textSearch ) {
+          // the requested text search will show up as a 'search in results' facet
+          ctrl.textSearch = data.textSearch;
+        } else {
+          // no requested text search, clear any prior text search
+          ctrl.textSearch = undefined;
+          searchInput.val('');
+        }
+        initSearch(data.magicSearchQuery || []);
+      }
+    });
 
     function initSearch(initialSearchTerms) {
       // Initializes both the unused choices and the full list of facets
@@ -256,6 +269,12 @@
         ctrl.filteredOptions = ctrl.facetOptions = facet.options;
         setMenuOpen(true);
       }
+      var searchVal = searchInput.val();
+      if (searchVal) {
+        ctrl.currentSearch = ctrl.currentSearch.filter(notTextSearch);
+        ctrl.currentSearch.push(service.getTextFacet(searchVal, $scope.strings.text));
+        ctrl.textSearch = searchVal;
+      }
       setSearchInput('');
       setPrompt('');
       $timeout(function() {
@@ -297,13 +316,12 @@
     }
 
     function clearSearch() {
-      if (ctrl.currentSearch.length > 0) {
-        ctrl.currentSearch = [];
-        ctrl.unusedFacetChoices = ctrl.facetChoices.map(service.getFacetChoice);
-        resetState();
-        $scope.$emit(magicSearchEvents.SEARCH_UPDATED, '');
-        emitTextSearch('');
-      }
+      ctrl.currentSearch = [];
+      delete ctrl.textSearch;
+      ctrl.unusedFacetChoices = ctrl.facetChoices.map(service.getFacetChoice);
+      resetState();
+      $scope.$emit(magicSearchEvents.SEARCH_UPDATED, '');
+      emitTextSearch('');
     }
 
     function resetState() {
